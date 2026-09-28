@@ -5,41 +5,49 @@
 ## ページの構成
 
 ```
-index.html                     トップ（学年を選ぶ）
-└ grade{1,2,3}.html            学年（分野を選ぶ：物理・化学・生物・地学）
-  └ grade{N}-{field}.html      分野（教材一覧）  例：grade2-biology.html
-    └ {教材}.html              教材本体          例：mirror.html, digestion.html, fall.html
-style.css                      全ページ共通のデザイン（ここ以外に CSS を書かない）
-tests/                         Playwright のテスト
+index.html            トップ（全部の教材を学年ごとにカードで並べる）
+└ grade{1,2,3}.html   学年（物理・化学・生物・地学の順に教材カード。ない分野は「準備中」）
+  └ {教材}.html       教材本体  例：mirror.html, digestion.html, fall.html
+style.css             全ページ共通のデザイン（ここ以外に CSS を書かない）
+tests/                Playwright のテスト
 ```
 
-- 分野のファイル名：physics / chemistry / biology / earth
-- ヘッダー・パンくず・フッターは各ページにコピーしてある。1か所変えたら全ページそろえる。
+- 分野のクラス名：`field-physics` / `field-chemistry` / `field-biology` / `field-earth`（色をまとめて切り替える）
+- アプリバー・学年ナビ・フッターは各ページにコピーしてある。1か所変えたら全ページそろえる
+- 学年ナビ（`nav.tabbar`、名前は「学年」）は、パソコンでは上のバーの右、スマホ（767px 以下）では画面の下に固定。いまの学年に `aria-current`（学年ページは `"page"`、教材ページは `"true"`）
+- アプリバーの「もどる」：教材 → 学年、学年 → ホーム。`aria-label` は「中学N年の教材にもどる」「ホームにもどる」
+- パンくずはパソコンだけに出す（スマホは「もどる」があるので隠す）
 
 ## 教材を追加するとき（`/new-material` スキルがある）
 
-1. 教材ページを作る（既存の教材と同じ骨組み：パンくず → page-header → sim-layout（キャンバス＋panel）→ 使い方 → このモデルについて → 戻るボタン）
-2. 分野ページの `.material-list` に1行足す。分野ページがなければ作る
-3. 学年ページのタイル：準備中の `<div class="tile is-disabled">` を `<a class="tile tile-{field}" href="...">` に変え、「教材 N件」を数える
-4. `index.html` の学年タイルの「教材 N件」も直す
-5. `tests/pages.spec.ts` の `PAGES` に追加し、`tests/materials.spec.ts` に教材の動きのテストを足す
+1. 教材ページを作る（骨組み：アプリバー → パンくず → page-head（分野と学年のチップ・題名・lead）→ sim-layout（`.card.sim-stage` にキャンバスとガイドのふきだし、`.card.panel` に操作）→ `.info` のアコーディオン「使い方」（開いておく）「このモデルについて」）
+2. 学年ページの、その分野の `.field-section` に教材カード（`.m-card`）を足す。「準備中」の `<p class="empty">` があれば置きかえる。lead の「いまはN本」も直す
+3. `index.html` の、その学年の `.card-list` にも同じカードを足す
+4. カードの絵（`.m-icon` の中の 40×40 の SVG）は、教材の中身が分かる簡単な線画を `currentColor` で描く
+5. `tests/pages.spec.ts` の `PAGES` と「トップには全部の教材が並ぶ」の数を直し、`tests/materials.spec.ts` に教材の動きのテストを足す
 
 ## デザインのルール（style.css の先頭にトークンがある）
 
+参考にしたもの：デジタル庁デザインシステム（文字・色・フォーカス・ボタン）、PayPay ミニアプリのガイド（上のバーと下のナビ）、LINE Design System（大事な操作を先に・左右16px・話しかける言葉）
+
 - 色・文字サイズ・余白・角丸は必ず `:root` のトークン（`--color-*`, `--text-*`, `--space-*`, `--radius-*`）を使う。新しい値を直接書かない
-- 文字サイズは7段階だけ。余白は 4px / 8px の倍数だけ
-- 押せる部品は最小 44px（`--target-min`）。フォーカス枠（`:focus-visible`）を消さない
-- 題名・見出しは日本語を大きく、英語は小さく添える（HTML では `.en` → `.ja` の順に書き、CSS で並びを入れ替えている）
-- 分野の色：物理＝青 `chip-physics` / 化学＝紫 `chip-chemistry` / 生物＝緑 `chip-biology` / 地学＝茶 `chip-earth`。ラベルとタイルの印だけに使う
-- モチーフは理科ノートの方眼。ヒーローとページの頭に敷く。キャンバスの方眼も同じ色（`#e3ecf6` / `#c9d9ea`）
-- 主ボタン（`.btn-primary`）は1ページに1つだけ。ほかは `.btn-secondary`、選ぶ操作は `.btn-choice` ＋ `aria-pressed`
-- 動きは操作への反応だけ（200ms 以内、`transform` / `opacity`）。`prefers-reduced-motion` を守る
+- 書体は Noto Sans JP（ロゴだけ毛筆の Yuji Syuku）。本文は 16px・行の高さ 1.7。**14px より小さい文字は使わない**
+- 文字は背景とコントラスト比 4.5:1 以上、部品の枠や線は 3:1 以上
+- 画面の地は灰色（`--color-bg`）、中身は白いカード（`.card`、角丸 16px）。画面の左右の余白は 16px（パソコンは 24px）
+- フォーカス枠は黄と黒の二重（`:focus-visible`）。どの部品でも同じで、消さない
+- 押せる部品は 44px 以上（ボタンは 48px）
+- ボタンは重要度で3段階：塗り `.btn-primary`（1画面に1つ）→ 枠線 `.btn-secondary`（同じ場所に3つまで）→ テキスト `.btn-tertiary`（もとに戻す・消すなど）。選ぶ操作は `.btn-choice` ＋ `aria-pressed`
+- ボタンの文字は「〜をかく」「〜を保存する」のように、押すと何が起こるかを書く
+- 分野の色は、チップ・カードの絵・分野の見出しの丸だけに使う
+- 説明が長いところは `<details class="accordion">` にたたむ。大事な操作（キャンバスと操作パネル）を先に見せる
+- 動きは操作への反応だけ（150ms）。`prefers-reduced-motion` を守る
 
 ## 教材の JavaScript
 
 - `<script>` はページの中にそのまま書く（外部ファイルやライブラリは使わない）
 - コメントは中学生が読んでも分かる日本語で書く（例：「速さは、重力加速度 × 時間 だけ増える」）
-- 画面上の文章は中学生向けの言葉で。結果は `aria-live="polite"` の `.notice` に出す
+- 画面上の文章は中学生向けの言葉で、話しかけるように書く（「〜しよう」「〜してみよう」）。結果はガイドのふきだし（`.guide` の中の `aria-live="polite"` の `.notice`）に出す
+- キャンバスの文字の書体は `'"Noto Sans JP", sans-serif'`（ページで読み込んでいる書体と同じにする）
 - キャンバスには `role="img"` と、図の内容を説明する `aria-label` を付ける
 - **キャンバスの文字はフォントが読み込まれる前に描かれてしまう。** 最初に一度描いてから、`document.fonts.load('<font>', '<使う文字>')` の後にもう一度描く（`document.fonts.ready` だけでは足りない）
 - 指・マウス・ペンは Pointer Events でまとめて扱う。キャンバスが縮んでも座標がずれないように、表示の大きさから換算する

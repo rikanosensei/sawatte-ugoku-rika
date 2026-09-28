@@ -1,6 +1,6 @@
 ---
 name: new-material
-description: 俺の理科教材に新しいシミュレーション教材を1本追加する。教材ページを作り、分野ページ・学年ページ・トップの件数とテストまでまとめて更新する。
+description: 俺の理科教材に新しいシミュレーション教材を1本追加する。教材ページを作り、学年ページとトップの教材カード、テストまでまとめて更新する。
 argument-hint: <学年> <分野> <単元名>  例：中2 物理 オームの法則
 disable-model-invocation: true
 ---
@@ -20,26 +20,29 @@ disable-model-invocation: true
 
 [templates/material.html](templates/material.html) をコピーして `{{...}}` を埋める。
 
-- 骨組み（パンくず → page-header → sim-layout → 使い方 → このモデルについて → 戻るボタン）は変えない
-- 操作パネルの部品は既存のクラスを使う：スライダーは `.control`、ボタンは `.btn`（主ボタンは1つだけ）、選ぶ操作は `.btn-choice` ＋ `aria-pressed`
-- キャンバスの色は既存の教材に合わせる（方眼 `#e3ecf6` / `#c9d9ea`、文字 `#1a2533`、線 `#7f93a8`）
+- 骨組み（アプリバー → パンくず → page-head → sim-layout（キャンバスとガイドのふきだし／操作パネル）→ アコーディオン「使い方」「このモデルについて」）は変えない
+- 学年ナビ（`nav.tabbar`）の、その学年のリンクに `aria-current="true"` を付ける
+- 操作パネルの部品は既存のクラスを使う：スライダーは `.control`、ボタンは重要度で `.btn-primary`（1つだけ）/ `.btn-secondary`（3つまで）/ `.btn-tertiary`（もとに戻す・消す）、選ぶ操作は `.btn-choice` ＋ `aria-pressed`
+- ボタンの文字は、押すと何が起こるかを書く（「〜をかく」「〜を保存する」）
+- キャンバスの色は既存の教材に合わせる（方眼 `#e3ecf6` / `#c9d9ea`、文字 `#1a2533`、線 `#7f93a8`）。文字の書体は `"Noto Sans JP"`
 - JavaScript のコメントは中学生にも読める日本語で
 - キャンバスの文字は、テンプレートの最後にあるとおり `document.fonts.load` の後に描き直す
 - 「このモデルについて」には、単純にしたところと、実際との違いを正直に書く
 
-## 2. 分野ページ
+## 2. 教材カードを作る
 
-- `grade{N}-{field}.html` があれば `.material-list` に1行足す
-- なければ `grade1-physics.html` をまねて作る（パンくず・題名・戻るボタンの文言を学年と分野に合わせる）
+学年ページとトップに並べるカード（`a.m-card.field-{field}`）。既存のカードをまねて、題名・1文の説明・分野と学年のチップを入れる。
+
+- `.m-icon` の中の絵は、40×40 の SVG で、教材の中身がひと目で分かる簡単な線画にする（`stroke="currentColor"`、線の太さ 2.5 前後、`aria-hidden="true"`）。例：鏡＝縦線と V 字の光、消化＝ほどける粒、落下＝弾む点線とボール
 
 ## 3. 学年ページとトップ
 
-- `grade{N}.html`：その分野のタイルが `<div class="tile is-disabled">…準備中` なら `<a class="tile tile-{field}" href="grade{N}-{field}.html">` にして `教材 1件` に。すでにリンクなら件数を1つ増やす
-- `index.html`：学年タイルの `教材 N件` を、その学年の教材の合計に直す
+- `grade{N}.html`：その分野の `.field-section` にカードを足す。`<p class="empty">…準備中…</p>` があれば `<ul class="card-list">` に置きかえる。lead の「いまはN本あります」も直す
+- `index.html`：その学年の `.card-list` にも同じカードを足す
 
 ## 4. テスト
 
-- `tests/pages.spec.ts` の `PAGES` に、新しい教材ページ（と、新しく作ったなら分野ページ）を足す
+- `tests/pages.spec.ts` の `PAGES` に新しい教材ページを足し、「トップには全部の教材が並ぶ」のカードの数と、「準備中」の数のテストを直す
 - `tests/materials.spec.ts` に `test.describe('<単元名>', ...)` を足す。最低限：
   - スライダーやボタンで表示の数値・メッセージが変わる
   - 操作するとキャンバスの絵が変わる（`canvasImage` で比べる）

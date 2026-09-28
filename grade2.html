@@ -3,64 +3,77 @@
 <head>
   <meta name="robots" content="noindex">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>中学2年｜俺の理科教材</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <a class="skip-link" href="#main">本文へ移動</a>
 
-  <header class="site-header">
-    <div class="container">
-      <p class="site-name"><a href="index.html">俺の理科教材</a></p>
-      <nav class="site-nav" aria-label="サイト内">
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="appbar-back" href="index.html" aria-label="ホームにもどる"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <p class="logo"><a href="index.html">俺の理科教材</a></p>
+      <nav class="tabbar" aria-label="学年">
         <ul>
-          <li><a href="index.html#materials">教材一覧</a></li>
+          <li><a href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 10.2 12 3.5l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z"/></svg><span>ホーム</span></a></li>
+          <li><a href="grade1.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">1</text></svg><span>1年</span></a></li>
+          <li><a href="grade2.html" aria-current="page"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">2</text></svg><span>2年</span></a></li>
+          <li><a href="grade3.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">3</text></svg><span>3年</span></a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main id="main">
-    <nav class="breadcrumb container" aria-label="現在位置">
+  <main id="main" class="page">
+    <nav class="breadcrumb" aria-label="現在位置">
       <ol>
         <li><a href="index.html">ホーム</a></li>
         <li><span aria-current="page">中学2年</span></li>
       </ol>
     </nav>
 
-    <header class="page-header">
-      <div class="container">
-        <h1 class="page-title">
-          <span class="en">Grade 2</span>
-          <span class="ja">中学2年</span>
-        </h1>
-        <p class="lead">分野を選んでください。</p>
-      </div>
-    </header>
+    <div class="page-head">
+      <h1 class="page-title">中学2年</h1>
+      <p class="lead">分野ごとに教材を並べています。いまは1本あります。</p>
+    </div>
 
-    <section class="section container">
-      <h2 class="section-title">
-        <span class="en">Fields</span>
-        <span class="ja">分野を選ぶ</span>
-      </h2>
-      <ul class="tile-list">
-        <li><div class="tile is-disabled"><span class="tile-title">物理</span><span class="tile-meta">準備中</span></div></li>
-        <li><div class="tile is-disabled"><span class="tile-title">化学</span><span class="tile-meta">準備中</span></div></li>
-        <li><a class="tile tile-biology" href="grade2-biology.html"><span class="tile-title">生物</span><span class="tile-meta">教材 1件</span></a></li>
-        <li><div class="tile is-disabled"><span class="tile-title">地学</span><span class="tile-meta">準備中</span></div></li>
+    <section class="field-section field-physics" aria-labelledby="f-physics">
+      <h2 class="field-title" id="f-physics">物理</h2>
+      <p class="empty">物理の教材は準備中です。できたらここに並びます。</p>
+    </section>
+
+    <section class="field-section field-chemistry" aria-labelledby="f-chemistry">
+      <h2 class="field-title" id="f-chemistry">化学</h2>
+      <p class="empty">化学の教材は準備中です。できたらここに並びます。</p>
+    </section>
+
+    <section class="field-section field-biology" aria-labelledby="f-biology">
+      <h2 class="field-title" id="f-biology">生物</h2>
+      <ul class="card-list">
+        <li>
+          <a class="m-card field-biology" href="digestion.html">
+            <span class="m-icon"><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="14" x2="16" y2="14"/><circle cx="7" cy="14" r="4"/><circle cx="16" cy="14" r="4"/><circle cx="24" cy="26" r="4"/><circle cx="34" cy="30" r="4"/></svg></span>
+            <span>
+              <span class="m-title">消化酵素のはたらき</span>
+              <span class="m-desc">消化酵素を選んで、どの栄養素が分解されるかを確かめる。</span>
+              <span class="chips"><span class="chip field-biology">生物</span><span class="chip">中学2年</span></span>
+            </span>
+          </a>
+        </li>
       </ul>
     </section>
 
-    <div class="page-end container">
-      <a class="btn btn-secondary" href="index.html#materials">学年を選ぶ画面へ戻る</a>
-    </div>
+    <section class="field-section field-earth" aria-labelledby="f-earth">
+      <h2 class="field-title" id="f-earth">地学</h2>
+      <p class="empty">地学の教材は準備中です。できたらここに並びます。</p>
+    </section>
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <p>© 2026 俺の理科教材</p>
-    </div>
+    <p>© 2026 俺の理科教材</p>
   </footer>
 </body>
 </html>

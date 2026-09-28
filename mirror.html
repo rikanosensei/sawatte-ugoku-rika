@@ -3,107 +3,103 @@
 <head>
   <meta name="robots" content="noindex">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>鏡にうつる像と光の反射｜俺の理科教材</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <a class="skip-link" href="#main">本文へ移動</a>
 
-  <header class="site-header">
-    <div class="container">
-      <p class="site-name"><a href="index.html">俺の理科教材</a></p>
-      <nav class="site-nav" aria-label="サイト内">
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="appbar-back" href="grade1.html" aria-label="中学1年の教材にもどる"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <p class="logo"><a href="index.html">俺の理科教材</a></p>
+      <nav class="tabbar" aria-label="学年">
         <ul>
-          <li><a href="index.html#materials">教材一覧</a></li>
+          <li><a href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 10.2 12 3.5l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z"/></svg><span>ホーム</span></a></li>
+          <li><a href="grade1.html" aria-current="true"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">1</text></svg><span>1年</span></a></li>
+          <li><a href="grade2.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">2</text></svg><span>2年</span></a></li>
+          <li><a href="grade3.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">3</text></svg><span>3年</span></a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main id="main">
-    <nav class="breadcrumb container" aria-label="現在位置">
+  <main id="main" class="page">
+    <nav class="breadcrumb" aria-label="現在位置">
       <ol>
         <li><a href="index.html">ホーム</a></li>
         <li><a href="grade1.html">中学1年</a></li>
-        <li><a href="grade1-physics.html">物理</a></li>
         <li><span aria-current="page">鏡にうつる像と光の反射</span></li>
       </ol>
     </nav>
 
-    <header class="page-header">
-      <div class="container">
-        <ul class="chips" aria-label="分野と学年"><li class="chip chip-physics">物理</li><li class="chip">中学1年</li></ul>
-        <h1 class="page-title">
-          <span class="en">Reflection in a Mirror</span>
-          <span class="ja">鏡にうつる像と光の反射</span>
-        </h1>
-        <p class="lead">目から鏡にうつる像に向かって線を引き、光が鏡でどう反射して目に届くか確かめよう。</p>
-      </div>
-    </header>
+    <div class="page-head">
+      <ul class="chips" aria-label="分野と学年"><li class="chip field-physics">物理</li><li class="chip">中学1年</li></ul>
+      <h1 class="page-title">鏡にうつる像と光の反射</h1>
+      <p class="lead">目から鏡にうつる像に向かって線を引き、光が鏡でどう反射して目に届くか確かめよう。</p>
+    </div>
 
-    <div class="container">
-      <div class="sim-layout">
-        <div>
-          <canvas id="board" class="sim-canvas is-draw" width="960" height="500" role="img"
+    <div class="sim-layout">
+      <section class="card sim-stage" aria-label="シミュレーション">
+        <canvas id="board" class="sim-canvas is-draw" width="960" height="500" role="img"
             aria-label="鏡の前に立つ自分と、鏡にうつる像の図。方眼の1マスは10cm。"></canvas>
+        <div class="guide">
+          <span class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1V16h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/></svg></span>
           <p id="msg" class="notice" aria-live="polite">自分の目（黒い点）から、鏡にうつる像の頭の先や足の先に向かってドラッグしよう。</p>
         </div>
+      </section>
 
-        <div class="panel">
-          <h2 class="panel-title">条件を変える</h2>
-          <div class="control">
-            <label class="control-label" for="hSlider">身長 <span class="control-value"><span id="hValue">160</span> cm</span></label>
-            <input type="range" id="hSlider" min="100" max="200" step="1" value="160">
-          </div>
-          <div class="control">
-            <label class="control-label" for="dSlider">鏡からの距離 <span class="control-value"><span id="dValue">100</span> cm</span></label>
-            <input type="range" id="dSlider" min="50" max="200" step="1" value="100">
-          </div>
+      <div class="card panel">
+            <h2 class="panel-title">条件を変える</h2>
+            <div class="control">
+              <label class="control-label" for="hSlider">身長 <span class="control-value"><span id="hValue">160</span> cm</span></label>
+              <input type="range" id="hSlider" min="100" max="200" step="1" value="160">
+            </div>
+            <div class="control">
+              <label class="control-label" for="dSlider">鏡からの距離 <span class="control-value"><span id="dValue">100</span> cm</span></label>
+              <input type="range" id="dSlider" min="50" max="200" step="1" value="100">
+            </div>
 
-          <h2 class="panel-title">ボタンで線をかく</h2>
-          <div class="panel-actions">
-            <button id="headBtn" class="btn btn-secondary btn-block">頭の先からの光</button>
-            <button id="toeBtn" class="btn btn-secondary btn-block">つま先からの光</button>
-          </div>
+            <h2 class="panel-title">ボタンで線をかく</h2>
+            <div class="panel-actions">
+              <button id="headBtn" class="btn btn-secondary btn-block">頭の先からの光をかく</button>
+              <button id="toeBtn" class="btn btn-secondary btn-block">つま先からの光をかく</button>
+            </div>
 
-          <div class="panel-actions">
-            <button id="resetBtn" class="btn btn-secondary btn-block" disabled>線をすべて消す</button>
-            <button id="saveBtn" class="btn btn-secondary btn-block">画像として保存</button>
-          </div>
+            <div class="panel-actions">
+              <button id="saveBtn" class="btn btn-secondary btn-block">画像を保存する</button>
+              <button id="resetBtn" class="btn btn-tertiary btn-block" disabled>線をすべて消す</button>
+            </div>
 
-          <div class="panel-note">
-            <p><strong>方眼</strong>　1マスは10cm。太い線は50cmごと。</p>
-          </div>
-        </div>
+            <div class="panel-note">
+              <p><strong>方眼</strong>　1マスは10cm。太い線は50cmごと。</p>
+            </div>
       </div>
     </div>
 
-    <section class="section container">
-      <h2 class="section-title">
-        <span class="en">How to Use</span>
-        <span class="ja">使い方</span>
-      </h2>
-      <ol class="steps prose">
-        <li>スライダーで、身長と鏡からの距離を決める。</li>
-        <li>自分の目から、鏡にうつる像の頭の先に向かってドラッグする。光が頭の先から鏡で反射して目に届く道筋が描かれる。</li>
-        <li>同じように、鏡にうつる像の足の先に向かってもドラッグする。</li>
-        <li>2本の光が鏡に当たった点の間の長さを、方眼で数える。全身をうつすのに必要な鏡の長さが分かる。</li>
-        <li>身長や距離を変えて、必要な鏡の長さがどう変わるか比べる。</li>
-      </ol>
-      <p class="prose">ドラッグしにくいときは、右の「ボタンで線をかく」を使うと、頭の先とつま先からの光の道筋をかけます。</p>
-    </section>
-
-    <section class="section container">
-      <h2 class="section-title">
-        <span class="en">Note</span>
-        <span class="ja">このモデルについて</span>
-      </h2>
-      <p class="prose">人の形は単純にしています。目の高さは、頭の上から10cm下としています。鏡は床から天井まで続いているものとして描いているので、光が当たった点から、実際に必要な鏡の範囲を読み取ってください。</p>
-    </section>
-
-    <div class="page-end container">
-      <a class="btn btn-secondary" href="grade1-physics.html">中学1年 物理の教材一覧へ戻る</a>
+    <div class="info">
+      <details class="accordion" open>
+        <summary>使い方</summary>
+        <div class="accordion-body">
+          <ol class="steps">
+              <li>スライダーで、身長と鏡からの距離を決める。</li>
+              <li>自分の目から、鏡にうつる像の頭の先に向かってドラッグする。光が頭の先から鏡で反射して目に届く道筋が描かれる。</li>
+              <li>同じように、鏡にうつる像の足の先に向かってもドラッグする。</li>
+              <li>2本の光が鏡に当たった点の間の長さを、方眼で数える。全身をうつすのに必要な鏡の長さが分かる。</li>
+              <li>身長や距離を変えて、必要な鏡の長さがどう変わるか比べる。</li>
+          </ol>
+            <p>ドラッグしにくいときは、「ボタンで線をかく」を使うと、頭の先とつま先からの光の道筋をかけます。</p>
+        </div>
+      </details>
+      <details class="accordion">
+        <summary>このモデルについて</summary>
+        <div class="accordion-body prose">
+          <p>人の形は単純にしています。目の高さは、頭の上から10cm下としています。鏡は床から天井まで続いているものとして描いているので、光が当たった点から、実際に必要な鏡の範囲を読み取ってください。</p>
+        </div>
+      </details>
     </div>
   </main>
 
@@ -117,7 +113,7 @@
   const dValue = document.getElementById('dValue');
   const resetBtn = document.getElementById('resetBtn');
 
-  const FONT = '"Zen Kaku Gothic New", sans-serif';
+  const FONT = '"Noto Sans JP", sans-serif';
   const S = 2;            // 縮尺：1cm を 2px で描く
   const GROUND_Y = 440;   // 床の高さ
   const MIRROR_X = 480;   // 鏡の位置
@@ -434,11 +430,8 @@
   document.fonts.load('500 22px ' + FONT, '鏡にうつる像自分').finally(draw);
 </script>
 
-
   <footer class="site-footer">
-    <div class="container">
-      <p>© 2026 俺の理科教材</p>
-    </div>
+    <p>© 2026 俺の理科教材</p>
   </footer>
 </body>
 </html>

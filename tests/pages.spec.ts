@@ -6,13 +6,12 @@ const PAGES = [
   'grade1.html',
   'grade2.html',
   'grade3.html',
-  'grade1-physics.html',
-  'grade2-biology.html',
-  'grade3-physics.html',
   'mirror.html',
   'digestion.html',
   'fall.html',
 ];
+
+const isMobile = () => test.info().project.name === 'mobile';
 
 for (const path of PAGES) {
   test.describe(path, () => {
@@ -53,37 +52,84 @@ for (const path of PAGES) {
       );
       expect(overflow).toBeLessThanOrEqual(0);
     });
+
+    test('学年のナビゲーションが見えていて、4つとも押せる', async ({ page }) => {
+      await page.goto(path);
+      const nav = page.getByRole('navigation', { name: '学年' });
+      await expect(nav).toBeVisible();
+      for (const name of ['ホーム', '1年', '2年', '3年']) {
+        const link = nav.getByRole('link', { name });
+        await expect(link).toBeInViewport();
+        const box = await link.boundingBox();
+        expect(box!.height, `${name} の高さ`).toBeGreaterThanOrEqual(44);
+      }
+    });
   });
 }
 
-test('トップから学年・分野を選んで教材までたどれる', async ({ page }) => {
+test('トップから教材を開き、もどるボタンで学年、ホームへもどれる', async ({ page }) => {
   await page.goto('index.html');
-  await page.getByRole('link', { name: /中学1年/ }).click();
-  await expect(page).toHaveURL(/grade1\.html$/);
-
-  await page.getByRole('link', { name: /物理/ }).click();
-  await expect(page).toHaveURL(/grade1-physics\.html$/);
-
-  await page.getByRole('link', { name: '鏡にうつる像と光の反射' }).click();
+  await page.getByRole('link', { name: /鏡にうつる像と光の反射/ }).click();
   await expect(page).toHaveURL(/mirror\.html$/);
-  await expect(page.locator('h1')).toContainText('鏡にうつる像と光の反射');
+  await expect(page.locator('h1')).toHaveText('鏡にうつる像と光の反射');
 
-  // パンくずで学年のページへ戻れる
-  await page.getByRole('navigation', { name: '現在位置' }).getByRole('link', { name: '中学1年' }).click();
+  await page.getByRole('link', { name: '中学1年の教材にもどる' }).click();
   await expect(page).toHaveURL(/grade1\.html$/);
+  await expect(page.locator('h1')).toHaveText('中学1年');
+
+  await page.getByRole('link', { name: 'ホームにもどる' }).click();
+  await expect(page).toHaveURL(/index\.html$/);
 });
 
-test('準備中の分野はリンクになっていない', async ({ page }) => {
+test('学年のナビゲーションで、いまの学年に印がつく', async ({ page }) => {
+  const nav = page.getByRole('navigation', { name: '学年' });
+
   await page.goto('grade2.html');
-  await expect(page.locator('.tile.is-disabled')).toHaveCount(3);
-  await expect(page.locator('a.tile')).toHaveCount(1);
+  await expect(nav.getByRole('link', { name: '2年' })).toHaveAttribute('aria-current', 'page');
+
+  // 教材のページでは、その教材の学年に印がつく
+  await page.goto('fall.html');
+  await expect(nav.getByRole('link', { name: '3年' })).toHaveAttribute('aria-current', 'true');
+  await expect(nav.getByRole('link', { name: 'ホーム' })).not.toHaveAttribute('aria-current', /.*/);
 });
 
-test('キーボードで最初に「本文へ移動」が選ばれる', async ({ page, browserName }) => {
-  test.skip(test.info().project.name === 'mobile', 'スマホにはキーボード操作がない');
+test('トップには全部の教材が並ぶ', async ({ page }) => {
+  await page.goto('index.html');
+  await expect(page.locator('.m-card')).toHaveCount(3);
+});
+
+test('教材がまだない分野は「準備中」と出て、リンクにはならない', async ({ page }) => {
+  await page.goto('grade2.html');
+  await expect(page.locator('.empty')).toHaveCount(3);
+  await expect(page.locator('.m-card')).toHaveCount(1);
+  await expect(page.locator('.field-section.field-biology .m-card')).toHaveAttribute('href', 'digestion.html');
+});
+
+test('パソコンではパンくずが出て、スマホでは隠れる', async ({ page }) => {
+  await page.goto('mirror.html');
+  const crumb = page.getByRole('navigation', { name: '現在位置' });
+  if (isMobile()) {
+    await expect(crumb).toBeHidden();
+  } else {
+    await expect(crumb).toBeVisible();
+    await crumb.getByRole('link', { name: '中学1年' }).click();
+    await expect(page).toHaveURL(/grade1\.html$/);
+  }
+});
+
+test('キーボードで最初に「本文へ移動」が選ばれる', async ({ page }) => {
+  test.skip(isMobile(), 'スマホにはキーボード操作がない');
   await page.goto('index.html');
   await page.keyboard.press('Tab');
   const skip = page.getByRole('link', { name: '本文へ移動' });
   await expect(skip).toBeFocused();
   await expect(skip).toBeInViewport();
+});
+
+test('教材の説明はたためて、開くと読める', async ({ page }) => {
+  await page.goto('fall.html');
+  const note = page.locator('details', { hasText: 'このモデルについて' });
+  await expect(note).not.toHaveAttribute('open', '');
+  await note.locator('summary').click();
+  await expect(note.getByText('重力の強さは、地球を1としたときの倍率')).toBeVisible();
 });
