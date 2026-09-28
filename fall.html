@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>落下運動と反発係数｜俺の理科教材</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="site-header">
+    <div class="container">
+      <p class="site-name"><a href="index.html">俺の理科教材</a></p>
+      <nav class="site-nav" aria-label="サイト内">
+        <ul>
+          <li><a href="index.html#materials">教材一覧</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <nav class="breadcrumb container" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade3.html">中学3年</a></li>
+        <li><a href="grade3-physics.html">物理</a></li>
+        <li><span aria-current="page">落下運動と反発係数</span></li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <div class="container">
+        <ul class="chips" aria-label="分野と学年"><li class="chip chip-physics">物理</li><li class="chip">中学3年</li></ul>
+        <h1 class="page-title">
+          <span class="en">Free Fall and Bounce</span>
+          <span class="ja">落下運動と反発係数</span>
+        </h1>
+        <p class="lead">重力の強さと反発係数を変えて、ボールの弾み方を比べてみよう。</p>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="sim-layout">
+        <div>
+          <canvas id="board" class="sim-canvas" width="600" height="360" role="img"
+            aria-label="床の上にボールがあり、左に高さのものさしがある図。スタートを押すと、ボールが落ちて弾む。"></canvas>
+          <p class="notice">条件を決めて、スタートを押してみよう。</p>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">条件を変える</h2>
+          <div class="control">
+            <label class="control-label" for="gSlider">重力の強さ <span class="control-value">地球の <span id="gValue">1.0</span> 倍</span></label>
+            <input type="range" id="gSlider" min="0.1" max="2.5" step="0.1" value="1">
+          </div>
+          <div class="control">
+            <label class="control-label" for="eSlider">反発係数 <span id="eValue" class="control-value">0.8</span></label>
+            <input type="range" id="eSlider" min="0" max="1" step="0.05" value="0.8">
+          </div>
+          <div class="panel-actions">
+            <button id="startBtn" class="btn btn-primary btn-block">スタート</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">How to Use</span>
+        <span class="ja">使い方</span>
+      </h2>
+      <ol class="steps prose">
+        <li>重力の強さと反発係数を決めて、スタートを押す。</li>
+        <li>重力の強さだけを変えて、落ちる速さや弾む回数がどう変わるか比べる。</li>
+        <li>反発係数を0や1にして、弾み方がどう変わるか比べる。</li>
+      </ol>
+    </section>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">Note</span>
+        <span class="ja">このモデルについて</span>
+      </h2>
+      <p class="prose">重力の強さは、地球を1としたときの倍率です。月はおよそ6分の1、木星はおよそ2.5倍です。1mを100pxとして、実際の重力加速度（地球では9.8 m/s²）で計算しているので、落ちる速さは本物と同じです。ボールは、下の端が床から2.7mの高さから落ちます。空気の抵抗は考えていません。また、短い時間ごとに区切って計算する近似なので、反発係数を1にしても、弾む高さが少しずつ変わることがあります。</p>
+    </section>
+
+    <div class="page-end container">
+      <a class="btn btn-secondary" href="grade3-physics.html">中学3年 物理の教材一覧へ戻る</a>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const gSlider = document.getElementById('gSlider');
+  const gValue = document.getElementById('gValue');
+  const eSlider = document.getElementById('eSlider');
+  const eValue = document.getElementById('eValue');
+  const startBtn = document.getElementById('startBtn');
+
+  const FONT = '"Zen Kaku Gothic New", sans-serif';
+  const PX_PER_M = 100;  // 縮尺：1m を 100px で描く
+  const G_EARTH = 9.8;   // 地球の重力加速度（m/s²）
+  const R = 20;          // ボールの半径
+  const GROUND = 330;    // 地面の高さ（縦の位置）
+  const START_Y = 40;    // 落とし始める位置（ボールの下の端が床から2.7m）
+
+  let y = START_Y;       // ボールの縦の位置（px）
+  let v = 0;             // ボールの速さ（px/秒）
+  let running = false;   // 動いている最中かどうか
+  let last = null;       // 前のコマの時刻
+
+  // 地面・ものさし・ボールを描く
+  function drawBall() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 地面
+    ctx.fillStyle = '#eef5fc';
+    ctx.fillRect(0, GROUND, canvas.width, canvas.height - GROUND);
+    ctx.strokeStyle = '#a9bccf';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND);
+    ctx.lineTo(canvas.width, GROUND);
+    ctx.stroke();
+
+    // 左のものさし（0.5mごとに目盛り、1mごとに数字）
+    ctx.strokeStyle = '#7f93a8';
+    ctx.fillStyle = '#4d5b6b';
+    ctx.lineWidth = 1.5;
+    ctx.font = '14px ' + FONT;
+    ctx.textBaseline = 'middle';
+    for (let m = 0.5; m <= 3; m += 0.5) {
+      const my = GROUND - m * PX_PER_M;
+      const len = (m % 1 === 0) ? 14 : 7;
+      ctx.beginPath();
+      ctx.moveTo(0, my);
+      ctx.lineTo(len, my);
+      ctx.stroke();
+      if (m % 1 === 0) {
+        ctx.fillText(m + ' m', 20, my);
+      }
+    }
+    ctx.textBaseline = 'alphabetic';
+
+    // ボール
+    ctx.fillStyle = '#f4b6a6';
+    ctx.strokeStyle = '#7f93a8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, y, R, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // 1コマ分動かす（time は、ブラウザが渡してくれる今の時刻・ミリ秒）
+  function update(time) {
+    if (last === null) { last = time; }
+    let dt = (time - last) / 1000;   // 前のコマから何秒たったか
+    last = time;
+    if (dt > 0.05) { dt = 0.05; }    // 別のタブを見ていた後などに、一気に進みすぎないように
+
+    const g = G_EARTH * Number(gSlider.value) * PX_PER_M;  // 重力加速度（px/秒²）
+    const e = Number(eSlider.value);
+    v = v + g * dt;    // 速さは、重力加速度 × 時間 だけ増える
+    y = y + v * dt;    // 位置は、速さ × 時間 だけ進む
+    if (y > GROUND - R) { y = GROUND - R; v = -v * e; }
+
+    drawBall();
+    requestAnimationFrame(update);
+  }
+
+  // スライダーを動かしたら数値の表示を変える
+  gSlider.addEventListener('input', function () {
+    gValue.textContent = Number(gSlider.value).toFixed(1);
+  });
+  eSlider.addEventListener('input', function () {
+    eValue.textContent = eSlider.value;
+  });
+
+  // スタートボタンを押したら最初の位置から落とす
+  startBtn.addEventListener('click', function () {
+    y = START_Y;
+    v = 0;
+    last = null;
+    if (!running) {
+      running = true;
+      requestAnimationFrame(update);
+    }
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  drawBall();
+  document.fonts.load('14px ' + FONT, '0123 m').finally(function () {
+    if (!running) { drawBall(); }
+  });
+</script>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2026 俺の理科教材</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,929 @@
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
+/* ロゴ用の毛筆の書体（ロゴの6文字だけを読み込む） */
+@import url('https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E4%BF%BA%E3%81%AE%E7%90%86%E7%A7%91%E6%95%99%E6%9D%90');
+
+/* =========================================================
+   俺の理科教材 デザインルール
+   モチーフ：理科ノートの方眼（教材のキャンバスと同じ 1マス）
+   ========================================================= */
+
+/* ---------- 1. デザイントークン（ルールの値） ---------- */
+:root {
+  /* 色 */
+  --color-text: #16263a;           /* 本文 */
+  --color-text-sub: #4a5a6c;       /* 補足 */
+  --color-bg: #ffffff;             /* 背景 */
+  --color-bg-pale: #f3f8fd;        /* 面（うすい） */
+  --color-bg-pastel: #dce9f7;      /* 面（パステル） */
+  --color-primary: #1d5fa8;        /* 操作できるもの・リンク */
+  --color-primary-hover: #174e8b;  /* マウスを重ねたとき */
+  --color-primary-active: #113c6c; /* 押したとき・強調 */
+  --color-border: #d3e0ec;         /* 区切り線（飾り） */
+  --color-border-strong: #6c86a1;  /* 操作できる部品の枠 */
+  --color-focus: #0b2a4a;          /* キーボードで選んだときの枠 */
+  --color-disabled-bg: #eef1f4;    /* 押せないとき */
+  --color-disabled-text: #6f7b88;
+  --color-light: #e8962a;          /* 光の道筋（トップの図だけ） */
+
+  /* 方眼（教材のキャンバスと同じ色） */
+  --grid-minor: #e3ecf6;
+  --grid-major: #c9d9ea;
+  --grid-cell: 20px;
+
+  /* 分野の色（ラベルとタイルの印だけに使う） */
+  --field-physics: #1d5fa8;
+  --field-physics-bg: #e4eef9;
+  --field-chemistry: #7a3f9e;
+  --field-chemistry-bg: #f1e8f7;
+  --field-biology: #2a7646;
+  --field-biology-bg: #e3f2e8;
+  --field-earth: #87571b;
+  --field-earth-bg: #f5ecdf;
+
+  /* 文字の大きさ（7段階だけ使う） */
+  --text-caption: 0.875rem;   /* 14px 注記・ラベル */
+  --text-small: 1rem;         /* 16px ボタン・操作パネル */
+  --text-body: 1.0625rem;     /* 17px 本文 */
+  --text-lead: 1.25rem;       /* 20px 導入文 */
+  --text-h3: 1.5rem;          /* 24px 小見出し */
+  --text-h2: 2rem;            /* 32px 見出し */
+  --text-h1: 2.5rem;          /* 40px ページの題名 */
+  --line-body: 1.8;
+  --line-heading: 1.4;
+
+  /* 余白（4pxと8pxの倍数だけ使う） */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 96px;
+
+  /* 角の丸み（3種類だけ使う） */
+  --radius-s: 4px;     /* ボタン・入力 */
+  --radius-m: 8px;     /* 操作パネル・タイル */
+  --radius-full: 999px; /* ラベル */
+
+  /* 影（持ち上がって見える部品だけ） */
+  --shadow-lift: 0 6px 16px -8px rgba(17, 60, 108, 0.35);
+
+  /* 重なり順（この3段だけ使う） */
+  --z-base: 1;
+  --z-header: 10;
+  --z-skip: 100;
+
+  /* 動き（操作への反応だけ。200ms以内） */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --duration: 160ms;
+
+  /* 指で押せる部品の最小の大きさ */
+  --target-min: 44px;
+}
+
+/* ---------- 2. 基本 ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Zen Kaku Gothic New", "BIZ UDPGothic", sans-serif;
+  font-size: var(--text-body);
+  line-height: var(--line-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  line-height: var(--line-heading);
+  text-wrap: balance;
+}
+
+p, li {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+  text-decoration-thickness: 2px;
+}
+
+/* キーボードで選んだときは、どの部品でも同じ枠を出す */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.prose {
+  max-width: 40em;
+}
+
+/* 本文へ移動（キーボードで最初に選ぶと現れる） */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-3);
+  z-index: var(--z-skip);
+  padding: var(--space-2) var(--space-3);
+  color: #ffffff;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-s);
+}
+
+.skip-link:focus {
+  top: var(--space-3);
+  color: #ffffff;
+}
+
+/* 方眼の面：ヒーローとページの頭に敷く */
+.hero,
+.page-header {
+  background-color: var(--color-bg-pale);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size:
+    calc(var(--grid-cell) * 5) calc(var(--grid-cell) * 5),
+    calc(var(--grid-cell) * 5) calc(var(--grid-cell) * 5),
+    var(--grid-cell) var(--grid-cell),
+    var(--grid-cell) var(--grid-cell);
+  background-position: -1px -1px;
+  border-bottom: 1px solid var(--grid-major);
+}
+
+/* ---------- 3. ヘッダー・フッター ---------- */
+.site-header {
+  position: relative;
+  z-index: var(--z-header);
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 72px;
+}
+
+.site-name {
+  margin: 0;
+}
+
+/* ロゴ：毛筆の書体で大きく */
+.site-name a {
+  font-family: "Yuji Syuku", "Yu Mincho", "YuMincho", serif;
+  font-size: clamp(1.375rem, 4vw, 1.75rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.site-name a,
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.site-nav ul {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav a {
+  font-size: var(--text-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.site-footer {
+  margin-top: var(--space-8);
+  padding: var(--space-5) 0;
+  font-size: var(--text-caption);
+  color: var(--color-text-sub);
+  background-color: var(--color-bg-pale);
+  border-top: 1px solid var(--color-border);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* ---------- 4. ページの頭 ---------- */
+.breadcrumb {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  font-size: var(--text-caption);
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumb li + li::before {
+  content: "›";
+  margin-right: var(--space-2);
+  color: var(--color-text-sub);
+}
+
+.breadcrumb [aria-current="page"] {
+  color: var(--color-text-sub);
+}
+
+/* トップのヒーロー：文字と、光が鏡で反射する図 */
+.hero {
+  padding: var(--space-8) 0 var(--space-7);
+}
+
+.hero .container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--color-primary-active);
+}
+
+.hero-lead {
+  margin: var(--space-4) 0 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 500;
+}
+
+.hero-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 光の道筋を一度だけ描く（ページを開いたときの動きはここだけ） */
+.hero-figure .ray {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: draw-ray 1.4s var(--ease-out) 0.2s both;
+}
+
+.hero-figure .ray-virtual {
+  animation: fade-in 0.4s ease-out 1.5s both;
+}
+
+@keyframes draw-ray {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.page-header {
+  padding: var(--space-6) 0;
+}
+
+/* 題名：日本語を大きく、英語は下に小さく */
+.page-title {
+  display: flex;
+  flex-direction: column-reverse;
+  margin: var(--space-3) 0 0;
+}
+
+.page-title .en {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-text-sub);
+}
+
+.page-title .ja {
+  display: block;
+  font-size: clamp(2rem, 5vw, var(--text-h1));
+  font-weight: 700;
+  color: var(--color-primary-active);
+}
+
+.chips + .page-title {
+  margin-top: var(--space-3);
+}
+
+.page-header .container > .page-title:first-child {
+  margin-top: 0;
+}
+
+.lead {
+  max-width: 40em;
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-lead);
+}
+
+/* ---------- 5. 見出し・区画 ---------- */
+.section {
+  padding-top: var(--space-8);
+}
+
+/* 見出し：日本語を大きく、英語は右に小さく添える */
+.section-title {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 0 var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-text);
+}
+
+.section-title .en {
+  display: block;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-text-sub);
+}
+
+.section-title .ja {
+  display: block;
+  font-size: clamp(1.5rem, 3.5vw, var(--text-h2));
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.subsection-title {
+  margin: var(--space-6) 0 var(--space-3);
+  font-size: var(--text-h3);
+}
+
+/* ---------- 6. ラベル（チップ） ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0 var(--space-3);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  line-height: 1.9;
+  color: var(--color-primary-active);
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+/* 分野のラベル：分野の色で見分ける */
+.chip-physics   { color: var(--field-physics);   background-color: var(--field-physics-bg);   border-color: transparent; }
+.chip-chemistry { color: var(--field-chemistry); background-color: var(--field-chemistry-bg); border-color: transparent; }
+.chip-biology   { color: var(--field-biology);   background-color: var(--field-biology-bg);   border-color: transparent; }
+.chip-earth     { color: var(--field-earth);     background-color: var(--field-earth-bg);     border-color: transparent; }
+
+/* ---------- 7. 教材一覧 ---------- */
+.material-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.material-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 var(--space-4);
+  align-items: center;
+  padding: var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--duration) var(--ease-out);
+}
+
+/* 行の右端の矢印：押すと開くことを示す */
+.material-item::after {
+  content: "";
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 10px;
+  height: 10px;
+  margin-right: var(--space-2);
+  border-top: 2px solid var(--color-primary);
+  border-right: 2px solid var(--color-primary);
+  transform: rotate(45deg);
+  transition: transform var(--duration) var(--ease-out);
+}
+
+.material-item:hover {
+  background-color: var(--color-bg-pale);
+}
+
+.material-item:hover::after {
+  transform: translateX(4px) rotate(45deg);
+}
+
+.material-title,
+.material-desc {
+  grid-column: 1;
+}
+
+.material-title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-lead);
+  font-weight: 700;
+  line-height: var(--line-heading);
+}
+
+.material-title a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* 行のどこを押しても教材が開くように、リンクの範囲を行全体に広げる */
+.material-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.material-item:hover .material-title a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.material-desc {
+  margin: 0;
+  color: var(--color-text-sub);
+}
+
+/* 学年・分野を選ぶタイル */
+.tile-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  --tile-accent: var(--color-primary);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 128px;
+  padding: var(--space-4);
+  color: var(--color-text);
+  text-decoration: none;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-strong);
+  border-top: 6px solid var(--tile-accent);
+  border-radius: var(--radius-m);
+  transition:
+    transform var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+}
+
+.tile-physics   { --tile-accent: var(--field-physics); }
+.tile-chemistry { --tile-accent: var(--field-chemistry); }
+.tile-biology   { --tile-accent: var(--field-biology); }
+.tile-earth     { --tile-accent: var(--field-earth); }
+
+a.tile:hover {
+  color: var(--color-text);
+  border-color: var(--tile-accent);
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-2px);
+}
+
+a.tile:hover .tile-title {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+a.tile:active {
+  background-color: var(--color-bg-pale);
+  box-shadow: none;
+  transform: none;
+}
+
+.tile-title {
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: var(--line-heading);
+}
+
+.tile-meta {
+  margin-top: var(--space-1);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--color-text-sub);
+}
+
+/* 教材がまだない分野：押せない（点線で「まだ」を示す） */
+.tile.is-disabled {
+  color: var(--color-disabled-text);
+  background-color: var(--color-disabled-bg);
+  border: 1px dashed #b3bfcb;
+  border-top-width: 1px;
+}
+
+.tile.is-disabled .tile-meta {
+  color: var(--color-disabled-text);
+}
+
+/* ---------- 8. ボタン ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-4);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;           /* ボタンの文字は改行しない */
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* 主ボタン：そのページで一番大事な操作に1つだけ */
+.btn-primary {
+  color: #ffffff;
+  background-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  color: #ffffff;
+  background-color: var(--color-primary-hover);
+}
+
+.btn-primary:active {
+  background-color: var(--color-primary-active);
+}
+
+/* 副ボタン：それ以外の操作 */
+.btn-secondary {
+  color: var(--color-primary);
+  background-color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.btn-secondary:hover {
+  color: var(--color-primary-hover);
+  background-color: var(--color-bg-pale);
+  border-color: var(--color-primary-hover);
+}
+
+.btn-secondary:active {
+  color: var(--color-primary-active);
+  background-color: var(--color-bg-pastel);
+  border-color: var(--color-primary-active);
+}
+
+/* 押せないとき */
+.btn:disabled,
+.btn:disabled:hover {
+  color: var(--color-disabled-text);
+  background-color: var(--color-disabled-bg);
+  border-color: var(--color-disabled-bg);
+  cursor: not-allowed;
+}
+
+/* 選択ボタン：いくつかの中から選ぶ操作（名前と補足の2段） */
+.btn-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--color-text);
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+}
+
+.btn-choice small {
+  margin-top: 2px;
+  font-size: var(--text-caption);
+  font-weight: 400;
+  color: var(--color-text-sub);
+}
+
+.btn-choice:hover {
+  background-color: var(--color-bg-pale);
+  border-color: var(--color-primary);
+}
+
+.btn-choice:active {
+  background-color: var(--color-bg-pastel);
+}
+
+/* 選んだあと：面の色と、枠の太さで示す */
+.btn-choice[aria-pressed="true"] {
+  background-color: var(--color-bg-pastel);
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+
+/* ---------- 9. スライダー ---------- */
+.control + .control {
+  margin-top: var(--space-3);
+}
+
+.control-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+
+.control-value {
+  font-weight: 700;
+  color: var(--color-primary-active);
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  display: block;
+  width: 100%;
+  height: var(--target-min);
+  margin: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* ---------- 10. シミュレーションの画面 ---------- */
+.sim-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: var(--space-5);
+  align-items: start;
+  padding-top: var(--space-6);
+}
+
+.sim-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: #ffffff;
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-m);
+}
+
+.sim-canvas.is-draw {
+  touch-action: none;   /* 線を引くときに、ページがスクロールしないように */
+  cursor: crosshair;
+}
+
+/* 結果の表示 */
+.notice {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) var(--space-4);
+  font-weight: 500;
+  background-color: var(--color-bg-pale);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+}
+
+/* 操作パネル：画面の横に置いたノートの欄 */
+.panel {
+  position: sticky;
+  top: var(--space-4);
+  padding: var(--space-4);
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-m);
+}
+
+.panel-title {
+  margin: 0 0 var(--space-2);
+  padding-bottom: var(--space-2);
+  font-size: var(--text-small);
+  font-weight: 700;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.panel-title:not(:first-child) {
+  margin-top: var(--space-5);
+}
+
+.panel-actions {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.panel-title + .panel-actions {
+  margin-top: var(--space-3);
+}
+
+.panel-note {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  font-size: var(--text-caption);
+  color: var(--color-text-sub);
+  border-top: 1px solid var(--color-border);
+}
+
+.panel-note p {
+  margin: 0 0 var(--space-2);
+}
+
+.panel-note strong {
+  color: var(--color-text);
+}
+
+.choice-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+/* 使い方の手順：番号を丸で示す（本当に順番がある手順だけ） */
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  position: relative;
+  padding-left: 48px;
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  top: 0.15em;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  font-size: var(--text-small);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-primary-active);
+  background-color: var(--color-bg-pastel);
+  border-radius: var(--radius-full);
+}
+
+.steps li + li {
+  margin-top: var(--space-3);
+}
+
+.steps + .prose {
+  margin-top: var(--space-4);
+}
+
+.page-end {
+  padding-top: var(--space-7);
+}
+
+/* ---------- 11. 画面の幅による切り替え ---------- */
+@media (max-width: 800px) {
+  .hero .container {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-figure {
+    max-width: 360px;
+  }
+
+  .sim-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    position: static;
+  }
+
+  .choice-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
+
+  .hero {
+    padding: var(--space-7) 0 var(--space-6);
+  }
+
+  .page-header {
+    padding: var(--space-5) 0;
+  }
+
+  .section {
+    padding-top: var(--space-7);
+  }
+
+  .page-end .btn {
+    width: 100%;
+    white-space: normal;
+  }
+}
+
+/* ---------- 12. 動きを減らす設定の人には、動きを出さない ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  a.tile:hover,
+  .material-item:hover::after {
+    transform: none;
+  }
+}

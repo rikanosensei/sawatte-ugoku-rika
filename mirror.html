@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>鏡にうつる像と光の反射｜俺の理科教材</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="site-header">
+    <div class="container">
+      <p class="site-name"><a href="index.html">俺の理科教材</a></p>
+      <nav class="site-nav" aria-label="サイト内">
+        <ul>
+          <li><a href="index.html#materials">教材一覧</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <nav class="breadcrumb container" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade1.html">中学1年</a></li>
+        <li><a href="grade1-physics.html">物理</a></li>
+        <li><span aria-current="page">鏡にうつる像と光の反射</span></li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <div class="container">
+        <ul class="chips" aria-label="分野と学年"><li class="chip chip-physics">物理</li><li class="chip">中学1年</li></ul>
+        <h1 class="page-title">
+          <span class="en">Reflection in a Mirror</span>
+          <span class="ja">鏡にうつる像と光の反射</span>
+        </h1>
+        <p class="lead">目から鏡にうつる像に向かって線を引き、光が鏡でどう反射して目に届くか確かめよう。</p>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="sim-layout">
+        <div>
+          <canvas id="board" class="sim-canvas is-draw" width="960" height="500" role="img"
+            aria-label="鏡の前に立つ自分と、鏡にうつる像の図。方眼の1マスは10cm。"></canvas>
+          <p id="msg" class="notice" aria-live="polite">自分の目（黒い点）から、鏡にうつる像の頭の先や足の先に向かってドラッグしよう。</p>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">条件を変える</h2>
+          <div class="control">
+            <label class="control-label" for="hSlider">身長 <span class="control-value"><span id="hValue">160</span> cm</span></label>
+            <input type="range" id="hSlider" min="100" max="200" step="1" value="160">
+          </div>
+          <div class="control">
+            <label class="control-label" for="dSlider">鏡からの距離 <span class="control-value"><span id="dValue">100</span> cm</span></label>
+            <input type="range" id="dSlider" min="50" max="200" step="1" value="100">
+          </div>
+
+          <h2 class="panel-title">ボタンで線をかく</h2>
+          <div class="panel-actions">
+            <button id="headBtn" class="btn btn-secondary btn-block">頭の先からの光</button>
+            <button id="toeBtn" class="btn btn-secondary btn-block">つま先からの光</button>
+          </div>
+
+          <div class="panel-actions">
+            <button id="resetBtn" class="btn btn-secondary btn-block" disabled>線をすべて消す</button>
+            <button id="saveBtn" class="btn btn-secondary btn-block">画像として保存</button>
+          </div>
+
+          <div class="panel-note">
+            <p><strong>方眼</strong>　1マスは10cm。太い線は50cmごと。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">How to Use</span>
+        <span class="ja">使い方</span>
+      </h2>
+      <ol class="steps prose">
+        <li>スライダーで、身長と鏡からの距離を決める。</li>
+        <li>自分の目から、鏡にうつる像の頭の先に向かってドラッグする。光が頭の先から鏡で反射して目に届く道筋が描かれる。</li>
+        <li>同じように、鏡にうつる像の足の先に向かってもドラッグする。</li>
+        <li>2本の光が鏡に当たった点の間の長さを、方眼で数える。全身をうつすのに必要な鏡の長さが分かる。</li>
+        <li>身長や距離を変えて、必要な鏡の長さがどう変わるか比べる。</li>
+      </ol>
+      <p class="prose">ドラッグしにくいときは、右の「ボタンで線をかく」を使うと、頭の先とつま先からの光の道筋をかけます。</p>
+    </section>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">Note</span>
+        <span class="ja">このモデルについて</span>
+      </h2>
+      <p class="prose">人の形は単純にしています。目の高さは、頭の上から10cm下としています。鏡は床から天井まで続いているものとして描いているので、光が当たった点から、実際に必要な鏡の範囲を読み取ってください。</p>
+    </section>
+
+    <div class="page-end container">
+      <a class="btn btn-secondary" href="grade1-physics.html">中学1年 物理の教材一覧へ戻る</a>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
+  const hSlider = document.getElementById('hSlider');
+  const dSlider = document.getElementById('dSlider');
+  const hValue = document.getElementById('hValue');
+  const dValue = document.getElementById('dValue');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const FONT = '"Zen Kaku Gothic New", sans-serif';
+  const S = 2;            // 縮尺：1cm を 2px で描く
+  const GROUND_Y = 440;   // 床の高さ
+  const MIRROR_X = 480;   // 鏡の位置
+  const EYE_GAP = 10 * S; // 頭の上から目までの長さ（10cm）
+
+  // 色
+  const INK = '#1a2533';
+  const LIGHT = '#e8836b';            // 光の道筋
+  const LIGHT_PREVIEW = 'rgba(232, 131, 107, 0.5)';
+  const GUIDE = '#a9bccf';            // 補助の点線
+
+  let paths = [];          // 引いた線（身長と距離に対する割合で記録）
+  let drawing = false;     // 線を引いている最中かどうか
+  let pointer = { x: 0, y: 0 };
+
+  // ===== 位置の計算 =====
+  function getPositions() {
+    const h = Number(hSlider.value);
+    const d = Number(dSlider.value);
+    const pX = MIRROR_X + d * S;       // 自分の位置
+    const vX = MIRROR_X - d * S;       // 鏡にうつる像の位置
+    const eyeX = pX - 6 * S;           // 目は鏡の側に少し寄せる
+    const eyeY = GROUND_Y - h * S + EYE_GAP;
+    return { h, d, pX, vX, eyeX, eyeY };
+  }
+
+  // 記録した線の、鏡にうつる像の側の点を求める
+  function targetOf(p, pos) {
+    if (p.part === 'head') {            // 頭の先
+      return { x: pos.vX, y: GROUND_Y - pos.h * S };
+    }
+    if (p.part === 'toe') {             // つま先
+      return { x: pos.vX + 16 * S, y: GROUND_Y };
+    }
+    return {                            // 指やマウスで引いた線
+      x: MIRROR_X - pos.d * S * p.relX,
+      y: GROUND_Y - pos.h * S * p.relY
+    };
+  }
+
+  // 線を1本加える
+  function addPath(p, message) {
+    paths.push(p);
+    resetBtn.disabled = false;
+    msg.textContent = message;
+    draw();
+  }
+
+  // 画面上の位置を、キャンバスの座標に直す（キャンバスが縮小されていてもずれないように）
+  function toCanvas(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * canvas.width / rect.width,
+      y: (e.clientY - rect.top) * canvas.height / rect.height
+    };
+  }
+
+  // ===== 描画 =====
+  function draw() {
+    const pos = getPositions();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
+    drawGroundAndMirror();
+    drawPerson(pos.vX, pos.h, false, '#c9d6e3', '#9fb3c8', '鏡にうつる像');
+    drawPerson(pos.pX, pos.h, true, '#8aa4c0', INK, '自分');
+
+    // 記録した線
+    paths.forEach(function (p) {
+      const t = targetOf(p, pos);
+      drawReflection(pos.eyeX, pos.eyeY, t.x, t.y, LIGHT);
+    });
+
+    // ドラッグ中の線
+    if (drawing) {
+      if (pointer.x < MIRROR_X) {
+        drawReflection(pos.eyeX, pos.eyeY, pointer.x, pointer.y, LIGHT_PREVIEW);
+      } else {
+        drawDashed(pos.eyeX, pos.eyeY, pointer.x, pointer.y);
+      }
+    }
+  }
+
+  function drawGrid() {
+    ctx.lineWidth = 1;
+    // 縦線
+    for (let x = MIRROR_X % (10 * S); x <= canvas.width; x += 10 * S) {
+      ctx.strokeStyle = ((x - MIRROR_X) % (50 * S) === 0) ? '#c9d9ea' : '#e8eff7';
+      ctx.beginPath();
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, GROUND_Y);
+      ctx.stroke();
+    }
+    // 横線（床から上へ）
+    for (let y = GROUND_Y; y >= 0; y -= 10 * S) {
+      ctx.strokeStyle = ((GROUND_Y - y) % (50 * S) === 0) ? '#c9d9ea' : '#e8eff7';
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(canvas.width, y + 0.5);
+      ctx.stroke();
+    }
+  }
+
+  function drawGroundAndMirror() {
+    // 床
+    ctx.fillStyle = '#eef5fc';
+    ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
+    ctx.strokeStyle = '#7f93a8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND_Y);
+    ctx.lineTo(canvas.width, GROUND_Y);
+    ctx.stroke();
+
+    // 鏡
+    ctx.fillStyle = '#a9c8ec';
+    ctx.fillRect(MIRROR_X - 3, 0, 6, GROUND_Y);
+    ctx.strokeStyle = '#2f6fb0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(MIRROR_X, 0);
+    ctx.lineTo(MIRROR_X, GROUND_Y);
+    ctx.stroke();
+
+    ctx.fillStyle = INK;
+    ctx.font = '500 22px ' + FONT;
+    ctx.textAlign = 'left';
+    ctx.fillText('鏡', MIRROR_X + 10, 28);
+  }
+
+  // 角の丸い四角形の形を作る
+  function roundRectPath(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  // 人を描く（faceLeft: 左（鏡の方）を向いているか）
+  function drawPerson(x, h, faceLeft, fill, eyeColor, label) {
+    const top = GROUND_Y - h * S;
+    const headR = 12 * S;
+    const headY = top + headR;
+    const bodyTop = headY + headR + 2 * S;
+    const bodyH = h * S * 0.45;
+    const legTop = bodyTop + bodyH;
+
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    ctx.arc(x, headY, headR, 0, Math.PI * 2);
+    ctx.fill();
+
+    roundRectPath(x - 14 * S, bodyTop, 28 * S, bodyH, 6 * S);
+    ctx.fill();
+
+    ctx.fillRect(x - 6 * S, legTop, 12 * S, GROUND_Y - legTop);
+
+    // つま先は向いている方へ出す
+    const footX = faceLeft ? x + 6 * S - 22 * S : x - 6 * S;
+    roundRectPath(footX, GROUND_Y - 8 * S, 22 * S, 8 * S, 3 * S);
+    ctx.fill();
+
+    // 目
+    const eyeX = faceLeft ? x - 6 * S : x + 6 * S;
+    ctx.fillStyle = eyeColor;
+    ctx.beginPath();
+    ctx.arc(eyeX, top + EYE_GAP, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 名前
+    ctx.fillStyle = INK;
+    ctx.font = '500 22px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x, GROUND_Y + 42);
+  }
+
+  function drawDashed(x1, y1, x2, y2) {
+    ctx.setLineDash([8, 6]);
+    ctx.strokeStyle = GUIDE;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // 線の途中に、光の進む向きの矢印を描く
+  function drawArrow(x1, y1, x2, y2, color) {
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+    const a = Math.atan2(y2 - y1, x2 - x1);
+    ctx.save();
+    ctx.translate(mx, my);
+    ctx.rotate(a);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(10, 0);
+    ctx.lineTo(-7, -7);
+    ctx.lineTo(-7, 7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 目から鏡にうつる像の点(tx, ty)を見たときの、光の道筋を描く
+  function drawReflection(eyeX, eyeY, tx, ty, color) {
+    const t = (MIRROR_X - eyeX) / (tx - eyeX);
+    const hitY = eyeY + t * (ty - eyeY);   // 鏡で反射する点の高さ
+    const realX = MIRROR_X * 2 - tx;        // 鏡にうつる像の点に対応する、自分の体の点
+
+    // 目と鏡にうつる像を結ぶ点線
+    drawDashed(eyeX, eyeY, tx, ty);
+
+    // 体の点 → 鏡 → 目 の光の道筋
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(realX, ty);
+    ctx.lineTo(MIRROR_X, hitY);
+    ctx.lineTo(eyeX, eyeY);
+    ctx.stroke();
+    drawArrow(realX, ty, MIRROR_X, hitY, color);
+    drawArrow(MIRROR_X, hitY, eyeX, eyeY, color);
+
+    // 反射した点と、体の点
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(MIRROR_X, hitY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(realX, ty, 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // ===== 操作（マウス・タッチ・ペン共通） =====
+  canvas.addEventListener('pointerdown', function (e) {
+    drawing = true;
+    pointer = toCanvas(e);
+    canvas.setPointerCapture(e.pointerId);
+    draw();
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (!drawing) { return; }
+    pointer = toCanvas(e);
+    draw();
+  });
+
+  function endPointer() {
+    if (drawing) {
+      const pos = getPositions();
+      if (pointer.x < MIRROR_X - 2 && pointer.y >= 0 && pointer.y <= GROUND_Y) {
+        addPath({
+          relX: (MIRROR_X - pointer.x) / (pos.d * S),
+          relY: (GROUND_Y - pointer.y) / (pos.h * S)
+        }, '光の道筋をかいた。鏡のどこで反射しているか、方眼で数えてみよう。');
+      } else {
+        msg.textContent = '鏡の向こう側（鏡にうつる像がある側）まで線をのばそう。';
+      }
+    }
+    drawing = false;
+    draw();
+  }
+
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+
+  // ===== スライダーとボタン =====
+  hSlider.addEventListener('input', function () {
+    hValue.textContent = hSlider.value;
+    draw();
+  });
+
+  dSlider.addEventListener('input', function () {
+    dValue.textContent = dSlider.value;
+    draw();
+  });
+
+  document.getElementById('headBtn').addEventListener('click', function () {
+    addPath({ part: 'head' }, '頭の先から出た光の道筋をかいた。鏡のどこで反射しているか、方眼で数えてみよう。');
+  });
+
+  document.getElementById('toeBtn').addEventListener('click', function () {
+    addPath({ part: 'toe' }, 'つま先から出た光の道筋をかいた。鏡のどこで反射しているか、方眼で数えてみよう。');
+  });
+
+  resetBtn.addEventListener('click', function () {
+    paths = [];
+    resetBtn.disabled = true;
+    msg.textContent = '自分の目（黒い点）から、鏡にうつる像の頭の先や足の先に向かってドラッグしよう。';
+    draw();
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', function () {
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'hansha.png';
+    link.click();
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  draw();
+  document.fonts.load('500 22px ' + FONT, '鏡にうつる像自分').finally(draw);
+</script>
+
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2026 俺の理科教材</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{単元名}}｜俺の理科教材</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="site-header">
+    <div class="container">
+      <p class="site-name"><a href="index.html">俺の理科教材</a></p>
+      <nav class="site-nav" aria-label="サイト内">
+        <ul>
+          <li><a href="index.html#materials">教材一覧</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <nav class="breadcrumb container" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade{{N}}.html">中学{{N}}年</a></li>
+        <li><a href="grade{{N}}-{{field}}.html">{{分野}}</a></li>
+        <li><span aria-current="page">{{単元名}}</span></li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <div class="container">
+        <ul class="chips" aria-label="分野と学年"><li class="chip chip-{{field}}">{{分野}}</li><li class="chip">中学{{N}}年</li></ul>
+        <h1 class="page-title">
+          <span class="en">{{English Title}}</span>
+          <span class="ja">{{単元名}}</span>
+        </h1>
+        <p class="lead">{{何を動かして、何を確かめるか（1文）}}</p>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="sim-layout">
+        <div>
+          <canvas id="board" class="sim-canvas" width="600" height="360" role="img"
+            aria-label="{{図に何が描かれていて、操作すると何が変わるか}}"></canvas>
+          <p id="msg" class="notice" aria-live="polite">{{最初に何をすればよいか}}</p>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">条件を変える</h2>
+          <div class="control">
+            <label class="control-label" for="aSlider">{{量の名前}} <span class="control-value"><span id="aValue">{{初期値}}</span> {{単位}}</span></label>
+            <input type="range" id="aSlider" min="{{最小}}" max="{{最大}}" step="{{きざみ}}" value="{{初期値}}">
+          </div>
+          <div class="panel-actions">
+            <button id="resetBtn" class="btn btn-secondary btn-block">もとに戻す</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">How to Use</span>
+        <span class="ja">使い方</span>
+      </h2>
+      <ol class="steps prose">
+        <li>{{手順1}}</li>
+        <li>{{手順2}}</li>
+        <li>{{手順3：条件を変えて比べる}}</li>
+      </ol>
+    </section>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">Note</span>
+        <span class="ja">このモデルについて</span>
+      </h2>
+      <p class="prose">{{単純にしたところと、実際との違い}}</p>
+    </section>
+
+    <div class="page-end container">
+      <a class="btn btn-secondary" href="grade{{N}}-{{field}}.html">中学{{N}}年 {{分野}}の教材一覧へ戻る</a>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
+  const aSlider = document.getElementById('aSlider');
+  const aValue = document.getElementById('aValue');
+  const resetBtn = document.getElementById('resetBtn');
+
+  // キャンバスで使う文字
+  const FONT = '"Zen Kaku Gothic New", sans-serif';
+
+  // 色（ほかの教材とそろえる）
+  const INK = '#1a2533';        // 文字
+  const LINE = '#7f93a8';       // 線
+  const GRID = '#e3ecf6';       // 方眼（細い線）
+  const GRID_MAJOR = '#c9d9ea'; // 方眼（太い線）
+
+  // 画面全体を描き直す
+  function draw() {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // {{ここに図を描く}}
+    ctx.fillStyle = INK;
+    ctx.font = '500 18px ' + FONT;
+    ctx.fillText('{{図の中の文字}}', 20, 30);
+  }
+
+  // スライダーを動かしたら、数値の表示を変えて描き直す
+  aSlider.addEventListener('input', function () {
+    aValue.textContent = aSlider.value;
+    draw();
+  });
+
+  // もとに戻す
+  resetBtn.addEventListener('click', function () {
+    aSlider.value = aSlider.defaultValue;
+    aValue.textContent = aSlider.value;
+    msg.textContent = '{{最初に何をすればよいか}}';
+    draw();
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  draw();
+  document.fonts.load('500 18px ' + FONT, '{{図の中で使う文字をすべて}}').finally(draw);
+</script>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2026 俺の理科教材</p>
+    </div>
+  </footer>
+</body>
+</html>

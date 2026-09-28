@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>消化酵素のはたらき｜俺の理科教材</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="site-header">
+    <div class="container">
+      <p class="site-name"><a href="index.html">俺の理科教材</a></p>
+      <nav class="site-nav" aria-label="サイト内">
+        <ul>
+          <li><a href="index.html#materials">教材一覧</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <nav class="breadcrumb container" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade2.html">中学2年</a></li>
+        <li><a href="grade2-biology.html">生物</a></li>
+        <li><span aria-current="page">消化酵素のはたらき</span></li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <div class="container">
+        <ul class="chips" aria-label="分野と学年"><li class="chip chip-biology">生物</li><li class="chip">中学2年</li></ul>
+        <h1 class="page-title">
+          <span class="en">Digestive Enzymes</span>
+          <span class="ja">消化酵素のはたらき</span>
+        </h1>
+        <p class="lead">消化酵素を選んで、どの栄養素が分解されるか確かめよう。</p>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="sim-layout">
+        <div>
+          <canvas id="board" class="sim-canvas" width="600" height="360" role="img"
+            aria-label="デンプン、タンパク質、脂肪を、粒のつながりで表した図。分解されると粒がはなれる。"></canvas>
+          <p id="msg" class="notice" aria-live="polite">消化酵素のボタンを押してみよう。</p>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">消化酵素を選ぶ</h2>
+          <div class="choice-list">
+            <button id="amylaseBtn" class="btn-choice" aria-pressed="false">アミラーゼ<small>だ液・すい液</small></button>
+            <button id="pepsinBtn" class="btn-choice" aria-pressed="false">ペプシン<small>胃液</small></button>
+            <button id="trypsinBtn" class="btn-choice" aria-pressed="false">トリプシン<small>すい液</small></button>
+            <button id="lipaseBtn" class="btn-choice" aria-pressed="false">リパーゼ<small>すい液</small></button>
+            <button id="bileBtn" class="btn-choice" aria-pressed="false">胆汁<small>肝臓でつくられる</small></button>
+          </div>
+          <div class="panel-actions">
+            <button id="resetBtn" class="btn btn-secondary btn-block" disabled>もとに戻す</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">How to Use</span>
+        <span class="ja">使い方</span>
+      </h2>
+      <ol class="steps prose">
+        <li>消化酵素のボタンを1つ押して、どの栄養素の粒がはなれるか見る。</li>
+        <li>ほかの消化酵素も押して、分解される栄養素が酵素ごとに決まっていることを確かめる。</li>
+        <li>胆汁を押して、消化酵素とのちがいを確かめる。</li>
+      </ol>
+    </section>
+
+    <section class="section container">
+      <h2 class="section-title">
+        <span class="en">Note</span>
+        <span class="ja">このモデルについて</span>
+      </h2>
+      <p class="prose">粒の数や形は、しくみを分かりやすくするために単純にしています。実際には、アミラーゼやペプシンだけでは最後の形まで分解されず、小腸の壁にある消化酵素のはたらきで、ブドウ糖やアミノ酸になります。</p>
+    </section>
+
+    <div class="page-end container">
+      <a class="btn btn-secondary" href="grade2-biology.html">中学2年 生物の教材一覧へ戻る</a>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
+
+  // キャンバスで使う文字
+  const FONT = '"Zen Kaku Gothic New", sans-serif';
+
+  // それぞれの栄養素が分解されたかどうか
+  let starchBroken = false;
+  let proteinBroken = false;
+  let fatBroken = false;
+
+  // 粒の色（配列）
+  const starchColors = ['#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1'];
+  const proteinColors = ['#f4b6a6', '#a9c8ec', '#b7e0c4', '#cdbbe6', '#f4b6a6', '#b7e0c4', '#a9c8ec'];
+  const fatColors = ['#ffffff', '#f9cf9f', '#f9cf9f'];
+
+  // 粒を1つ描く
+  function drawBead(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = '#7f93a8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // 栄養素を1行描く（name:名前、y:縦の位置、colors:粒の色、broken:分解されたか、after:分解後の名前）
+  function drawRow(name, y, colors, broken, after) {
+    // 左に名前を書く
+    ctx.fillStyle = '#1a2533';
+    ctx.font = '500 18px ' + FONT;
+    ctx.fillText(name, 20, y + 6);
+
+    // 分解されたら粒の間を広げる
+    let gap = 40;
+    if (broken) { gap = 60; }
+
+    // 分解されていなければ、粒をつなぐ線を描く
+    if (!broken) {
+      ctx.strokeStyle = '#a9bccf';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(150, y);
+      ctx.lineTo(150 + gap * (colors.length - 1), y);
+      ctx.stroke();
+    }
+
+    // 粒を1つずつ描く
+    for (let i = 0; i < colors.length; i++) {
+      drawBead(150 + gap * i, y, colors[i]);
+    }
+
+    // 分解されたら、何になったかを下に書く
+    if (broken) {
+      ctx.fillStyle = '#1d5fa8';
+      ctx.font = '16px ' + FONT;
+      ctx.fillText('→ ' + after, 150, y + 42);
+    }
+  }
+
+  // 画面全体を描き直す
+  function drawAll() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawRow('デンプン', 60, starchColors, starchBroken, 'ブドウ糖');
+    drawRow('タンパク質', 170, proteinColors, proteinBroken, 'アミノ酸');
+    drawRow('脂肪', 280, fatColors, fatBroken, 'モノグリセリドと脂肪酸');
+  }
+
+  const resetBtn = document.getElementById('resetBtn');
+  const choiceButtons = document.querySelectorAll('.btn-choice');
+
+  // ボタンを「選んだ」状態にして、もとに戻すボタンを押せるようにする
+  function markChosen(button) {
+    button.setAttribute('aria-pressed', 'true');
+    resetBtn.disabled = false;
+  }
+
+  // 酵素のボタン
+  document.getElementById('amylaseBtn').addEventListener('click', function () {
+    starchBroken = true;
+    markChosen(this);
+    msg.textContent = 'アミラーゼがデンプンを分解した！（最終的にはブドウ糖になる）';
+    drawAll();
+  });
+
+  document.getElementById('pepsinBtn').addEventListener('click', function () {
+    proteinBroken = true;
+    markChosen(this);
+    msg.textContent = 'ペプシンがタンパク質を分解した！（最終的にはアミノ酸になる）';
+    drawAll();
+  });
+
+  document.getElementById('trypsinBtn').addEventListener('click', function () {
+    proteinBroken = true;
+    markChosen(this);
+    msg.textContent = 'トリプシンがタンパク質を分解した！（最終的にはアミノ酸になる）';
+    drawAll();
+  });
+
+  document.getElementById('lipaseBtn').addEventListener('click', function () {
+    fatBroken = true;
+    markChosen(this);
+    msg.textContent = 'リパーゼが脂肪を分解した！（モノグリセリドと脂肪酸になる）';
+    drawAll();
+  });
+
+  document.getElementById('bileBtn').addEventListener('click', function () {
+    markChosen(this);
+    msg.textContent = '胆汁は消化酵素をふくまないので、分解はしない。脂肪を細かい粒にして、分解を助ける。';
+  });
+
+  // もとに戻す
+  resetBtn.addEventListener('click', function () {
+    starchBroken = false;
+    proteinBroken = false;
+    fatBroken = false;
+    choiceButtons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    resetBtn.disabled = true;
+    msg.textContent = '消化酵素のボタンを押してみよう。';
+    drawAll();
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  drawAll();
+  Promise.all([
+    document.fonts.load('500 18px ' + FONT, 'デンプンタンパク質脂肪'),
+    document.fonts.load('16px ' + FONT, '→ ブドウ糖アミノ酸モノグリセリドと脂肪酸')
+  ]).finally(drawAll);
+</script>
+
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2026 俺の理科教材</p>
+    </div>
+  </footer>
+</body>
+</html>
