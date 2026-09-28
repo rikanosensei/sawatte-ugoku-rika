@@ -108,6 +108,42 @@
   canvas.dataset.h = H;
   ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
 
+  // 動きを減らす設定の人には、演出の動きを出さない（結果はそのまま見せる）
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふきだしで話す。cheer が true なら、フラスコがよろこぶ
+  function say(text, cheer) {
+    msg.textContent = text;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;          // いったん描き直させて、動きを最初からにする
+    msg.classList.add('pop');
+    if (cheer) {
+      const icon = document.querySelector('.guide-icon');
+      icon.classList.remove('cheer');
+      void icon.offsetWidth;
+      icon.classList.add('cheer');
+    }
+  }
+
+  // 紙ふぶきを飛ばす（学習のゴールに届いたときだけ使う）
+  function celebrate() {
+    if (reduceMotion) { return; }
+    const stage = canvas.closest('.sim-stage');
+    const colors = ['#ffd23f', '#ff5fa2', '#3d7bff', '#2ec66a', '#b65cff', '#ff8a2a'];
+    for (let i = 0; i < 40; i++) {
+      const piece = document.createElement('span');
+      piece.className = 'confetti';
+      piece.setAttribute('aria-hidden', 'true');
+      piece.style.left = (10 + Math.random() * 80) + '%';
+      piece.style.backgroundColor = colors[i % colors.length];
+      piece.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+      piece.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+      piece.style.animationDelay = (Math.random() * 0.2) + 's';
+      piece.addEventListener('animationend', function () { piece.remove(); });
+      stage.appendChild(piece);
+    }
+  }
+
   // 色（ほかの教材とそろえる）
   const INK = '#1a2533';  // 文字
   const LINE = '#7f93a8'; // 線
@@ -133,7 +169,7 @@
   resetBtn.addEventListener('click', function () {
     aSlider.value = aSlider.defaultValue;
     aValue.textContent = aSlider.value;
-    msg.textContent = '{{最初に何をすればよいか}}';
+    say('{{最初に何をすればよいか}}');
     draw();
   });
 

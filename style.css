@@ -398,17 +398,23 @@ svg {
   margin-left: auto;
 }
 
-/* ボールが弾む・粒がゆれる（動きを減らす設定のときは止まる） */
+/* ボールが弾む・粒がゆれる（動きを減らす設定のときは止まる）
+   上下の動きは本物の放物線と同じ速さの変わり方（上がるときは2次式で減速、落ちるときは2次式で加速）。
+   つぶれる動きは別にして、床に当たる前後だけで起こす。 */
+.hero-scene .ball-hop {
+  animation: hop 1.2s infinite;
+}
+
 .hero-scene .ball {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  animation: hop 1.3s infinite;
+  animation: squash 1.2s infinite;
 }
 
 .hero-scene .ball-shadow {
   transform-box: fill-box;
   transform-origin: 50% 50%;
-  animation: hop-shadow 1.3s infinite;
+  animation: hop-shadow 1.2s infinite;
 }
 
 .hero-scene .beads {
@@ -422,18 +428,25 @@ svg {
 }
 
 @keyframes hop {
-  0%   { transform: translateY(0) scale(1.18, 0.82); animation-timing-function: cubic-bezier(0.3, 0.7, 0.5, 1); }
-  8%   { transform: translateY(-10px) scale(0.94, 1.06); animation-timing-function: cubic-bezier(0.3, 0.7, 0.5, 1); }
-  50%  { transform: translateY(-120px) scale(1, 1); animation-timing-function: cubic-bezier(0.5, 0, 0.7, 0.3); }
-  96%  { transform: translateY(-4px) scale(0.96, 1.04); }
-  100% { transform: translateY(0) scale(1.18, 0.82); }
+  0%   { transform: translateY(0);      animation-timing-function: cubic-bezier(0.3333, 0.6667, 0.6667, 1); }
+  50%  { transform: translateY(-120px); animation-timing-function: cubic-bezier(0.3333, 0, 0.6667, 0.3333); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes squash {
+  0%   { transform: scale(1.22, 0.78); animation-timing-function: ease-out; }
+  7%   { transform: scale(0.94, 1.08); animation-timing-function: ease-in-out; }
+  16%  { transform: scale(1, 1); }
+  86%  { transform: scale(1, 1); animation-timing-function: ease-in; }
+  95%  { transform: scale(0.94, 1.08); animation-timing-function: ease-out; }
+  100% { transform: scale(1.22, 0.78); }
 }
 
 @keyframes hop-shadow {
-  0%, 100% { transform: scale(1.1); opacity: 0.25; }
-  50%      { transform: scale(0.5); opacity: 0.1; }
+  0%   { transform: scale(1.1);  opacity: 0.25; animation-timing-function: cubic-bezier(0.3333, 0.6667, 0.6667, 1); }
+  50%  { transform: scale(0.55); opacity: 0.1;  animation-timing-function: cubic-bezier(0.3333, 0, 0.6667, 0.3333); }
+  100% { transform: scale(1.1);  opacity: 0.25; }
 }
-
 @keyframes float {
   from { transform: translateY(0); }
   to   { transform: translateY(-8px); }
@@ -850,7 +863,60 @@ svg {
 }
 
 .sim-stage {
+  position: relative;
+  overflow: hidden;
   padding: var(--space-3);
+}
+
+/* 紙ふぶき（できたときのお祝い） */
+.confetti {
+  position: absolute;
+  top: 35%;
+  z-index: 1;
+  width: 10px;
+  height: 14px;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  pointer-events: none;
+  animation: confetti 1.5s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+
+@keyframes confetti {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0) scale(0.4); }
+  20%  { opacity: 1; transform: translate(calc(var(--dx) * 0.4), -120px) rotate(calc(var(--rot) * 0.3)) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), 260px) rotate(var(--rot)) scale(1); }
+}
+
+/* ふきだしが変わったら、ぽんと出る */
+.notice.pop {
+  animation: bubble-pop 320ms var(--ease-spring);
+}
+
+@keyframes bubble-pop {
+  from { transform: scale(0.92); }
+  to   { transform: none; }
+}
+
+/* フラスコがよろこぶ */
+.guide-icon.cheer {
+  animation: cheer 800ms var(--ease-spring);
+}
+
+@keyframes cheer {
+  0%   { transform: none; }
+  25%  { transform: translateY(-14px) rotate(-12deg); }
+  50%  { transform: translateY(0) rotate(10deg); }
+  75%  { transform: translateY(-6px) rotate(-4deg); }
+  100% { transform: none; }
+}
+
+/* スライダーの下のひとこと */
+.control-hint {
+  min-height: 1.5em;
+  margin: 0;
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--ink-sub);
 }
 
 .sim-canvas {

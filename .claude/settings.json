@@ -1,4 +1,9 @@
 {
+  "skillOverrides": {
+    "minimalist-ui": "user-invocable-only",
+    "design-taste-frontend": "user-invocable-only",
+    "redesign-existing-projects": "user-invocable-only"
+  },
   "hooks": {
     "PostToolUse": [
       {

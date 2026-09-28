@@ -61,7 +61,8 @@
             <h2 class="panel-title">条件を変える</h2>
             <div class="control">
               <label class="control-label" for="gSlider">重力の強さ <span class="control-value">地球の <span id="gValue">1.0</span> 倍</span></label>
-              <input type="range" id="gSlider" min="0.1" max="2.5" step="0.1" value="1">
+              <input type="range" id="gSlider" min="0.1" max="2.5" step="0.1" value="1" aria-describedby="gPlanet">
+              <p id="gPlanet" class="control-hint">地球の重力</p>
             </div>
             <div class="control">
               <label class="control-label" for="eSlider">反発係数 <span id="eValue" class="control-value">0.8</span></label>
@@ -100,6 +101,7 @@ const canvas = document.getElementById('board');
   const msg = document.getElementById('msg');
   const gSlider = document.getElementById('gSlider');
   const gValue = document.getElementById('gValue');
+  const gPlanet = document.getElementById('gPlanet');
   const eSlider = document.getElementById('eSlider');
   const eValue = document.getElementById('eValue');
   const startBtn = document.getElementById('startBtn');
@@ -121,6 +123,42 @@ const canvas = document.getElementById('board');
   canvas.dataset.h = H;
   ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
 
+  // 動きを減らす設定の人には、演出の動きを出さない（結果はそのまま見せる）
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふきだしで話す。cheer が true なら、フラスコがよろこぶ
+  function say(text, cheer) {
+    msg.textContent = text;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;          // いったん描き直させて、動きを最初からにする
+    msg.classList.add('pop');
+    if (cheer) {
+      const icon = document.querySelector('.guide-icon');
+      icon.classList.remove('cheer');
+      void icon.offsetWidth;
+      icon.classList.add('cheer');
+    }
+  }
+
+  // 紙ふぶきを飛ばす
+  function celebrate() {
+    if (reduceMotion) { return; }
+    const stage = canvas.closest('.sim-stage');
+    const colors = ['#ffd23f', '#ff5fa2', '#3d7bff', '#2ec66a', '#b65cff', '#ff8a2a'];
+    for (let i = 0; i < 40; i++) {
+      const piece = document.createElement('span');
+      piece.className = 'confetti';
+      piece.setAttribute('aria-hidden', 'true');
+      piece.style.left = (10 + Math.random() * 80) + '%';
+      piece.style.backgroundColor = colors[i % colors.length];
+      piece.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+      piece.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+      piece.style.animationDelay = (Math.random() * 0.2) + 's';
+      piece.addEventListener('animationend', function () { piece.remove(); });
+      stage.appendChild(piece);
+    }
+  }
+
   const PX_PER_M = 100;    // 縮尺：1m を 100px で描く
   const G_EARTH = 9.8;     // 地球の重力加速度（m/s²）
   const R = 20;            // ボールの半径（px）
@@ -134,9 +172,8 @@ const canvas = document.getElementById('board');
 
   // 色
   const INK = '#1b1b2f';
-  const SUB = '#4f555e';
-  const LINE = '#7f93a8';
-  const GRID = '#e3ecf6';
+  const SUB = '#4a4a5e';
+  const GRID = 'rgba(255, 255, 255, 0.8)';
   const TRACE = '#2446d8';
 
   let h = START_H;     // ボールの下の端の高さ（m）
@@ -146,6 +183,24 @@ const canvas = document.getElementById('board');
   let running = false; // 動いている最中かどうか
   let last = null;     // 前のコマの時刻
   let trace = [[0, START_H]]; // グラフにかく記録 [時間, 高さ]
+
+  // 見た目だけの演出（計算には使わない）
+  let squashAt = -1e9;   // 床に当たった時刻（ミリ秒）
+  let squashPower = 0;   // つぶれる強さ
+  let dust = [];         // 床に当たったときに舞うけむり
+  let ghosts = [];       // ボールの残像
+  let lastGhost = 0;
+
+  // 重力の強さが、どの星に近いか
+  function planetOf(ratio) {
+    if (ratio < 0.15) { return '月より弱い重力'; }
+    if (ratio <= 0.25) { return '月くらいの重力'; }
+    if (ratio >= 0.35 && ratio <= 0.45) { return '火星くらいの重力'; }
+    if (ratio >= 0.85 && ratio <= 0.95) { return '金星くらいの重力'; }
+    if (Math.abs(ratio - 1) < 0.01) { return '地球の重力'; }
+    if (ratio >= 2.35) { return '木星くらいの重力'; }
+    return '';
+  }
 
   // 高さ（m）を、キャンバスの縦の位置（px）に直す
   function yOf(height) {
@@ -161,13 +216,17 @@ const canvas = document.getElementById('board');
   }
 
   // ===== 描画 =====
-  function draw() {
-    ctx.fillStyle = '#ffffff';
+  function draw(now) {
+    // 空
+    const sky = ctx.createLinearGradient(0, 0, 0, GROUND);
+    sky.addColorStop(0, '#bfe3ff');
+    sky.addColorStop(1, '#eef8ff');
+    ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H);
 
     // 0.5m ごとの横線（ボールとグラフの高さを見くらべるため）
     ctx.strokeStyle = GRID;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     for (let m = 0.5; m <= 3; m += 0.5) {
       ctx.beginPath();
       ctx.moveTo(0, yOf(m) + 0.5);
@@ -175,21 +234,21 @@ const canvas = document.getElementById('board');
       ctx.stroke();
     }
 
-    // 床
-    ctx.fillStyle = '#eef5fc';
+    // 地面（草）
+    ctx.fillStyle = '#7be08f';
     ctx.fillRect(0, GROUND, W, H - GROUND);
-    ctx.strokeStyle = '#a9bccf';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(0, GROUND);
     ctx.lineTo(W, GROUND);
     ctx.stroke();
 
     // 左のものさし（0.5m ごとに目盛り、1m ごとに数字）
-    ctx.strokeStyle = LINE;
-    ctx.fillStyle = SUB;
-    ctx.lineWidth = 1.5;
-    ctx.font = '14px ' + FONT;
+    ctx.strokeStyle = INK;
+    ctx.fillStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.font = '700 14px ' + FONT;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     for (let m = 0.5; m <= 3; m += 0.5) {
@@ -203,32 +262,92 @@ const canvas = document.getElementById('board');
       }
     }
 
-    // ボール
+    drawGraph();
+    drawEffects(now);
+    drawBall(now);
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // 残像とけむり
+  function drawEffects(now) {
+    ghosts.forEach(function (g, i) {
+      ctx.globalAlpha = 0.08 + 0.3 * (i / ghosts.length);
+      ctx.fillStyle = '#ff8a2a';
+      ctx.beginPath();
+      ctx.arc(BALL_X, g - R, R, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    dust.forEach(function (d) {
+      ctx.globalAlpha = Math.max(0, d.life);
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  // 顔のあるボール。床に当たるとつぶれる（見た目だけ）
+  function drawBall(now) {
+    const bottom = yOf(h);
+    let sx = 1;
+    let sy = 1;
+    const since = now === undefined ? 1e9 : now - squashAt;
+    if (since < 160) {
+      const k = squashPower * (1 - since / 160);
+      sx = 1 + k;
+      sy = 1 - k;
+    }
+    ctx.save();
+    ctx.translate(BALL_X, bottom);
+    ctx.scale(sx, sy);
     ctx.fillStyle = '#ff8a2a';
     ctx.strokeStyle = INK;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(BALL_X, yOf(h) - R, R, 0, Math.PI * 2);
+    ctx.arc(0, -R, R, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-
-    drawGraph();
-    ctx.textBaseline = 'alphabetic';
+    // つや
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.beginPath();
+    ctx.ellipse(-8, -R - 8, 5, 3, -0.6, 0, Math.PI * 2);
+    ctx.fill();
+    // 目と口（落ちているあいだはびっくり顔）
+    ctx.fillStyle = INK;
+    ctx.beginPath();
+    ctx.arc(-6, -R - 2, 2.6, 0, Math.PI * 2);
+    ctx.arc(6, -R - 2, 2.6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (running && v < -1) {
+      ctx.arc(0, -R + 7, 3, 0, Math.PI * 2);
+    } else {
+      ctx.arc(0, -R + 4, 5, 0.15 * Math.PI, 0.85 * Math.PI);
+    }
+    ctx.stroke();
+    ctx.restore();
   }
 
   // 高さと時間のグラフ
   function drawGraph() {
     // 縦の軸
-    ctx.strokeStyle = LINE;
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(GRAPH_LEFT, yOf(3));
     ctx.lineTo(GRAPH_LEFT, GROUND);
     ctx.stroke();
 
     // 時間の目盛り（1秒ごと、2秒ごとに数字）
-    ctx.fillStyle = SUB;
-    ctx.font = '14px ' + FONT;
+    ctx.fillStyle = INK;
+    ctx.font = '700 14px ' + FONT;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     const start = graphStart();
@@ -244,7 +363,25 @@ const canvas = document.getElementById('board');
     }
     ctx.textAlign = 'right';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText('高さと時間のグラフ', GRAPH_RIGHT, yOf(3) - 6);
+    ctx.fillStyle = SUB;
+    ctx.fillText('高さと時間のグラフ', GRAPH_RIGHT, yOf(3) - 8);
+
+    // 重力の強さに近い星（あれば）
+    const planet = planetOf(Number(gSlider.value));
+    if (planet) {
+      ctx.font = '700 14px ' + FONT;
+      ctx.textAlign = 'left';
+      const w = ctx.measureText(planet).width + 20;
+      ctx.fillStyle = '#ffd23f';
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(GRAPH_LEFT + 10, 6, w, 24, 12);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = INK;
+      ctx.fillText(planet, GRAPH_LEFT + 20, 23);
+    }
     ctx.textAlign = 'left';
 
     // 記録した高さを線でつなぐ
@@ -264,10 +401,13 @@ const canvas = document.getElementById('board');
     ctx.stroke();
 
     // いまの点
-    ctx.fillStyle = TRACE;
+    ctx.fillStyle = '#ff8a2a';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(xOf(t), yOf(h), 4, 0, Math.PI * 2);
+    ctx.arc(xOf(t), yOf(h), 6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -276,6 +416,25 @@ const canvas = document.getElementById('board');
     timeValue.textContent = t.toFixed(1);
     heightValue.textContent = h.toFixed(2);
     bounceValue.textContent = bounces;
+  }
+
+  // 床に当たったときの見た目の演出
+  function onImpact(speed) {
+    if (reduceMotion) { return; }
+    squashAt = performance.now();
+    squashPower = Math.min(0.35, speed / 25);
+    const count = Math.min(10, 3 + Math.round(speed));
+    for (let i = 0; i < count; i++) {
+      const side = i % 2 === 0 ? -1 : 1;
+      dust.push({
+        x: BALL_X + side * (8 + Math.random() * 10),
+        y: GROUND - 3,
+        vx: side * (40 + Math.random() * 80),
+        vy: -(30 + Math.random() * 60),
+        r: 3 + Math.random() * 4,
+        life: 1
+      });
+    }
   }
 
   // ===== 動きの計算 =====
@@ -303,6 +462,7 @@ const canvas = document.getElementById('board');
         h = 0;
         v = -impact * e;                  // はね返る速さは、当たる速さ × 反発係数
         trace.push([t, 0]);
+        onImpact(-impact);
         if (v < REST_SPEED) {
           v = 0;
           stop();
@@ -323,29 +483,56 @@ const canvas = document.getElementById('board');
   function stop() {
     running = false;
     if (bounces === 0) {
-      msg.textContent = 'ボールは弾まずに止まった。反発係数を大きくしてみよう。';
+      say('ボールは弾まずに止まった。反発係数を大きくしてみよう。');
     } else {
-      msg.textContent = 'ボールが止まった。' + bounces + '回弾んだよ。グラフの山の高さがどう変わったか見てみよう。';
+      say('ボールが止まった。' + bounces + '回弾んだよ！グラフの山の高さがどう変わったか見てみよう。', true);
     }
   }
 
-  // 1コマ分動かす（time は、ブラウザが渡してくれる今の時刻・ミリ秒）
-  function update(time) {
-    if (!running) { return; }
-    if (last === null) { last = time; }
-    let dt = (time - last) / 1000;   // 前のコマから何秒たったか
-    last = time;
+  // 1コマ分動かす（now は、ブラウザが渡してくれる今の時刻・ミリ秒）
+  function frame(now) {
+    if (last === null) { last = now; }
+    let dt = (now - last) / 1000;    // 前のコマから何秒たったか
+    last = now;
     if (dt > 0.05) { dt = 0.05; }    // 別のタブを見ていた後などに、一気に進みすぎないように
 
-    step(dt);
-    showNumbers();
-    draw();
-    if (running) { requestAnimationFrame(update); }
+    if (running) {
+      step(dt);
+      showNumbers();
+      // 残像を 0.05 秒ごとに残す
+      if (now - lastGhost > 50) {
+        ghosts.push(yOf(h));
+        if (ghosts.length > 8) { ghosts.shift(); }
+        lastGhost = now;
+      }
+    } else if (ghosts.length) {
+      ghosts.shift();
+    }
+
+    // けむりを動かす
+    dust.forEach(function (d) {
+      d.x += d.vx * dt;
+      d.y += d.vy * dt;
+      d.vy += 200 * dt;
+      d.life -= dt * 2;
+    });
+    dust = dust.filter(function (d) { return d.life > 0; });
+
+    draw(now);
+    const effectsGoing = dust.length > 0 || ghosts.length > 0 || now - squashAt < 160;
+    if (running || effectsGoing) {
+      requestAnimationFrame(frame);
+    } else {
+      last = null;
+    }
   }
 
   // スライダーを動かしたら数値の表示を変える
   gSlider.addEventListener('input', function () {
-    gValue.textContent = Number(gSlider.value).toFixed(1);
+    const ratio = Number(gSlider.value);
+    gValue.textContent = ratio.toFixed(1);
+    gPlanet.textContent = planetOf(ratio);
+    if (!running) { draw(); }
   });
   eSlider.addEventListener('input', function () {
     eValue.textContent = eSlider.value;
@@ -353,24 +540,27 @@ const canvas = document.getElementById('board');
 
   // スタートボタンを押したら、最初の位置から落とす
   startBtn.addEventListener('click', function () {
+    const wasStill = !running && last === null;
     h = START_H;
     v = 0;
     t = 0;
     bounces = 0;
     trace = [[0, START_H]];
-    last = null;
-    msg.textContent = 'ボールを落とした。右のグラフで、高さが時間とともにどう変わるか見てみよう。';
+    ghosts = [];
+    dust = [];
+    say('ボールを落とした。右のグラフで、高さが時間とともにどう変わるか見てみよう。');
     showNumbers();
-    if (!running) {
-      running = true;
-      requestAnimationFrame(update);
+    running = true;
+    if (wasStill) {
+      last = null;
+      requestAnimationFrame(frame);
     }
   });
 
   // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
   // （キャンバスの文字は、描くまでフォントが読み込まれないため）
   draw();
-  document.fonts.load('14px ' + FONT, '0123456789 m秒高さと時間のグラフ').finally(function () {
+  document.fonts.load('700 14px ' + FONT, '0123456789 m秒高さと時間のグラフ月火星金地木くらいより弱いの重力').finally(function () {
     if (!running) { draw(); }
   });
 </script>

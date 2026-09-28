@@ -37,7 +37,7 @@ disable-model-invocation: true
 
 ## 3. 学年ページとトップ
 
-- `grade{N}.html`：その分野の `.field-section` にカードを足す。`<p class="empty">…準備中…</p>` があれば `<ul class="card-list">` に置きかえる。lead の「いまはN本あります」も直す
+- `grade{N}.html`：その分野の `.field-section` にカードを足す。`<p class="empty">…準備中…</p>` があれば `<ul class="card-list">` に置きかえる
 - `index.html`：その学年の `.card-list` にも同じカードを足す
 
 ## 4. テスト

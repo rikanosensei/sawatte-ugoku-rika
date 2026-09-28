@@ -104,7 +104,7 @@
   </main>
 
 <script>
-  const canvas = document.getElementById('board');
+const canvas = document.getElementById('board');
   const ctx = canvas.getContext('2d');
   const msg = document.getElementById('msg');
   const hSlider = document.getElementById('hSlider');
@@ -126,6 +126,42 @@
   canvas.dataset.h = H;
   ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
 
+  // 動きを減らす設定の人には、演出の動きを出さない（結果はそのまま見せる）
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふきだしで話す。cheer が true なら、フラスコがよろこぶ
+  function say(text, cheer) {
+    msg.textContent = text;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;          // いったん描き直させて、動きを最初からにする
+    msg.classList.add('pop');
+    if (cheer) {
+      const icon = document.querySelector('.guide-icon');
+      icon.classList.remove('cheer');
+      void icon.offsetWidth;
+      icon.classList.add('cheer');
+    }
+  }
+
+  // 紙ふぶきを飛ばす
+  function celebrate() {
+    if (reduceMotion) { return; }
+    const stage = canvas.closest('.sim-stage');
+    const colors = ['#ffd23f', '#ff5fa2', '#3d7bff', '#2ec66a', '#b65cff', '#ff8a2a'];
+    for (let i = 0; i < 40; i++) {
+      const piece = document.createElement('span');
+      piece.className = 'confetti';
+      piece.setAttribute('aria-hidden', 'true');
+      piece.style.left = (10 + Math.random() * 80) + '%';
+      piece.style.backgroundColor = colors[i % colors.length];
+      piece.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+      piece.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+      piece.style.animationDelay = (Math.random() * 0.2) + 's';
+      piece.addEventListener('animationend', function () { piece.remove(); });
+      stage.appendChild(piece);
+    }
+  }
+
   const S = 2;            // 縮尺：1cm を 2px で描く
   const GROUND_Y = 440;   // 床の高さ
   const MIRROR_X = 480;   // 鏡の位置
@@ -136,10 +172,14 @@
   const LIGHT = '#ff3d8b';            // 光の道筋
   const LIGHT_PREVIEW = 'rgba(255, 61, 139, 0.5)';
   const GUIDE = '#a9bccf';            // 補助の点線
+  const SKIN = '#ffe0c7';
+  const HAIR = '#3b2f4a';
 
   let paths = [];          // 引いた線（身長と距離に対する割合で記録）
   let drawing = false;     // 線を引いている最中かどうか
   let pointer = { x: 0, y: 0 };
+  let celebrated = false;  // 頭の先と足もとの両方をかいて、お祝いしたかどうか
+  let looping = false;     // 光の粒を動かしている最中かどうか
   const START_MSG = '自分の目（黒い点）から、鏡にうつる像の頭の先や足もとに向かってドラッグしよう。';
 
   // ===== 位置の計算 =====
@@ -170,11 +210,42 @@
     };
   }
 
+  // 頭の先・足もとまで届いた線かどうか
+  function reachesHead(p) {
+    return p.part === 'head' || (p.relY !== undefined && p.relY >= 0.97);
+  }
+  function reachesFoot(p) {
+    return p.part === 'foot' || (p.relY !== undefined && p.relY <= 0.03);
+  }
+
   // 線を1本加える
   function addPath(p, message) {
     paths.push(p);
-    msg.textContent = message;
+    if (!celebrated && paths.some(reachesHead) && paths.some(reachesFoot)) {
+      celebrated = true;
+      say('やった！頭の先と足もと、両方の光がかけた。2つの光が鏡に当たった点の間を、方眼で数えてみよう。', true);
+      celebrate();
+    } else {
+      say(message);
+    }
+    startLoop();
     draw();
+  }
+
+  // 光の粒を動かし続ける（線があるあいだだけ）
+  function startLoop() {
+    if (looping || reduceMotion) { return; }
+    looping = true;
+    requestAnimationFrame(loop);
+  }
+  function loop(time) {
+    if (paths.length === 0) {
+      looping = false;
+      draw();
+      return;
+    }
+    draw(time);
+    requestAnimationFrame(loop);
   }
 
   // 画面上の位置を、キャンバスの座標に直す（キャンバスが縮小されていてもずれないように）
@@ -187,21 +258,23 @@
   }
 
   // ===== 描画 =====
-  function draw() {
+  // time があるときは、光の道筋の上を光の粒が進む
+  function draw(time) {
     const pos = getPositions();
 
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, W, H);
 
     drawGrid();
-    drawGroundAndMirror();
-    drawPerson(pos.vX, pos.h, false, '#c7d9ff', '#7d8fb8', '鏡にうつる像');
-    drawPerson(pos.pX, pos.h, true, '#3d7bff', INK, '自分');
+    drawFloor();
+    drawPerson(pos.vX, pos.h, false, 0.55, '鏡にうつる像');
+    drawMirror();
+    drawPerson(pos.pX, pos.h, true, 1, '自分');
 
     // 記録した線
     paths.forEach(function (p) {
       const t = targetOf(p, pos);
-      drawReflection(pos.eyeX, pos.eyeY, t.x, t.y, LIGHT);
+      drawReflection(pos.eyeX, pos.eyeY, t.x, t.y, LIGHT, time);
     });
 
     // ドラッグ中の線
@@ -234,31 +307,52 @@
     }
   }
 
-  function drawGroundAndMirror() {
-    // 床
-    ctx.fillStyle = '#eef5fc';
+  function drawFloor() {
+    ctx.fillStyle = '#fff3c4';
     ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
-    ctx.strokeStyle = '#7f93a8';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(0, GROUND_Y);
     ctx.lineTo(W, GROUND_Y);
     ctx.stroke();
+  }
 
-    // 鏡
-    ctx.fillStyle = '#bfe3ff';
-    ctx.fillRect(MIRROR_X - 3, 0, 6, GROUND_Y);
+  // 鏡：うすい水色のガラスに、光るすじ
+  function drawMirror() {
+    const grad = ctx.createLinearGradient(MIRROR_X - 6, 0, MIRROR_X + 6, 0);
+    grad.addColorStop(0, '#9fd3ff');
+    grad.addColorStop(0.5, '#e9f6ff');
+    grad.addColorStop(1, '#9fd3ff');
+    ctx.fillStyle = grad;
+    ctx.fillRect(MIRROR_X - 6, 0, 12, GROUND_Y);
     ctx.strokeStyle = INK;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(MIRROR_X, 0);
-    ctx.lineTo(MIRROR_X, GROUND_Y);
-    ctx.stroke();
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(MIRROR_X - 6, -2, 12, GROUND_Y + 2);
 
+    // 光るすじ
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    [70, 210, 330].forEach(function (y) {
+      ctx.beginPath();
+      ctx.moveTo(MIRROR_X - 3, y + 12);
+      ctx.lineTo(MIRROR_X + 3, y);
+      ctx.stroke();
+    });
+    ctx.lineCap = 'butt';
+
+    // 名前の札
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    roundRectPath(MIRROR_X + 12, 10, 40, 30, 8);
+    ctx.fill();
+    ctx.stroke();
     ctx.fillStyle = INK;
-    ctx.font = '500 22px ' + FONT;
-    ctx.textAlign = 'left';
-    ctx.fillText('鏡', MIRROR_X + 10, 28);
+    ctx.font = '700 20px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.fillText('鏡', MIRROR_X + 32, 32);
   }
 
   // 角の丸い四角形の形を作る
@@ -276,40 +370,75 @@
     ctx.closePath();
   }
 
-  // 人を描く（faceLeft: 左（鏡の方）を向いているか）
-  function drawPerson(x, h, faceLeft, fill, eyeColor, label) {
+  // 人を描く（faceLeft: 左（鏡の方）を向いているか、alpha: こさ）
+  function drawPerson(x, h, faceLeft, alpha, label) {
     const top = GROUND_Y - h * S;
     const headR = 12 * S;
     const headY = top + headR;
     const bodyTop = headY + headR + 2 * S;
     const bodyH = h * S * 0.45;
     const legTop = bodyTop + bodyH;
+    const dir = faceLeft ? -1 : 1;    // 顔の向き
 
-    ctx.fillStyle = fill;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+
+    // 足
+    ctx.fillStyle = '#2446d8';
+    ctx.fillRect(x - 6 * S, legTop, 12 * S, GROUND_Y - legTop);
+    ctx.strokeRect(x - 6 * S, legTop, 12 * S, GROUND_Y - legTop);
+
+    // くつ（つま先は向いている方へ出す）
+    const footX = faceLeft ? x + 6 * S - 22 * S : x - 6 * S;
+    ctx.fillStyle = '#ff5fa2';
+    roundRectPath(footX, GROUND_Y - 8 * S, 22 * S, 8 * S, 3 * S);
+    ctx.fill();
+    ctx.stroke();
+
+    // 体
+    ctx.fillStyle = '#3d7bff';
+    roundRectPath(x - 14 * S, bodyTop, 28 * S, bodyH, 6 * S);
+    ctx.fill();
+    ctx.stroke();
+
+    // 頭
+    ctx.fillStyle = SKIN;
     ctx.beginPath();
     ctx.arc(x, headY, headR, 0, Math.PI * 2);
     ctx.fill();
+    ctx.stroke();
 
-    roundRectPath(x - 14 * S, bodyTop, 28 * S, bodyH, 6 * S);
+    // かみの毛
+    ctx.fillStyle = HAIR;
+    ctx.beginPath();
+    ctx.arc(x, headY, headR, Math.PI * 1.12, Math.PI * 1.88);
+    ctx.closePath();
     ctx.fill();
 
-    ctx.fillRect(x - 6 * S, legTop, 12 * S, GROUND_Y - legTop);
-
-    // つま先は向いている方へ出す
-    const footX = faceLeft ? x + 6 * S - 22 * S : x - 6 * S;
-    roundRectPath(footX, GROUND_Y - 8 * S, 22 * S, 8 * S, 3 * S);
-    ctx.fill();
-
-    // 目
-    const eyeX = faceLeft ? x - 6 * S : x + 6 * S;
-    ctx.fillStyle = eyeColor;
+    // 目（光が届く点）
+    const eyeX = x + dir * 6 * S;
+    ctx.fillStyle = INK;
     ctx.beginPath();
     ctx.arc(eyeX, top + EYE_GAP, 5, 0, Math.PI * 2);
     ctx.fill();
 
+    // ほっぺと口
+    ctx.fillStyle = '#ff9ec4';
+    ctx.beginPath();
+    ctx.ellipse(x + dir * 1 * S, top + 15 * S, 3 * S, 2 * S, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x + dir * 7 * S, top + 15 * S, 3 * S, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
+    ctx.restore();
+
     // 名前
     ctx.fillStyle = INK;
-    ctx.font = '500 22px ' + FONT;
+    ctx.font = '700 22px ' + FONT;
     ctx.textAlign = 'center';
     ctx.fillText(label, x, GROUND_Y + 42);
   }
@@ -344,7 +473,7 @@
   }
 
   // 目から鏡にうつる像の点(tx, ty)を見たときの、光の道筋を描く
-  function drawReflection(eyeX, eyeY, tx, ty, color) {
+  function drawReflection(eyeX, eyeY, tx, ty, color, time) {
     const t = (MIRROR_X - eyeX) / (tx - eyeX);
     const hitY = eyeY + t * (ty - eyeY);   // 鏡で反射する点の高さ
     const realX = MIRROR_X * 2 - tx;        // 鏡にうつる像の点に対応する、自分の体の点
@@ -352,25 +481,62 @@
     // 目と鏡にうつる像を結ぶ点線
     drawDashed(eyeX, eyeY, tx, ty);
 
-    // 体の点 → 鏡 → 目 の光の道筋
+    // 体の点 → 鏡 → 目 の光の道筋（光っているように、まわりをぼかす）
+    ctx.save();
+    ctx.shadowColor = 'rgba(255, 61, 139, 0.55)';
+    ctx.shadowBlur = 10;
     ctx.strokeStyle = color;
     ctx.lineWidth = 4;
+    ctx.lineJoin = 'round';
     ctx.beginPath();
     ctx.moveTo(realX, ty);
     ctx.lineTo(MIRROR_X, hitY);
     ctx.lineTo(eyeX, eyeY);
     ctx.stroke();
+    ctx.restore();
     drawArrow(realX, ty, MIRROR_X, hitY, color);
     drawArrow(MIRROR_X, hitY, eyeX, eyeY, color);
 
     // 反射した点と、体の点
     ctx.fillStyle = color;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(MIRROR_X, hitY, 6, 0, Math.PI * 2);
+    ctx.arc(MIRROR_X, hitY, 7, 0, Math.PI * 2);
     ctx.fill();
+    ctx.stroke();
     ctx.beginPath();
     ctx.arc(realX, ty, 5, 0, Math.PI * 2);
     ctx.fill();
+
+    // 光の粒：体の点 → 鏡 → 目 の向きに進む
+    if (time !== undefined) {
+      const a = Math.hypot(MIRROR_X - realX, hitY - ty);
+      const b = Math.hypot(eyeX - MIRROR_X, eyeY - hitY);
+      for (let k = 0; k < 3; k++) {
+        const s = ((time / 1600 + k / 3) % 1) * (a + b);
+        let px;
+        let py;
+        if (s < a) {
+          px = realX + (MIRROR_X - realX) * s / a;
+          py = ty + (hitY - ty) * s / a;
+        } else {
+          px = MIRROR_X + (eyeX - MIRROR_X) * (s - a) / b;
+          py = hitY + (eyeY - hitY) * (s - a) / b;
+        }
+        ctx.save();
+        ctx.shadowColor = '#ffd23f';
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = '#fffbe0';
+        ctx.strokeStyle = LIGHT;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
   }
 
   // ===== 操作（マウス・タッチ・ペン共通） =====
@@ -396,7 +562,7 @@
           relY: (GROUND_Y - pointer.y) / (pos.h * S)
         }, '光の道筋をかいた。鏡のどこで反射しているか、方眼で数えてみよう。');
       } else {
-        msg.textContent = '鏡の向こう側（鏡にうつる像がある側）まで線をのばそう。';
+        say('鏡の向こう側（鏡にうつる像がある側）まで線をのばそう。');
       }
     }
     drawing = false;
@@ -428,11 +594,12 @@
   // 線をすべて消す（まだ線がないときは、何をすればよいかを伝える）
   resetBtn.addEventListener('click', function () {
     if (paths.length === 0) {
-      msg.textContent = '消す線はまだありません。目から、鏡にうつる像に向かってドラッグしてみよう。';
+      say('消す線はまだありません。目から、鏡にうつる像に向かってドラッグしてみよう。');
       return;
     }
     paths = [];
-    msg.textContent = START_MSG;
+    celebrated = false;
+    say(START_MSG);
     draw();
   });
 
@@ -446,7 +613,7 @@
   // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
   // （キャンバスの文字は、描くまでフォントが読み込まれないため）
   draw();
-  document.fonts.load('500 22px ' + FONT, '鏡にうつる像自分').finally(draw);
+  document.fonts.load('700 22px ' + FONT, '鏡にうつる像自分').finally(function () { draw(); });
 </script>
 
   <footer class="site-footer">

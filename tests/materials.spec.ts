@@ -42,7 +42,7 @@ test.describe('鏡にうつる像と光の反射', () => {
     await page.getByRole('button', { name: '頭の先からの光' }).click();
     await expect(msg).toContainText('頭の先から出た光');
     await page.getByRole('button', { name: '足もとからの光' }).click();
-    await expect(msg).toContainText('足もとから出た光');
+    await expect(msg).toContainText('両方の光がかけた'); // 頭の先と足もとがそろうとお祝い
     expect(await canvasImage(page)).not.toBe(before);
 
     await reset.click();
@@ -125,11 +125,18 @@ test.describe('消化酵素のはたらき', () => {
   test('胆汁では図が変わらず、酵素では図が変わる', async ({ page }) => {
     const before = await canvasImage(page);
     await page.getByRole('button', { name: /^胆汁/ }).click();
-    expect(await canvasImage(page)).toBe(before);
+    await expect.poll(() => canvasImage(page)).toBe(before); // 脂肪は少しゆれるだけで、もとの形にもどる
     await page.getByRole('button', { name: /^リパーゼ/ }).click();
     await expect.poll(() => canvasImage(page)).not.toBe(before); // 粒は少しずつはなれる
   });
 
+  test('3つの栄養素を全部分解すると、お祝いの言葉が出る', async ({ page }) => {
+    await page.getByRole('button', { name: /^アミラーゼ/ }).click();
+    await page.getByRole('button', { name: /^ペプシン/ }).click();
+    await expect(page.locator('#msg')).not.toContainText('全部分解された');
+    await page.getByRole('button', { name: /^リパーゼ/ }).click();
+    await expect(page.locator('#msg')).toContainText('3つの栄養素が全部分解された');
+  });
   test('もとに戻すと、選んだ状態と図が最初に戻る', async ({ page }) => {
     const reset = page.getByRole('button', { name: 'もとに戻す' });
     const before = await canvasImage(page);
@@ -161,6 +168,16 @@ test.describe('落下運動と反発係数', () => {
     await expect(page.locator('#eValue')).toHaveText('0.5');
   });
 
+  test('重力の強さに近い星の名前が出る', async ({ page }) => {
+    const hint = page.locator('#gPlanet');
+    await expect(hint).toHaveText('地球の重力');
+    await page.getByLabel('重力の強さ').fill('0.2');
+    await expect(hint).toHaveText('月くらいの重力');
+    await page.getByLabel('重力の強さ').fill('2.5');
+    await expect(hint).toHaveText('木星くらいの重力');
+    await page.getByLabel('重力の強さ').fill('1.6');
+    await expect(hint).toHaveText('');
+  });
   test('スタートを押すとボールが落ち、時間と高さの表示が変わる', async ({ page }) => {
     const before = await canvasImage(page);
     await page.getByRole('button', { name: 'スタート' }).click();
