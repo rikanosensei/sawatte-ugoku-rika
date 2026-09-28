@@ -47,7 +47,7 @@
         <canvas id="board" class="sim-canvas is-draw" width="960" height="500" role="img"
             aria-label="鏡の前に立つ自分と、鏡にうつる像の図。方眼の1マスは10cm。"></canvas>
         <div class="guide">
-          <span class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1V16h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/></svg></span>
+          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
           <p id="msg" class="notice" aria-live="polite">自分の目（黒い点）から、鏡にうつる像の頭の先や足もとに向かってドラッグしよう。</p>
         </div>
       </section>
@@ -132,9 +132,9 @@
   const EYE_GAP = 10 * S; // 頭の上から目までの長さ（10cm）
 
   // 色
-  const INK = '#1a2533';
-  const LIGHT = '#e8836b';            // 光の道筋
-  const LIGHT_PREVIEW = 'rgba(232, 131, 107, 0.5)';
+  const INK = '#1b1b2f';
+  const LIGHT = '#ff3d8b';            // 光の道筋
+  const LIGHT_PREVIEW = 'rgba(255, 61, 139, 0.5)';
   const GUIDE = '#a9bccf';            // 補助の点線
 
   let paths = [];          // 引いた線（身長と距離に対する割合で記録）
@@ -195,8 +195,8 @@
 
     drawGrid();
     drawGroundAndMirror();
-    drawPerson(pos.vX, pos.h, false, '#c9d6e3', '#9fb3c8', '鏡にうつる像');
-    drawPerson(pos.pX, pos.h, true, '#8aa4c0', INK, '自分');
+    drawPerson(pos.vX, pos.h, false, '#c7d9ff', '#7d8fb8', '鏡にうつる像');
+    drawPerson(pos.pX, pos.h, true, '#3d7bff', INK, '自分');
 
     // 記録した線
     paths.forEach(function (p) {
@@ -246,9 +246,9 @@
     ctx.stroke();
 
     // 鏡
-    ctx.fillStyle = '#a9c8ec';
+    ctx.fillStyle = '#bfe3ff';
     ctx.fillRect(MIRROR_X - 3, 0, 6, GROUND_Y);
-    ctx.strokeStyle = '#2f6fb0';
+    ctx.strokeStyle = INK;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(MIRROR_X, 0);

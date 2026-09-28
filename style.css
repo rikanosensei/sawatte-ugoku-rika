@@ -1,50 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
-/* ロゴ用の毛筆の書体（ロゴの6文字だけを読み込む） */
-@import url('https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E4%BF%BA%E3%81%AE%E7%90%86%E7%A7%91%E6%95%99%E6%9D%90');
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
 
 /* =========================================================
-   俺の理科教材 デザインルール
-   参考：デジタル庁デザインシステム（文字・色・フォーカス・ボタン）
-         PayPay ミニアプリ（上のバーと下のナビゲーション）
-         LINE Design System（大事な操作を先に・左右16pxの余白・話しかける言葉）
+   俺の理科教材 デザインルール ―「楽しさ全開」
+   ・シールのようなカード：太い線（2.5px）と、ずらした影
+   ・分野ごとのはっきりした色、丸く太い見出し（Dela Gothic One）
+   ・案内役はフラスコのキャラクター
+   ・読みやすさは守る：本文16px、コントラスト比4.5:1以上、黄と黒のフォーカス枠、44px以上
    ========================================================= */
 
 /* ---------- 1. デザイントークン ---------- */
 :root {
-  /* 色：文字は背景とのコントラスト比 4.5:1 以上、線や部品の枠は 3:1 以上 */
-  --color-text: #1b1d21;
-  --color-text-sub: #4f555e;
-  --color-bg: #f3f5f7;            /* 画面の地（アプリの灰色） */
-  --color-surface: #ffffff;       /* カード */
-  --color-primary: #0a5bc4;       /* 操作できるもの（白地で 6.2:1） */
-  --color-primary-hover: #084a9f;
-  --color-primary-active: #063a7d;
-  --color-primary-tint: #e6f0fb;  /* 選んだもの・マウスを重ねたときの面 */
-  --color-border: #dde1e6;        /* 飾りの区切り線 */
-  --color-border-strong: #858d97; /* 操作できる部品の枠（白地で 3.4:1） */
-  --color-disabled-bg: #e9ecef;
-  --color-disabled-text: #6b727b;
-  --color-focus-inner: #ffd43d;   /* フォーカス枠（黄と黒の二重） */
-  --color-focus-outer: #000000;
+  /* 色 */
+  --ink: #1b1b2f;            /* 文字・線・影 */
+  --ink-sub: #4a4a5e;        /* 補足の文字 */
+  --paper: #ffffff;          /* カード */
+  --bg: #f4f7ff;             /* 画面の地（水玉を敷く） */
+  --bg-dot: #d9e1f7;
+  --link: #2446d8;           /* リンク・テキストボタン */
+  --sun: #ffd23f;            /* いちばん大事なボタン・印 */
+  --sun-soft: #fff3c4;
+  --pink: #ff5fa2;
+  --sky: #bfe3ff;
 
-  /* 分野の色（ラベル・アイコン・見出しの印だけに使う） */
-  --field-physics: #0a5bc4;   --field-physics-bg: #e6f0fb;
-  --field-chemistry: #7a3f9e; --field-chemistry-bg: #f3eaf8;
-  --field-biology: #1f7a45;   --field-biology-bg: #e3f3e9;
-  --field-earth: #8a5412;     --field-earth-bg: #f7ecdc;
+  /* 分野の色：fill は面、soft はうすい面、text は文字 */
+  --physics-fill: #3d7bff;   --physics-soft: #dde8ff;   --physics-text: #1d4fc4;
+  --chemistry-fill: #b65cff; --chemistry-soft: #f1e3ff; --chemistry-text: #7a2bb8;
+  --biology-fill: #2ec66a;   --biology-soft: #d9f7e5;   --biology-text: #157a3a;
+  --earth-fill: #ff8a2a;     --earth-soft: #ffe7d1;     --earth-text: #a14d00;
 
-  /* 文字（デジタル庁のテキストスタイルから選ぶ。14px 未満は使わない） */
-  --text-caption: 0.875rem;  /* 14px 注記・ナビのラベル */
-  --text-body: 1rem;         /* 16px 本文・ボタン */
-  --text-lead: 1.125rem;     /* 18px 導入文・カードの題名 */
-  --text-h3: 1.25rem;        /* 20px 小見出し */
-  --text-h2: 1.5rem;         /* 24px 見出し */
-  --text-h1: 1.75rem;        /* 28px ページの題名（パソコンでは 32px） */
-  --text-display: clamp(2rem, 6vw, 2.75rem); /* トップの大見出し */
-  --line-body: 1.7;
-  --line-heading: 1.4;
+  --focus-inner: #ffd23f;
+  --focus-outer: #000000;
 
-  /* 余白（4 の倍数だけ使う。画面の左右は 16px） */
+  /* 文字 */
+  --font-body: "Noto Sans JP", sans-serif;
+  --font-display: "Dela Gothic One", "Noto Sans JP", sans-serif;
+  --text-caption: 0.875rem;  /* 14px（これより小さくしない） */
+  --text-body: 1rem;         /* 16px */
+  --text-lead: 1.125rem;     /* 18px */
+  --text-h3: 1.25rem;        /* 20px */
+  --text-h2: 1.625rem;       /* 26px */
+  --text-h1: clamp(1.875rem, 5vw, 2.5rem);
+  --text-hero: clamp(2.5rem, 8vw, 4.25rem);
+  --line-body: 1.75;
+  --line-heading: 1.35;
+
+  /* 余白 */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -52,19 +52,24 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
+  --space-8: 72px;
   --gutter: 16px;
 
-  /* 角の丸み */
-  --radius-s: 8px;      /* ボタン・入力 */
-  --radius-m: 16px;     /* カード */
-  --radius-full: 999px; /* ラベル・丸いボタン */
+  /* 形 */
+  --line: 2.5px solid var(--ink);
+  --radius-s: 12px;
+  --radius-m: 20px;
+  --radius-full: 999px;
+  --pop: 5px 5px 0 var(--ink);        /* シールの影 */
+  --pop-hover: 7px 7px 0 var(--ink);
+  --pop-small: 3px 3px 0 var(--ink);
 
-  --shadow-hover: 0 4px 16px rgba(16, 24, 40, 0.08);
-  --appbar-height: 56px;
-  --tabbar-height: 64px;
+  --appbar-height: 60px;
+  --tabbar-height: 68px;
   --target-min: 44px;
-  --duration: 150ms;
+  --duration: 120ms;
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   --z-appbar: 10;
   --z-tabbar: 20;
@@ -85,18 +90,19 @@ html {
 
 body {
   margin: 0;
-  font-family: "Noto Sans JP", sans-serif;
+  font-family: var(--font-body);
   font-size: var(--text-body);
   line-height: var(--line-body);
   letter-spacing: 0.02em;
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--bg-dot) 1.5px, transparent 1.8px);
+  background-size: 24px 24px;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
   line-height: var(--line-heading);
-  letter-spacing: 0.01em;
   text-wrap: balance;
 }
 
@@ -105,20 +111,19 @@ p, li {
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--link);
   text-underline-offset: 0.2em;
 }
 
 a:hover {
-  color: var(--color-primary-hover);
   text-decoration-thickness: 2px;
 }
 
-/* フォーカス枠：黄と黒の二重。どの部品でも同じ形で、消さない */
+/* フォーカス枠：黄と黒の二重。消さない */
 :focus-visible {
-  outline: 4px solid var(--color-focus-outer);
+  outline: 4px solid var(--focus-outer);
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--color-focus-inner);
+  box-shadow: 0 0 0 2px var(--focus-inner);
 }
 
 svg {
@@ -131,14 +136,15 @@ svg {
   left: var(--gutter);
   z-index: var(--z-skip);
   padding: var(--space-2) var(--space-4);
-  color: #ffffff;
-  background-color: var(--color-primary);
-  border-radius: var(--radius-s);
+  font-weight: 700;
+  color: var(--ink);
+  background-color: var(--sun);
+  border: var(--line);
+  border-radius: var(--radius-full);
 }
 
 .skip-link:focus {
   top: var(--space-2);
-  color: #ffffff;
 }
 
 .page {
@@ -151,67 +157,73 @@ svg {
   max-width: 40em;
 }
 
-/* ---------- 3. 上のバー（アプリバー） ---------- */
+/* ---------- 3. 上のバー ---------- */
 .appbar {
   position: sticky;
   top: 0;
   z-index: var(--z-appbar);
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background-color: var(--paper);
+  border-bottom: var(--line);
 }
 
 .appbar-inner {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   max-width: 1080px;
   height: var(--appbar-height);
   margin: 0 auto;
-  padding: 0 var(--space-2);
+  padding: 0 var(--space-3);
 }
 
-/* もどるボタン */
 .appbar-back {
   display: grid;
   place-items: center;
   width: var(--target-min);
   height: var(--target-min);
-  color: var(--color-text);
+  color: var(--ink);
+  background-color: var(--paper);
+  border: var(--line);
   border-radius: var(--radius-full);
-  transition: background-color var(--duration) var(--ease-out);
+  box-shadow: var(--pop-small);
+  transition: transform var(--duration) var(--ease-out), box-shadow var(--duration) var(--ease-out);
 }
 
 .appbar-back:hover {
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: var(--ink);
+  background-color: var(--sun-soft);
 }
 
-/* ロゴ：毛筆の書体 */
+.appbar-back:active {
+  box-shadow: 0 0 0 var(--ink);
+  transform: translate(3px, 3px);
+}
+
 .logo {
-  margin: 0 0 0 var(--space-2);
+  margin: 0 0 0 var(--space-1);
 }
 
 .logo a {
   display: inline-flex;
   align-items: center;
   min-height: var(--target-min);
-  font-family: "Yuji Syuku", "Yu Mincho", "YuMincho", serif;
-  font-size: 1.375rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
   line-height: 1.2;
-  color: var(--color-text);
+  color: var(--ink);
   text-decoration: none;
   white-space: nowrap;
 }
 
-/* ---------- 4. ナビゲーション（パソコンは上、スマホは下） ---------- */
+/* ---------- 4. 学年ナビ（パソコンは上、スマホは下） ---------- */
 .tabbar {
   margin-left: auto;
 }
 
 .tabbar ul {
   display: flex;
-  gap: var(--space-1);
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -223,22 +235,22 @@ svg {
   gap: 6px;
   min-height: var(--target-min);
   padding: 0 var(--space-4);
-  font-size: var(--text-body);
   font-weight: 700;
-  color: var(--color-text-sub);
+  color: var(--ink);
   text-decoration: none;
+  border: 2.5px solid transparent;
   border-radius: var(--radius-full);
-  transition: background-color var(--duration) var(--ease-out), color var(--duration) var(--ease-out);
+  transition: background-color var(--duration) var(--ease-out);
 }
 
 .tabbar a:hover {
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: var(--ink);
+  background-color: var(--sun-soft);
 }
 
 .tabbar a[aria-current] {
-  color: var(--color-primary);
-  background-color: var(--color-primary-tint);
+  background-color: var(--sun);
+  border-color: var(--ink);
 }
 
 @media (max-width: 767px) {
@@ -253,9 +265,9 @@ svg {
     left: 0;
     z-index: var(--z-tabbar);
     margin: 0;
-    padding-bottom: env(safe-area-inset-bottom);
-    background-color: var(--color-surface);
-    border-top: 1px solid var(--color-border);
+    padding: 0 var(--space-2) env(safe-area-inset-bottom);
+    background-color: var(--paper);
+    border-top: var(--line);
   }
 
   .tabbar ul {
@@ -269,11 +281,12 @@ svg {
   .tabbar a {
     flex-direction: column;
     justify-content: center;
-    gap: 2px;
+    gap: 3px;
     height: var(--tabbar-height);
     padding: 0;
     font-size: var(--text-caption);
     line-height: 1;
+    border: 0;
     border-radius: 0;
   }
 
@@ -281,12 +294,26 @@ svg {
   .tabbar a[aria-current] {
     background-color: transparent;
   }
+
+  /* 選んでいる学年は、アイコンの後ろに黄色の丸 */
+  .tabbar a svg {
+    box-sizing: content-box;
+    padding: 3px 14px;
+    border: 2.5px solid transparent;
+    border-radius: var(--radius-full);
+  }
+
+  .tabbar a[aria-current] svg {
+    background-color: var(--sun);
+    border-color: var(--ink);
+  }
 }
 
 /* ---------- 5. ページの頭 ---------- */
 .breadcrumb {
   padding-top: var(--space-4);
   font-size: var(--text-caption);
+  font-weight: 500;
 }
 
 .breadcrumb ol {
@@ -302,21 +329,23 @@ svg {
 .breadcrumb li + li::before {
   content: "›";
   margin-right: var(--space-2);
-  color: var(--color-text-sub);
+  color: var(--ink-sub);
 }
 
 .breadcrumb [aria-current="page"] {
-  color: var(--color-text-sub);
+  color: var(--ink-sub);
 }
 
 .page-head {
-  padding: var(--space-5) 0 var(--space-5);
+  padding: var(--space-5) 0;
 }
 
 .page-title {
   margin: var(--space-2) 0 0;
+  font-family: var(--font-display);
   font-size: var(--text-h1);
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .chips + .page-title {
@@ -325,88 +354,196 @@ svg {
 
 .lead {
   max-width: 40em;
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-lead);
-  line-height: 1.6;
-  color: var(--color-text-sub);
-}
-
-/* トップ */
-.home-head {
-  padding: var(--space-6) 0 var(--space-2);
-}
-
-.home-title {
-  margin: 0;
-  font-size: var(--text-display);
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.home-lead {
-  max-width: 32em;
   margin: var(--space-3) 0 0;
   font-size: var(--text-lead);
-  line-height: 1.6;
-  color: var(--color-text-sub);
+  line-height: 1.65;
+  color: var(--ink-sub);
 }
 
-/* ---------- 6. 見出し・区画 ---------- */
+/* ---------- 6. トップのヒーロー ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: center;
+  padding: var(--space-7) 0 var(--space-5);
+}
+
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.hero-title span {
+  display: block;
+}
+
+.hero-lead {
+  max-width: 26em;
+  margin: var(--space-5) 0 var(--space-6);
+  font-size: var(--text-lead);
+  line-height: 1.7;
+  color: var(--ink-sub);
+}
+
+.hero-scene {
+  display: block;
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  margin-left: auto;
+}
+
+/* ボールが弾む・粒がゆれる（動きを減らす設定のときは止まる） */
+.hero-scene .ball {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: hop 1.3s infinite;
+}
+
+.hero-scene .ball-shadow {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: hop-shadow 1.3s infinite;
+}
+
+.hero-scene .beads {
+  animation: float 3s ease-in-out infinite alternate;
+}
+
+.hero-scene .mascot-big {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: wobble 2.6s ease-in-out infinite;
+}
+
+@keyframes hop {
+  0%   { transform: translateY(0) scale(1.18, 0.82); animation-timing-function: cubic-bezier(0.3, 0.7, 0.5, 1); }
+  8%   { transform: translateY(-10px) scale(0.94, 1.06); animation-timing-function: cubic-bezier(0.3, 0.7, 0.5, 1); }
+  50%  { transform: translateY(-120px) scale(1, 1); animation-timing-function: cubic-bezier(0.5, 0, 0.7, 0.3); }
+  96%  { transform: translateY(-4px) scale(0.96, 1.04); }
+  100% { transform: translateY(0) scale(1.18, 0.82); }
+}
+
+@keyframes hop-shadow {
+  0%, 100% { transform: scale(1.1); opacity: 0.25; }
+  50%      { transform: scale(0.5); opacity: 0.1; }
+}
+
+@keyframes float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-8px); }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+
+/* ---------- 7. 見出し・区画 ---------- */
 .section {
-  margin-top: var(--space-7);
+  margin-top: var(--space-8);
 }
 
 .section-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin-bottom: var(--space-4);
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
 .section-title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: var(--text-h2);
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* 学年の見出しは、黄色のマーカーを引く */
+.section-head .section-title {
+  padding: 0 6px;
+  background: linear-gradient(transparent 58%, var(--sun) 58%, var(--sun) 92%, transparent 92%);
 }
 
 .section-link {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
   min-height: var(--target-min);
+  padding: 0 var(--space-4);
   font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  background-color: var(--paper);
+  border: var(--line);
+  border-radius: var(--radius-full);
+  box-shadow: var(--pop-small);
+  transition: transform var(--duration) var(--ease-out), box-shadow var(--duration) var(--ease-out);
 }
 
-/* 分野の見出し：分野の色の丸をつける */
+.section-link::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-top: 2.5px solid currentColor;
+  border-right: 2.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.section-link:hover {
+  color: var(--ink);
+  background-color: var(--sun-soft);
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+
+.section-link:active {
+  box-shadow: 0 0 0 var(--ink);
+  transform: translate(3px, 3px);
+}
+
+/* 分野の見出し：分野の色のラベル */
 .field-title {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: var(--space-1) var(--space-4) var(--space-1) var(--space-2);
+  font-family: var(--font-display);
   font-size: var(--text-h3);
-  font-weight: 700;
+  font-weight: 400;
+  background-color: var(--field-soft);
+  border: var(--line);
+  border-radius: var(--radius-full);
 }
 
 .field-title::before {
   content: "";
-  width: 12px;
-  height: 12px;
-  background-color: var(--field);
+  width: 22px;
+  height: 22px;
+  background-color: var(--field-fill);
+  border: 2.5px solid var(--ink);
   border-radius: var(--radius-full);
 }
 
 .field-section + .field-section {
-  margin-top: var(--space-6);
+  margin-top: var(--space-7);
 }
 
-/* ---------- 7. 分野の色をまとめて切り替える ---------- */
-.field-physics   { --field: var(--field-physics);   --field-bg: var(--field-physics-bg); }
-.field-chemistry { --field: var(--field-chemistry); --field-bg: var(--field-chemistry-bg); }
-.field-biology   { --field: var(--field-biology);   --field-bg: var(--field-biology-bg); }
-.field-earth     { --field: var(--field-earth);     --field-bg: var(--field-earth-bg); }
+/* ---------- 8. 分野の色をまとめて切り替える ---------- */
+.field-physics   { --field-fill: var(--physics-fill);   --field-soft: var(--physics-soft);   --field-text: var(--physics-text); }
+.field-chemistry { --field-fill: var(--chemistry-fill); --field-soft: var(--chemistry-soft); --field-text: var(--chemistry-text); }
+.field-biology   { --field-fill: var(--biology-fill);   --field-soft: var(--biology-soft);   --field-text: var(--biology-text); }
+.field-earth     { --field-fill: var(--earth-fill);     --field-soft: var(--earth-soft);     --field-text: var(--earth-text); }
 
-/* ---------- 8. ラベル（チップ） ---------- */
+/* ---------- 9. ラベル（チップ） ---------- */
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -419,13 +556,13 @@ svg {
 .chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px var(--space-3);
+  padding: 1px var(--space-3);
   font-size: var(--text-caption);
   font-weight: 700;
   line-height: 1.6;
-  color: var(--color-text-sub);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  color: var(--ink);
+  background-color: var(--paper);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-full);
 }
 
@@ -433,227 +570,283 @@ svg {
 .chip.field-chemistry,
 .chip.field-biology,
 .chip.field-earth {
-  color: var(--field);
-  background-color: var(--field-bg);
-  border-color: transparent;
+  color: var(--field-text);
+  background-color: var(--field-soft);
 }
 
-/* ---------- 9. 教材カード ---------- */
+/* ---------- 10. 教材カード（シール） ---------- */
 .card-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .m-card {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: var(--space-4);
-  align-items: start;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  padding: var(--space-4);
-  color: var(--color-text);
+  overflow: hidden;
+  color: var(--ink);
   text-decoration: none;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--paper);
+  border: var(--line);
   border-radius: var(--radius-m);
-  transition: border-color var(--duration) var(--ease-out), box-shadow var(--duration) var(--ease-out);
+  box-shadow: var(--pop);
+  transition: transform 180ms var(--ease-spring), box-shadow 180ms var(--ease-spring);
 }
 
 .m-card:hover {
-  color: var(--color-text);
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-hover);
+  color: var(--ink);
+  box-shadow: var(--pop-hover);
+  transform: translate(-2px, -2px) rotate(-0.6deg);
 }
 
 .m-card:active {
-  background-color: var(--color-primary-tint);
+  box-shadow: 1px 1px 0 var(--ink);
+  transform: translate(4px, 4px);
+  transition-duration: 60ms;
 }
 
+/* カードの上の絵：分野の色の面に、白い線で大きく */
 .m-icon {
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
-  color: var(--field);
-  background-color: var(--field-bg);
-  border-radius: 12px;
+  height: 132px;
+  color: #ffffff;
+  background-color: var(--field-fill);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.25) 2px, transparent 2.4px);
+  background-size: 18px 18px;
+  border-bottom: var(--line);
+}
+
+.m-icon svg {
+  width: 88px;
+  height: 88px;
+  filter: drop-shadow(3px 3px 0 rgba(27, 27, 47, 0.35));
+  transition: transform 220ms var(--ease-spring);
+}
+
+.m-card:hover .m-icon svg {
+  transform: scale(1.12) rotate(3deg);
+}
+
+.m-card > span:last-child {
+  display: block;
+  padding: var(--space-4) var(--space-5) var(--space-5);
 }
 
 .m-title {
   display: block;
-  font-size: var(--text-lead);
-  font-weight: 700;
-  line-height: 1.5;
-  color: var(--color-primary);
+  font-size: var(--text-h3);
+  font-weight: 900;
+  line-height: 1.45;
 }
 
 .m-card:hover .m-title {
   text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.2em;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--field-fill);
+  text-underline-offset: 0.25em;
 }
 
 .m-desc {
   display: block;
-  margin-top: var(--space-1);
-  line-height: 1.6;
-  color: var(--color-text-sub);
+  margin-top: var(--space-2);
+  line-height: 1.65;
+  color: var(--ink-sub);
 }
 
 .m-card .chips {
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 /* 教材がまだない分野 */
 .empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   margin: 0;
-  padding: var(--space-4);
-  color: var(--color-text-sub);
-  border: 1px dashed var(--color-border-strong);
+  padding: var(--space-4) var(--space-5);
+  font-weight: 500;
+  color: var(--ink-sub);
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 2.5px dashed var(--ink-sub);
   border-radius: var(--radius-m);
 }
 
-/* ---------- 10. ボタン（塗り・枠線・テキストの3段階） ---------- */
+.empty::before {
+  content: "もうすぐ";
+  flex: none;
+  padding: 0 var(--space-3);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  line-height: 1.8;
+  color: var(--ink);
+  background-color: var(--sun);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-full);
+  transform: rotate(-4deg);
+}
+
+/* ---------- 11. ボタン（押すと沈む） ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 48px;
-  padding: var(--space-3) var(--space-5);
+  min-height: 52px;
+  padding: var(--space-3) var(--space-6);
   font: inherit;
-  font-weight: 700;
+  font-weight: 900;
   line-height: 1.3;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-align: center;
   text-decoration: none;
-  border: 1px solid transparent;
-  border-radius: var(--radius-s);
+  color: var(--ink);
+  background-color: var(--paper);
+  border: var(--line);
+  border-radius: var(--radius-full);
+  box-shadow: var(--pop-small);
   cursor: pointer;
-  transition: background-color var(--duration) var(--ease-out), border-color var(--duration) var(--ease-out), color var(--duration) var(--ease-out);
+  transition: transform var(--duration) var(--ease-out), box-shadow var(--duration) var(--ease-out), background-color var(--duration) var(--ease-out);
+}
+
+.btn:hover {
+  color: var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  transform: translate(-2px, -2px);
+}
+
+.btn:active {
+  box-shadow: 0 0 0 var(--ink);
+  transform: translate(3px, 3px);
+  transition-duration: 50ms;
 }
 
 .btn-block {
   width: 100%;
 }
 
-/* 塗り：その画面でいちばん大事な操作に1つだけ */
+/* 塗り：その画面でいちばん大事な操作に1つだけ（黄色） */
 .btn-primary {
-  color: #ffffff;
-  background-color: var(--color-primary);
+  background-color: var(--sun);
 }
 
 .btn-primary:hover {
-  color: #ffffff;
-  background-color: var(--color-primary-hover);
-}
-
-.btn-primary:active {
-  background-color: var(--color-primary-active);
+  background-color: #ffdc66;
 }
 
 /* 枠線：ほかの操作（同じ場所に3つまで） */
-.btn-secondary {
-  color: var(--color-primary);
-  background-color: var(--color-surface);
-  border-color: var(--color-primary);
-}
-
 .btn-secondary:hover {
-  color: var(--color-primary-hover);
-  background-color: var(--color-primary-tint);
-  border-color: var(--color-primary-hover);
+  background-color: var(--sun-soft);
 }
 
-.btn-secondary:active {
-  color: var(--color-primary-active);
-  border-color: var(--color-primary-active);
-}
-
-/* テキスト：取り消し・もとに戻すなど、控えめな操作 */
+/* テキスト：もとに戻す・消すなど、控えめな操作 */
 .btn-tertiary {
-  color: var(--color-primary);
+  min-height: var(--target-min);
+  font-weight: 700;
+  color: var(--link);
   text-decoration: underline;
   text-underline-offset: 0.2em;
   background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .btn-tertiary:hover {
-  color: var(--color-primary-hover);
+  color: var(--link);
   text-decoration-thickness: 2px;
-  background-color: var(--color-primary-tint);
+  background-color: rgba(36, 70, 216, 0.08);
+  box-shadow: none;
+  transform: none;
 }
 
-.btn:disabled,
-.btn:disabled:hover {
-  color: var(--color-disabled-text);
-  text-decoration: none;
-  background-color: var(--color-disabled-bg);
-  border-color: var(--color-disabled-bg);
-  cursor: not-allowed;
+.btn-tertiary:active {
+  transform: none;
 }
 
-.btn-tertiary:disabled,
-.btn-tertiary:disabled:hover {
-  background-color: transparent;
-  border-color: transparent;
-}
-
-/* 選ぶボタン：名前と補足の2段。選んだら面の色と枠の太さで示す */
+/* 選ぶボタン：選んだら黄色くなり、右にチェックがつく */
 .btn-choice {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   width: 100%;
-  min-height: 56px;
-  padding: var(--space-2) var(--space-4);
+  min-height: 60px;
+  padding: var(--space-2) 48px var(--space-2) var(--space-4);
   font: inherit;
-  font-weight: 700;
+  font-weight: 900;
   line-height: 1.4;
   text-align: left;
-  color: var(--color-text);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border-strong);
+  color: var(--ink);
+  background-color: var(--paper);
+  border: var(--line);
   border-radius: var(--radius-s);
+  box-shadow: var(--pop-small);
   cursor: pointer;
-  transition: background-color var(--duration) var(--ease-out), border-color var(--duration) var(--ease-out);
+  transition: transform var(--duration) var(--ease-out), box-shadow var(--duration) var(--ease-out), background-color var(--duration) var(--ease-out);
 }
 
 .btn-choice small {
   margin-top: 2px;
   font-size: var(--text-caption);
-  font-weight: 400;
-  color: var(--color-text-sub);
+  font-weight: 500;
+  color: var(--ink-sub);
 }
 
 .btn-choice:hover {
-  background-color: var(--color-primary-tint);
-  border-color: var(--color-primary);
+  background-color: var(--sun-soft);
+}
+
+.btn-choice:active {
+  box-shadow: 0 0 0 var(--ink);
+  transform: translate(3px, 3px);
 }
 
 .btn-choice[aria-pressed="true"] {
-  background-color: var(--color-primary-tint);
-  border-color: var(--color-primary);
-  box-shadow: inset 0 0 0 2px var(--color-primary);
+  background-color: var(--sun);
 }
 
-/* ---------- 11. シミュレーションの画面 ---------- */
+.btn-choice[aria-pressed="true"] small {
+  color: var(--ink);
+}
+
+.btn-choice[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 9px;
+  height: 16px;
+  margin-top: -10px;
+  border-right: 3.5px solid var(--ink);
+  border-bottom: 3.5px solid var(--ink);
+  transform: rotate(45deg);
+  animation: pop-in 260ms var(--ease-spring);
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: rotate(45deg) scale(0.2); }
+  to   { opacity: 1; transform: rotate(45deg) scale(1); }
+}
+
+/* ---------- 12. シミュレーションの画面 ---------- */
 .sim-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: var(--space-5);
   align-items: start;
 }
 
 .card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--paper);
+  border: var(--line);
   border-radius: var(--radius-m);
+  box-shadow: var(--pop);
 }
 
 .sim-stage {
@@ -665,6 +858,7 @@ svg {
   width: 100%;
   height: auto;
   background-color: #ffffff;
+  border: 2px solid var(--ink);
   border-radius: var(--radius-s);
 }
 
@@ -683,49 +877,60 @@ svg {
 
 .readout > div {
   padding: var(--space-2) var(--space-3);
-  background-color: var(--color-bg);
+  background-color: var(--sun-soft);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-s);
 }
 
 .readout dt {
   font-size: var(--text-caption);
-  color: var(--color-text-sub);
+  font-weight: 700;
+  color: var(--ink-sub);
 }
 
 .readout dd {
   margin: 0;
-  font-size: var(--text-lead);
-  font-weight: 700;
+  font-size: 1.375rem;
+  font-weight: 900;
+  line-height: 1.3;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-/* ガイドのふきだし：操作の結果や、次にすることを話しかける */
+/* 案内役のフラスコと、ふきだし */
 .guide {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: var(--space-3);
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .guide-icon {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  color: var(--color-primary);
-  background-color: var(--color-primary-tint);
+  width: 56px;
+  height: 56px;
+  background-color: var(--sky);
+  border: var(--line);
   border-radius: var(--radius-full);
 }
 
+.guide-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
 .notice {
+  position: relative;
   flex: 1;
   margin: 0;
   padding: var(--space-3) var(--space-4);
-  font-weight: 500;
-  line-height: 1.6;
-  background-color: var(--color-bg);
-  border-radius: 4px var(--radius-m) var(--radius-m) var(--radius-m);
+  font-weight: 700;
+  line-height: 1.65;
+  background-color: var(--paper);
+  border: var(--line);
+  border-radius: var(--radius-m) var(--radius-m) var(--radius-m) 4px;
+  box-shadow: var(--pop-small);
 }
 
 /* 操作パネル */
@@ -736,9 +941,14 @@ svg {
 }
 
 .panel-title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-body);
-  font-weight: 700;
+  display: inline-block;
+  margin: 0 0 var(--space-3);
+  padding: 0 4px;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  background: linear-gradient(transparent 60%, var(--sun) 60%, var(--sun) 94%, transparent 94%);
 }
 
 .panel-title:not(:first-child) {
@@ -747,20 +957,20 @@ svg {
 
 .panel-actions {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin-top: var(--space-4);
 }
 
 .panel-title + .panel-actions {
-  margin-top: var(--space-2);
+  margin-top: 0;
 }
 
 .panel-note {
   margin-top: var(--space-4);
   padding-top: var(--space-3);
   font-size: var(--text-caption);
-  color: var(--color-text-sub);
-  border-top: 1px solid var(--color-border);
+  color: var(--ink-sub);
+  border-top: 2px dashed var(--bg-dot);
 }
 
 .panel-note p {
@@ -768,12 +978,12 @@ svg {
 }
 
 .panel-note strong {
-  color: var(--color-text);
+  color: var(--ink);
 }
 
 .choice-list {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .control + .control {
@@ -789,32 +999,79 @@ svg {
 }
 
 .control-value {
-  color: var(--color-primary);
+  padding: 0 var(--space-2);
+  font-weight: 900;
   font-variant-numeric: tabular-nums;
+  background-color: var(--sun-soft);
+  border-radius: 6px;
 }
 
+/* スライダー：太い線と、黄色い大きなつまみ */
 input[type="range"] {
   display: block;
   width: 100%;
   height: var(--target-min);
   margin: 0;
-  accent-color: var(--color-primary);
+  background: transparent;
   cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-/* ---------- 12. 開いて読む説明（アコーディオン） ---------- */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  background-color: var(--physics-soft);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius-full);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 30px;
+  height: 30px;
+  margin-top: -11px;
+  background-color: var(--sun);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius-full);
+  box-shadow: 2px 2px 0 var(--ink);
+  -webkit-appearance: none;
+  appearance: none;
+  transition: transform var(--duration) var(--ease-spring);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 8px;
+  background-color: var(--physics-soft);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius-full);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  background-color: var(--sun);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius-full);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* ---------- 13. 開いて読む説明（アコーディオン） ---------- */
 .info {
-  margin-top: var(--space-6);
+  margin-top: var(--space-7);
 }
 
 .accordion {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--paper);
+  border: var(--line);
   border-radius: var(--radius-m);
+  box-shadow: var(--pop-small);
 }
 
 .accordion + .accordion {
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .accordion summary {
@@ -822,10 +1079,11 @@ input[type="range"] {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  min-height: 56px;
+  min-height: 60px;
   padding: var(--space-3) var(--space-5);
+  font-family: var(--font-display);
   font-size: var(--text-lead);
-  font-weight: 700;
+  letter-spacing: 0.02em;
   list-style: none;
   cursor: pointer;
   border-radius: var(--radius-m);
@@ -837,13 +1095,13 @@ input[type="range"] {
 
 .accordion summary::after {
   content: "";
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   margin-right: var(--space-1);
-  border-right: 2px solid var(--color-text-sub);
-  border-bottom: 2px solid var(--color-text-sub);
+  border-right: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
   transform: translateY(-3px) rotate(45deg);
-  transition: transform var(--duration) var(--ease-out);
+  transition: transform 200ms var(--ease-spring);
 }
 
 .accordion[open] summary::after {
@@ -851,7 +1109,7 @@ input[type="range"] {
 }
 
 .accordion summary:hover {
-  color: var(--color-primary);
+  background-color: var(--sun-soft);
 }
 
 .accordion-body {
@@ -866,7 +1124,7 @@ input[type="range"] {
   margin-bottom: 0;
 }
 
-/* 手順：番号を丸で示す（順番のある手順だけ） */
+/* 手順：番号を黄色い丸で（順番のある手順だけ） */
 .steps {
   margin: 0;
   padding: 0;
@@ -876,42 +1134,42 @@ input[type="range"] {
 
 .steps li {
   position: relative;
-  padding-left: 44px;
+  padding-left: 48px;
   counter-increment: step;
 }
 
 .steps li::before {
   content: counter(step);
   position: absolute;
-  top: 0.1em;
+  top: 0;
   left: 0;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  font-size: var(--text-caption);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  width: 32px;
+  height: 32px;
+  font-family: var(--font-display);
+  font-size: var(--text-body);
   line-height: 1;
-  color: var(--color-primary);
-  background-color: var(--color-primary-tint);
+  background-color: var(--sun);
+  border: 2.5px solid var(--ink);
   border-radius: var(--radius-full);
 }
 
 .steps li + li {
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .steps + p {
   margin-top: var(--space-4);
 }
 
-/* ---------- 13. フッター ---------- */
+/* ---------- 14. フッター ---------- */
 .site-footer {
-  margin-top: var(--space-7);
+  margin-top: var(--space-8);
   padding: var(--space-5) var(--gutter);
   font-size: var(--text-caption);
-  color: var(--color-text-sub);
+  font-weight: 500;
+  color: var(--ink-sub);
   text-align: center;
 }
 
@@ -919,7 +1177,7 @@ input[type="range"] {
   margin: 0;
 }
 
-/* ---------- 14. 画面の幅による切り替え ---------- */
+/* ---------- 15. 画面の幅による切り替え ---------- */
 @media (min-width: 768px) {
   .page {
     padding: 0 var(--space-5);
@@ -928,15 +1186,25 @@ input[type="range"] {
   .appbar-inner {
     padding: 0 var(--space-4);
   }
-
-  .page-title {
-    font-size: 2rem;
-  }
 }
 
 @media (max-width: 767px) {
   .breadcrumb {
     display: none;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: var(--space-6);
+  }
+
+  .hero-scene {
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .hero .btn {
+    width: 100%;
   }
 }
 
@@ -954,12 +1222,13 @@ input[type="range"] {
   }
 }
 
-/* ---------- 15. 動きを減らす設定の人には、動きを出さない ---------- */
+/* ---------- 16. 動きを減らす設定の人には、動きを出さない ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

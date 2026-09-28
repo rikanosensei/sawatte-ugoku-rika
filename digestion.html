@@ -47,7 +47,7 @@
         <canvas id="board" class="sim-canvas" width="600" height="360" role="img"
             aria-label="デンプン、タンパク質、脂肪を、粒のつながりで表した図。分解されると粒がはなれる。"></canvas>
         <div class="guide">
-          <span class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1V16h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/></svg></span>
+          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
           <p id="msg" class="notice" aria-live="polite">消化酵素のボタンを押してみよう。</p>
         </div>
       </section>
@@ -108,21 +108,21 @@ const canvas = document.getElementById('board');
   canvas.dataset.h = H;
   ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
 
-  const INK = '#1a2533';      // 文字
-  const LINE = '#7f93a8';     // 粒のふち
-  const LINK = '#a9bccf';     // 粒をつなぐ線
-  const RESULT = '#0a5bc4';   // 分解されてできたものの名前
+  const INK = '#1b1b2f';      // 文字
+  const LINE = '#1b1b2f';     // 粒のふち
+  const LINK = '#1b1b2f';     // 粒をつなぐ線
+  const RESULT = '#2446d8';   // 分解されてできたものの名前
   const START_MSG = '消化酵素のボタンを押してみよう。';
 
   // 栄養素ごとの粒の色と、分解の進み具合
   // p：いまの進み具合（0 はつながっている、1 はばらばら）、goal：目指す進み具合
   const rows = [
     { name: 'デンプン', y: 60, after: 'ブドウ糖', p: 0, goal: 0,
-      colors: ['#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1'] },
+      colors: ['#ffd23f', '#ffd23f', '#ffd23f', '#ffd23f', '#ffd23f', '#ffd23f', '#ffd23f'] },
     { name: 'タンパク質', y: 170, after: 'アミノ酸', p: 0, goal: 0,
-      colors: ['#f4b6a6', '#a9c8ec', '#b7e0c4', '#cdbbe6', '#f4b6a6', '#b7e0c4', '#a9c8ec'] },
+      colors: ['#ff7a7a', '#5b9bff', '#35c97a', '#b784ff', '#ff7a7a', '#35c97a', '#5b9bff'] },
     { name: '脂肪', y: 280, after: 'モノグリセリドと脂肪酸', p: 0, goal: 0,
-      colors: ['#ffffff', '#f9cf9f', '#f9cf9f'] }
+      colors: ['#ffffff', '#ffb057', '#ffb057'] }
   ];
   const STARCH = 0;
   const PROTEIN = 1;
@@ -136,7 +136,7 @@ const canvas = document.getElementById('board');
   function drawBead(x, y, color) {
     ctx.fillStyle = color;
     ctx.strokeStyle = LINE;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.arc(x, y, 16, 0, Math.PI * 2);
     ctx.fill();
