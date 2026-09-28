@@ -673,6 +673,33 @@ svg {
   cursor: crosshair;
 }
 
+/* 数値の表示（時間・高さなど） */
+.readout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+}
+
+.readout > div {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-bg);
+  border-radius: var(--radius-s);
+}
+
+.readout dt {
+  font-size: var(--text-caption);
+  color: var(--color-text-sub);
+}
+
+.readout dd {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 /* ガイドのふきだし：操作の結果や、次にすることを話しかける */
 .guide {
   display: flex;

@@ -62,7 +62,7 @@
               <button id="bileBtn" class="btn-choice" aria-pressed="false">胆汁<small>肝臓でつくられる</small></button>
             </div>
             <div class="panel-actions">
-              <button id="resetBtn" class="btn btn-tertiary btn-block" disabled>もとに戻す</button>
+              <button id="resetBtn" class="btn btn-tertiary btn-block">もとに戻す</button>
             </div>
       </div>
     </div>
@@ -88,27 +88,54 @@
   </main>
 
 <script>
-  const canvas = document.getElementById('board');
+const canvas = document.getElementById('board');
   const ctx = canvas.getContext('2d');
   const msg = document.getElementById('msg');
+  const resetBtn = document.getElementById('resetBtn');
+  const choiceButtons = document.querySelectorAll('.btn-choice');
 
-  // キャンバスで使う文字
+  // キャンバスで使う文字（ページと同じ書体）
   const FONT = '"Noto Sans JP", sans-serif';
 
-  // それぞれの栄養素が分解されたかどうか
-  let starchBroken = false;
-  let proteinBroken = false;
-  let fatBroken = false;
+  // 高解像度の画面（タブレットなど）でもくっきり見えるように、画素を細かくする。
+  // 図は W × H の大きさを基準に描く。
+  const W = canvas.width;
+  const H = canvas.height;
+  const RATIO = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * RATIO;
+  canvas.height = H * RATIO;
+  canvas.dataset.w = W;
+  canvas.dataset.h = H;
+  ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
 
-  // 粒の色（配列）
-  const starchColors = ['#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1'];
-  const proteinColors = ['#f4b6a6', '#a9c8ec', '#b7e0c4', '#cdbbe6', '#f4b6a6', '#b7e0c4', '#a9c8ec'];
-  const fatColors = ['#ffffff', '#f9cf9f', '#f9cf9f'];
+  const INK = '#1a2533';      // 文字
+  const LINE = '#7f93a8';     // 粒のふち
+  const LINK = '#a9bccf';     // 粒をつなぐ線
+  const RESULT = '#0a5bc4';   // 分解されてできたものの名前
+  const START_MSG = '消化酵素のボタンを押してみよう。';
+
+  // 栄養素ごとの粒の色と、分解の進み具合
+  // p：いまの進み具合（0 はつながっている、1 はばらばら）、goal：目指す進み具合
+  const rows = [
+    { name: 'デンプン', y: 60, after: 'ブドウ糖', p: 0, goal: 0,
+      colors: ['#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1', '#f6e3a1'] },
+    { name: 'タンパク質', y: 170, after: 'アミノ酸', p: 0, goal: 0,
+      colors: ['#f4b6a6', '#a9c8ec', '#b7e0c4', '#cdbbe6', '#f4b6a6', '#b7e0c4', '#a9c8ec'] },
+    { name: '脂肪', y: 280, after: 'モノグリセリドと脂肪酸', p: 0, goal: 0,
+      colors: ['#ffffff', '#f9cf9f', '#f9cf9f'] }
+  ];
+  const STARCH = 0;
+  const PROTEIN = 1;
+  const FAT = 2;
+
+  // 動きを減らす設定の人には、粒がはなれる様子を動かさずに見せる
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DURATION = 600;    // 粒がはなれきるまでの時間（ミリ秒）
 
   // 粒を1つ描く
   function drawBead(x, y, color) {
     ctx.fillStyle = color;
-    ctx.strokeStyle = '#7f93a8';
+    ctx.strokeStyle = LINE;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.arc(x, y, 16, 0, Math.PI * 2);
@@ -116,84 +143,120 @@
     ctx.stroke();
   }
 
-  // 栄養素を1行描く（name:名前、y:縦の位置、colors:粒の色、broken:分解されたか、after:分解後の名前）
-  function drawRow(name, y, colors, broken, after) {
+  // 栄養素を1行描く
+  function drawRow(row) {
     // 左に名前を書く
-    ctx.fillStyle = '#1a2533';
+    ctx.fillStyle = INK;
     ctx.font = '500 18px ' + FONT;
-    ctx.fillText(name, 20, y + 6);
+    ctx.fillText(row.name, 20, row.y + 6);
 
-    // 分解されたら粒の間を広げる
-    let gap = 40;
-    if (broken) { gap = 60; }
+    // 進み具合を、はじめとおわりがゆっくりになるように変える
+    const k = row.p * row.p * (3 - 2 * row.p);
 
-    // 分解されていなければ、粒をつなぐ線を描く
-    if (!broken) {
-      ctx.strokeStyle = '#a9bccf';
+    // 分解が進むほど、粒の間が広がる
+    const gap = 40 + 20 * k;
+
+    // 粒をつなぐ線は、分解が進むほどうすくなる
+    if (k < 1) {
+      ctx.globalAlpha = 1 - k;
+      ctx.strokeStyle = LINK;
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(150, y);
-      ctx.lineTo(150 + gap * (colors.length - 1), y);
+      ctx.moveTo(150, row.y);
+      ctx.lineTo(150 + gap * (row.colors.length - 1), row.y);
       ctx.stroke();
+      ctx.globalAlpha = 1;
     }
 
     // 粒を1つずつ描く
-    for (let i = 0; i < colors.length; i++) {
-      drawBead(150 + gap * i, y, colors[i]);
+    for (let i = 0; i < row.colors.length; i++) {
+      drawBead(150 + gap * i, row.y, row.colors[i]);
     }
 
     // 分解されたら、何になったかを下に書く
-    if (broken) {
-      ctx.fillStyle = '#1d5fa8';
+    if (k > 0) {
+      ctx.globalAlpha = k;
+      ctx.fillStyle = RESULT;
       ctx.font = '16px ' + FONT;
-      ctx.fillText('→ ' + after, 150, y + 42);
+      ctx.fillText('→ ' + row.after, 150, row.y + 42);
+      ctx.globalAlpha = 1;
     }
   }
 
   // 画面全体を描き直す
   function drawAll() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawRow('デンプン', 60, starchColors, starchBroken, 'ブドウ糖');
-    drawRow('タンパク質', 170, proteinColors, proteinBroken, 'アミノ酸');
-    drawRow('脂肪', 280, fatColors, fatBroken, 'モノグリセリドと脂肪酸');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    rows.forEach(drawRow);
   }
 
-  const resetBtn = document.getElementById('resetBtn');
-  const choiceButtons = document.querySelectorAll('.btn-choice');
+  // 粒がはなれる様子を、少しずつ描く
+  let animating = false;
+  let lastTime = null;
 
-  // ボタンを「選んだ」状態にして、もとに戻すボタンを押せるようにする
+  function tick(time) {
+    if (lastTime === null) { lastTime = time; }
+    const step = (time - lastTime) / DURATION;
+    lastTime = time;
+
+    rows.forEach(function (row) {
+      if (row.p < row.goal) { row.p = Math.min(row.goal, row.p + step); }
+      if (row.p > row.goal) { row.p = Math.max(row.goal, row.p - step); }
+    });
+    drawAll();
+
+    const moving = rows.some(function (row) { return row.p !== row.goal; });
+    if (moving) {
+      requestAnimationFrame(tick);
+    } else {
+      animating = false;
+      lastTime = null;
+    }
+  }
+
+  // 栄養素を分解する
+  function breakDown(index) {
+    rows[index].goal = 1;
+    if (reduceMotion) {
+      rows[index].p = 1;
+      drawAll();
+      return;
+    }
+    if (!animating) {
+      animating = true;
+      lastTime = null;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  // ボタンを「選んだ」状態にする
   function markChosen(button) {
     button.setAttribute('aria-pressed', 'true');
-    resetBtn.disabled = false;
   }
 
   // 酵素のボタン
   document.getElementById('amylaseBtn').addEventListener('click', function () {
-    starchBroken = true;
     markChosen(this);
+    breakDown(STARCH);
     msg.textContent = 'アミラーゼがデンプンを分解した！（最終的にはブドウ糖になる）';
-    drawAll();
   });
 
   document.getElementById('pepsinBtn').addEventListener('click', function () {
-    proteinBroken = true;
     markChosen(this);
+    breakDown(PROTEIN);
     msg.textContent = 'ペプシンがタンパク質を分解した！（最終的にはアミノ酸になる）';
-    drawAll();
   });
 
   document.getElementById('trypsinBtn').addEventListener('click', function () {
-    proteinBroken = true;
     markChosen(this);
+    breakDown(PROTEIN);
     msg.textContent = 'トリプシンがタンパク質を分解した！（最終的にはアミノ酸になる）';
-    drawAll();
   });
 
   document.getElementById('lipaseBtn').addEventListener('click', function () {
-    fatBroken = true;
     markChosen(this);
+    breakDown(FAT);
     msg.textContent = 'リパーゼが脂肪を分解した！（モノグリセリドと脂肪酸になる）';
-    drawAll();
   });
 
   document.getElementById('bileBtn').addEventListener('click', function () {
@@ -201,14 +264,18 @@
     msg.textContent = '胆汁は消化酵素をふくまないので、分解はしない。脂肪を細かい粒にして、分解を助ける。';
   });
 
-  // もとに戻す
+  // もとに戻す（まだ何も選んでいないときは、何をすればよいかを伝える）
   resetBtn.addEventListener('click', function () {
-    starchBroken = false;
-    proteinBroken = false;
-    fatBroken = false;
+    const chosen = Array.prototype.some.call(choiceButtons, function (b) {
+      return b.getAttribute('aria-pressed') === 'true';
+    });
+    if (!chosen) {
+      msg.textContent = 'まだ何も選んでいません。消化酵素のボタンを押してみよう。';
+      return;
+    }
+    rows.forEach(function (row) { row.p = 0; row.goal = 0; });
     choiceButtons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
-    resetBtn.disabled = true;
-    msg.textContent = '消化酵素のボタンを押してみよう。';
+    msg.textContent = START_MSG;
     drawAll();
   });
 

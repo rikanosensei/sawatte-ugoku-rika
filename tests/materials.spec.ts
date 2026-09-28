@@ -9,7 +9,8 @@ async function canvasImage(page: Page) {
 async function toScreen(page: Page, x: number, y: number) {
   const canvas = page.locator('#board');
   const box = await canvas.boundingBox();
-  const size = await canvas.evaluate((c: HTMLCanvasElement) => ({ w: c.width, h: c.height }));
+  // 高解像度の画面では画素を細かくしているので、図の基準の大きさ（data-w / data-h）を使う
+  const size = await canvas.evaluate((c: HTMLCanvasElement) => ({ w: Number(c.dataset.w), h: Number(c.dataset.h) }));
   if (!box) throw new Error('キャンバスが表示されていない');
   return { x: box.x + (x * box.width) / size.w, y: box.y + (y * box.height) / size.h };
 }
@@ -32,20 +33,43 @@ test.describe('鏡にうつる像と光の反射', () => {
   test('ボタンで光の道筋をかき、すべて消せる', async ({ page }) => {
     const reset = page.getByRole('button', { name: '線をすべて消す' });
     const msg = page.locator('#msg');
-    await expect(reset).toBeDisabled();
-
     const before = await canvasImage(page);
+
+    // まだ線がないときに押すと、何をすればよいかが出る
+    await reset.click();
+    await expect(msg).toContainText('消す線はまだありません');
+
     await page.getByRole('button', { name: '頭の先からの光' }).click();
     await expect(msg).toContainText('頭の先から出た光');
-    await page.getByRole('button', { name: 'つま先からの光' }).click();
-    await expect(msg).toContainText('つま先から出た光');
-    await expect(reset).toBeEnabled();
+    await page.getByRole('button', { name: '足もとからの光' }).click();
+    await expect(msg).toContainText('足もとから出た光');
     expect(await canvasImage(page)).not.toBe(before);
 
     await reset.click();
-    await expect(reset).toBeDisabled();
     await expect(msg).toContainText('ドラッグしよう');
     expect(await canvasImage(page)).toBe(before);
+  });
+
+  test('頭の先と足もとの光が鏡に当たる点の間は、距離によらず身長の半分', async ({ page }) => {
+    for (const [height, distance] of [[160, 50], [160, 100], [160, 200], [120, 80], [190, 150]]) {
+      await page.getByLabel('身長').fill(String(height));
+      await page.getByLabel('鏡からの距離').fill(String(distance));
+      // ページの中の計算（getPositions / targetOf）を使って、光が鏡に当たる高さを求める
+      const lengthCm = await page.evaluate(() => {
+        const w = window as unknown as {
+          getPositions: () => { eyeX: number; eyeY: number };
+          targetOf: (p: { part: string }, pos: object) => { x: number; y: number };
+        };
+        const pos = w.getPositions();
+        const hitY = (part: string) => {
+          const t = w.targetOf({ part }, pos);
+          const k = (480 - pos.eyeX) / (t.x - pos.eyeX);   // 480 は鏡の位置
+          return pos.eyeY + k * (t.y - pos.eyeY);
+        };
+        return (hitY('foot') - hitY('head')) / 2;          // 1cm を 2px で描いている
+      });
+      expect(lengthCm, `身長${height}cm・距離${distance}cm`).toBeCloseTo(height / 2, 5);
+    }
   });
 
   test('目から像に向かってドラッグすると線が引ける', async ({ page }) => {
@@ -59,7 +83,6 @@ test.describe('鏡にうつる像と光の反射', () => {
     await page.mouse.up();
 
     await expect(page.locator('#msg')).toContainText('光の道筋をかいた');
-    await expect(page.getByRole('button', { name: '線をすべて消す' })).toBeEnabled();
   });
 
   test('鏡の手前で指を離すと、のばすように案内が出る', async ({ page }) => {
@@ -72,7 +95,6 @@ test.describe('鏡にうつる像と光の反射', () => {
     await page.mouse.up();
 
     await expect(page.locator('#msg')).toContainText('鏡の向こう側');
-    await expect(page.getByRole('button', { name: '線をすべて消す' })).toBeDisabled();
   });
 });
 
@@ -105,19 +127,21 @@ test.describe('消化酵素のはたらき', () => {
     await page.getByRole('button', { name: /^胆汁/ }).click();
     expect(await canvasImage(page)).toBe(before);
     await page.getByRole('button', { name: /^リパーゼ/ }).click();
-    expect(await canvasImage(page)).not.toBe(before);
+    await expect.poll(() => canvasImage(page)).not.toBe(before); // 粒は少しずつはなれる
   });
 
   test('もとに戻すと、選んだ状態と図が最初に戻る', async ({ page }) => {
     const reset = page.getByRole('button', { name: 'もとに戻す' });
-    await expect(reset).toBeDisabled();
     const before = await canvasImage(page);
+
+    // まだ何も選んでいないときに押すと、何をすればよいかが出る
+    await reset.click();
+    await expect(page.locator('#msg')).toContainText('まだ何も選んでいません');
 
     await page.getByRole('button', { name: /^アミラーゼ/ }).click();
     await page.getByRole('button', { name: /^ペプシン/ }).click();
     await reset.click();
 
-    await expect(reset).toBeDisabled();
     await expect(page.locator('.btn-choice[aria-pressed="true"]')).toHaveCount(0);
     await expect(page.locator('#msg')).toHaveText('消化酵素のボタンを押してみよう。');
     expect(await canvasImage(page)).toBe(before);
@@ -137,9 +161,55 @@ test.describe('落下運動と反発係数', () => {
     await expect(page.locator('#eValue')).toHaveText('0.5');
   });
 
-  test('スタートを押すとボールが落ちる', async ({ page }) => {
+  test('スタートを押すとボールが落ち、時間と高さの表示が変わる', async ({ page }) => {
     const before = await canvasImage(page);
     await page.getByRole('button', { name: 'スタート' }).click();
     await expect.poll(() => canvasImage(page)).not.toBe(before);
+    await expect.poll(async () => Number(await page.locator('#timeValue').textContent())).toBeGreaterThan(0);
+    await expect.poll(async () => Number(await page.locator('#heightValue').textContent())).toBeLessThan(2.7);
   });
+
+  test('反発係数が0なら、弾まずに止まる', async ({ page }) => {
+    await page.getByLabel('重力の強さ').fill('2.5');
+    await page.getByLabel('反発係数').fill('0');
+    await page.getByRole('button', { name: 'スタート' }).click();
+    await expect(page.locator('#msg')).toContainText('弾まずに止まった');
+    await expect(page.locator('#bounceValue')).toHaveText('0');
+    await expect(page.locator('#heightValue')).toHaveText('0.00');
+  });
+
+  test('反発係数が1より小さいと、何回か弾んで止まる', async ({ page }) => {
+    await page.getByLabel('重力の強さ').fill('2.5');
+    await page.getByLabel('反発係数').fill('0.5');
+    await page.getByRole('button', { name: 'スタート' }).click();
+    await expect(page.locator('#msg')).toContainText('回弾んだ', { timeout: 10000 });
+    expect(Number(await page.locator('#bounceValue').textContent())).toBeGreaterThan(2);
+  });
+
+  test('反発係数が1なら、弾んでも最初の高さまでもどる', async ({ page }) => {
+    await page.getByLabel('重力の強さ').fill('2.5');
+    await page.getByLabel('反発係数').fill('1');
+    await page.getByRole('button', { name: 'スタート' }).click();
+    await expect(page.locator('#bounceValue')).toHaveText('1');
+
+    // 1回弾んだあと、しばらく高さを見て、いちばん高いところを調べる
+    let highest = 0;
+    for (let i = 0; i < 40; i++) {
+      highest = Math.max(highest, Number(await page.locator('#heightValue').textContent()));
+      await page.waitForTimeout(30);
+    }
+    expect(highest).toBeGreaterThan(2.6);
+    expect(highest).toBeLessThanOrEqual(2.7);
+  });
+});
+
+test('キャンバスは、画面の細かさに合わせてくっきり描かれる', async ({ page }) => {
+  await page.goto('fall.html');
+  const info = await page.locator('#board').evaluate((c: HTMLCanvasElement) => ({
+    width: c.width,
+    base: Number(c.dataset.w),
+    ratio: Math.min(window.devicePixelRatio || 1, 2),
+  }));
+  expect(info.base).toBe(600);
+  expect(info.width).toBe(600 * info.ratio);
 });

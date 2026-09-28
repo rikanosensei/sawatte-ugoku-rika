@@ -45,10 +45,15 @@
     <div class="sim-layout">
       <section class="card sim-stage" aria-label="シミュレーション">
         <canvas id="board" class="sim-canvas" width="600" height="360" role="img"
-            aria-label="床の上にボールがあり、左に高さのものさしがある図。スタートを押すと、ボールが落ちて弾む。"></canvas>
+            aria-label="左に高さのものさしとボール、右に高さと時間のグラフがある図。スタートを押すと、ボールが落ちて弾み、グラフに高さの変わり方がかかれる。"></canvas>
+        <dl class="readout">
+          <div><dt>時間</dt><dd><span id="timeValue">0.0</span> 秒</dd></div>
+          <div><dt>高さ</dt><dd><span id="heightValue">2.70</span> m</dd></div>
+          <div><dt>弾んだ回数</dt><dd><span id="bounceValue">0</span> 回</dd></div>
+        </dl>
         <div class="guide">
           <span class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1V16h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/></svg></span>
-          <p class="notice">条件を決めて、スタートを押してみよう。</p>
+          <p id="msg" class="notice" aria-live="polite">条件を決めて、スタートを押してみよう。</p>
         </div>
       </section>
 
@@ -74,7 +79,8 @@
         <div class="accordion-body">
           <ol class="steps">
               <li>重力の強さと反発係数を決めて、スタートを押す。</li>
-              <li>重力の強さだけを変えて、落ちる速さや弾む回数がどう変わるか比べる。</li>
+              <li>右のグラフで、ボールの高さが時間とともにどう変わるかを見る。</li>
+              <li>重力の強さだけを変えて、落ちる速さやグラフの山の形がどう変わるか比べる。</li>
               <li>反発係数を0や1にして、弾み方がどう変わるか比べる。</li>
           </ol>
         </div>
@@ -82,91 +88,259 @@
       <details class="accordion">
         <summary>このモデルについて</summary>
         <div class="accordion-body prose">
-          <p>重力の強さは、地球を1としたときの倍率です。月はおよそ6分の1、木星はおよそ2.5倍です。1mを100pxとして、実際の重力加速度（地球では9.8 m/s²）で計算しているので、落ちる速さは本物と同じです。ボールは、下の端が床から2.7mの高さから落ちます。空気の抵抗は考えていません。また、短い時間ごとに区切って計算する近似なので、反発係数を1にしても、弾む高さが少しずつ変わることがあります。</p>
+          <p>重力の強さは、地球を1としたときの倍率です。月はおよそ6分の1、木星はおよそ2.5倍です。1mを100pxとして、実際の重力加速度（地球では9.8 m/s²）で計算しているので、落ちる速さは本物と同じです。ボールは、下の端が床から2.7mの高さから落ちます。空気の抵抗は考えていません。表示している高さも、ボールの下の端の高さです。ボールが床に当たる瞬間を計算で求めているので、反発係数を1にすると、いつまでも同じ高さまで弾みます。はね返る速さがとても小さくなったら、止まったものとしています。</p>
         </div>
       </details>
     </div>
   </main>
 
 <script>
-  const canvas = document.getElementById('board');
+const canvas = document.getElementById('board');
   const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
   const gSlider = document.getElementById('gSlider');
   const gValue = document.getElementById('gValue');
   const eSlider = document.getElementById('eSlider');
   const eValue = document.getElementById('eValue');
   const startBtn = document.getElementById('startBtn');
+  const timeValue = document.getElementById('timeValue');
+  const heightValue = document.getElementById('heightValue');
+  const bounceValue = document.getElementById('bounceValue');
 
+  // キャンバスで使う文字（ページと同じ書体）
   const FONT = '"Noto Sans JP", sans-serif';
-  const PX_PER_M = 100;  // 縮尺：1m を 100px で描く
-  const G_EARTH = 9.8;   // 地球の重力加速度（m/s²）
-  const R = 20;          // ボールの半径
-  const GROUND = 330;    // 地面の高さ（縦の位置）
-  const START_Y = 40;    // 落とし始める位置（ボールの下の端が床から2.7m）
 
-  let y = START_Y;       // ボールの縦の位置（px）
-  let v = 0;             // ボールの速さ（px/秒）
-  let running = false;   // 動いている最中かどうか
-  let last = null;       // 前のコマの時刻
+  // 高解像度の画面（タブレットなど）でもくっきり見えるように、画素を細かくする。
+  // 図は W × H の大きさを基準に描く。
+  const W = canvas.width;
+  const H = canvas.height;
+  const RATIO = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * RATIO;
+  canvas.height = H * RATIO;
+  canvas.dataset.w = W;
+  canvas.dataset.h = H;
+  ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
 
-  // 地面・ものさし・ボールを描く
-  function drawBall() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const PX_PER_M = 100;    // 縮尺：1m を 100px で描く
+  const G_EARTH = 9.8;     // 地球の重力加速度（m/s²）
+  const R = 20;            // ボールの半径（px）
+  const GROUND = 330;      // 床の位置（px）
+  const START_H = 2.7;     // 落とし始める高さ（ボールの下の端、m）
+  const BALL_X = 110;      // ボールの横の位置（px）
+  const GRAPH_LEFT = 200;  // グラフの左の端（px）
+  const GRAPH_RIGHT = 580; // グラフの右の端（px）
+  const GRAPH_SECONDS = 8; // グラフに入る時間（秒）
+  const REST_SPEED = 0.05; // これより遅くはね返ったら、止まったとみなす（m/秒）
 
-    // 地面
+  // 色
+  const INK = '#1a2533';
+  const SUB = '#4f555e';
+  const LINE = '#7f93a8';
+  const GRID = '#e3ecf6';
+  const TRACE = '#0a5bc4';
+
+  let h = START_H;     // ボールの下の端の高さ（m）
+  let v = 0;           // ボールの速さ（m/秒、上向きをプラス）
+  let t = 0;           // 落とし始めてからの時間（秒）
+  let bounces = 0;     // 弾んだ回数
+  let running = false; // 動いている最中かどうか
+  let last = null;     // 前のコマの時刻
+  let trace = [[0, START_H]]; // グラフにかく記録 [時間, 高さ]
+
+  // 高さ（m）を、キャンバスの縦の位置（px）に直す
+  function yOf(height) {
+    return GROUND - height * PX_PER_M;
+  }
+
+  // 時間（秒）を、グラフの横の位置（px）に直す
+  function graphStart() {
+    return Math.max(0, t - GRAPH_SECONDS);
+  }
+  function xOf(time) {
+    return GRAPH_LEFT + (time - graphStart()) / GRAPH_SECONDS * (GRAPH_RIGHT - GRAPH_LEFT);
+  }
+
+  // ===== 描画 =====
+  function draw() {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+
+    // 0.5m ごとの横線（ボールとグラフの高さを見くらべるため）
+    ctx.strokeStyle = GRID;
+    ctx.lineWidth = 1;
+    for (let m = 0.5; m <= 3; m += 0.5) {
+      ctx.beginPath();
+      ctx.moveTo(0, yOf(m) + 0.5);
+      ctx.lineTo(GRAPH_RIGHT, yOf(m) + 0.5);
+      ctx.stroke();
+    }
+
+    // 床
     ctx.fillStyle = '#eef5fc';
-    ctx.fillRect(0, GROUND, canvas.width, canvas.height - GROUND);
+    ctx.fillRect(0, GROUND, W, H - GROUND);
     ctx.strokeStyle = '#a9bccf';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, GROUND);
-    ctx.lineTo(canvas.width, GROUND);
+    ctx.lineTo(W, GROUND);
     ctx.stroke();
 
-    // 左のものさし（0.5mごとに目盛り、1mごとに数字）
-    ctx.strokeStyle = '#7f93a8';
-    ctx.fillStyle = '#4d5b6b';
+    // 左のものさし（0.5m ごとに目盛り、1m ごとに数字）
+    ctx.strokeStyle = LINE;
+    ctx.fillStyle = SUB;
     ctx.lineWidth = 1.5;
     ctx.font = '14px ' + FONT;
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     for (let m = 0.5; m <= 3; m += 0.5) {
-      const my = GROUND - m * PX_PER_M;
       const len = (m % 1 === 0) ? 14 : 7;
       ctx.beginPath();
-      ctx.moveTo(0, my);
-      ctx.lineTo(len, my);
+      ctx.moveTo(0, yOf(m));
+      ctx.lineTo(len, yOf(m));
       ctx.stroke();
       if (m % 1 === 0) {
-        ctx.fillText(m + ' m', 20, my);
+        ctx.fillText(m + ' m', 20, yOf(m));
       }
     }
-    ctx.textBaseline = 'alphabetic';
 
     // ボール
     ctx.fillStyle = '#f4b6a6';
-    ctx.strokeStyle = '#7f93a8';
+    ctx.strokeStyle = LINE;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(canvas.width / 2, y, R, 0, Math.PI * 2);
+    ctx.arc(BALL_X, yOf(h) - R, R, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
+
+    drawGraph();
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // 高さと時間のグラフ
+  function drawGraph() {
+    // 縦の軸
+    ctx.strokeStyle = LINE;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(GRAPH_LEFT, yOf(3));
+    ctx.lineTo(GRAPH_LEFT, GROUND);
+    ctx.stroke();
+
+    // 時間の目盛り（1秒ごと、2秒ごとに数字）
+    ctx.fillStyle = SUB;
+    ctx.font = '14px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const start = graphStart();
+    for (let s = Math.ceil(start); s <= start + GRAPH_SECONDS; s++) {
+      const x = xOf(s);
+      ctx.beginPath();
+      ctx.moveTo(x, GROUND);
+      ctx.lineTo(x, GROUND + 6);
+      ctx.stroke();
+      if (s % 2 === 0) {
+        ctx.fillText(s + ' 秒', x, GROUND + 9);
+      }
+    }
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('高さと時間のグラフ', GRAPH_RIGHT, yOf(3) - 6);
+    ctx.textAlign = 'left';
+
+    // 記録した高さを線でつなぐ
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(GRAPH_LEFT, 0, GRAPH_RIGHT - GRAPH_LEFT, GROUND + 1);
+    ctx.clip();
+    ctx.strokeStyle = TRACE;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    trace.forEach(function (point, i) {
+      const x = xOf(point[0]);
+      const y = yOf(point[1]);
+      if (i === 0) { ctx.moveTo(x, y); } else { ctx.lineTo(x, y); }
+    });
+    ctx.stroke();
+
+    // いまの点
+    ctx.fillStyle = TRACE;
+    ctx.beginPath();
+    ctx.arc(xOf(t), yOf(h), 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 時間・高さ・弾んだ回数の表示を変える
+  function showNumbers() {
+    timeValue.textContent = t.toFixed(1);
+    heightValue.textContent = h.toFixed(2);
+    bounceValue.textContent = bounces;
+  }
+
+  // ===== 動きの計算 =====
+  // dt 秒だけ進める。床に当たる瞬間を式で求めるので、コマの間で床にめりこまない。
+  function step(dt) {
+    const g = G_EARTH * Number(gSlider.value);  // 重力加速度（m/s²）
+    const e = Number(eSlider.value);            // 反発係数
+    let remain = dt;
+
+    for (let i = 0; i < 20 && remain > 0; i++) {
+      // 床に着くまでの時間 τ を求める（h + v×τ − ½×g×τ² = 0 を解く）
+      const toGround = (v + Math.sqrt(v * v + 2 * g * h)) / g;
+
+      if (toGround > remain) {
+        // このコマの間は床に着かない
+        h = h + v * remain - g * remain * remain / 2;  // 位置は、速さと重力で変わる
+        v = v - g * remain;                            // 速さは、重力加速度 × 時間 だけ下向きに増える
+        t += remain;
+        remain = 0;
+      } else {
+        // 床に着いて、はね返る
+        t += toGround;
+        remain -= toGround;
+        const impact = v - g * toGround;  // 床に当たる直前の速さ（下向きなのでマイナス）
+        h = 0;
+        v = -impact * e;                  // はね返る速さは、当たる速さ × 反発係数
+        trace.push([t, 0]);
+        if (v < REST_SPEED) {
+          v = 0;
+          stop();
+          return;
+        }
+        bounces += 1;
+      }
+    }
+    trace.push([t, h]);
+
+    // グラフから外れた古い記録は捨てる
+    while (trace.length > 2 && trace[1][0] < graphStart()) {
+      trace.shift();
+    }
+  }
+
+  // ボールが止まったとき
+  function stop() {
+    running = false;
+    if (bounces === 0) {
+      msg.textContent = 'ボールは弾まずに止まった。反発係数を大きくしてみよう。';
+    } else {
+      msg.textContent = 'ボールが止まった。' + bounces + '回弾んだよ。グラフの山の高さがどう変わったか見てみよう。';
+    }
   }
 
   // 1コマ分動かす（time は、ブラウザが渡してくれる今の時刻・ミリ秒）
   function update(time) {
+    if (!running) { return; }
     if (last === null) { last = time; }
     let dt = (time - last) / 1000;   // 前のコマから何秒たったか
     last = time;
     if (dt > 0.05) { dt = 0.05; }    // 別のタブを見ていた後などに、一気に進みすぎないように
 
-    const g = G_EARTH * Number(gSlider.value) * PX_PER_M;  // 重力加速度（px/秒²）
-    const e = Number(eSlider.value);
-    v = v + g * dt;    // 速さは、重力加速度 × 時間 だけ増える
-    y = y + v * dt;    // 位置は、速さ × 時間 だけ進む
-    if (y > GROUND - R) { y = GROUND - R; v = -v * e; }
-
-    drawBall();
-    requestAnimationFrame(update);
+    step(dt);
+    showNumbers();
+    draw();
+    if (running) { requestAnimationFrame(update); }
   }
 
   // スライダーを動かしたら数値の表示を変える
@@ -177,11 +351,16 @@
     eValue.textContent = eSlider.value;
   });
 
-  // スタートボタンを押したら最初の位置から落とす
+  // スタートボタンを押したら、最初の位置から落とす
   startBtn.addEventListener('click', function () {
-    y = START_Y;
+    h = START_H;
     v = 0;
+    t = 0;
+    bounces = 0;
+    trace = [[0, START_H]];
     last = null;
+    msg.textContent = 'ボールを落とした。右のグラフで、高さが時間とともにどう変わるか見てみよう。';
+    showNumbers();
     if (!running) {
       running = true;
       requestAnimationFrame(update);
@@ -190,9 +369,9 @@
 
   // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
   // （キャンバスの文字は、描くまでフォントが読み込まれないため）
-  drawBall();
-  document.fonts.load('14px ' + FONT, '0123 m').finally(function () {
-    if (!running) { drawBall(); }
+  draw();
+  document.fonts.load('14px ' + FONT, '0123456789 m秒高さと時間のグラフ').finally(function () {
+    if (!running) { draw(); }
   });
 </script>
 

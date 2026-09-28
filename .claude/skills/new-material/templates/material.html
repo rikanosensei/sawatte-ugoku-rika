@@ -97,6 +97,17 @@
   // キャンバスで使う文字（ページと同じ書体）
   const FONT = '"Noto Sans JP", sans-serif';
 
+  // 高解像度の画面（タブレットなど）でもくっきり見えるように、画素を細かくする。
+  // 図は W × H の大きさを基準に描く（canvas.width は使わない）。
+  const W = canvas.width;
+  const H = canvas.height;
+  const RATIO = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * RATIO;
+  canvas.height = H * RATIO;
+  canvas.dataset.w = W;
+  canvas.dataset.h = H;
+  ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
+
   // 色（ほかの教材とそろえる）
   const INK = '#1a2533';  // 文字
   const LINE = '#7f93a8'; // 線
@@ -104,7 +115,7 @@
   // 画面全体を描き直す
   function draw() {
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, W, H);
 
     // {{ここに図を描く}}
     ctx.fillStyle = INK;
