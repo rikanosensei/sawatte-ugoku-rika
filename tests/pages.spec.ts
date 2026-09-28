@@ -22,7 +22,7 @@ for (const path of PAGES) {
 
       const res = await page.goto(path);
       expect(res?.status()).toBe(200);
-      await expect(page).toHaveTitle(/俺の理科教材/);
+      await expect(page).toHaveTitle(/さわってうごく理科教材/);
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('h1')).toBeVisible();
       await page.waitForLoadState('networkidle');

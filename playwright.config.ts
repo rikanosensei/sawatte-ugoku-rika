@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * 俺の理科教材のテスト設定
+ * さわってうごく理科教材のテスト設定
  * https://playwright.dev/docs/test-configuration
  *
  * テストのときだけ、サイトを http://localhost:4173 で開く。
