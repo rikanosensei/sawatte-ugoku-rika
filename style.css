@@ -868,25 +868,6 @@ svg {
   padding: var(--space-3);
 }
 
-/* 紙ふぶき（できたときのお祝い） */
-.confetti {
-  position: absolute;
-  top: 35%;
-  z-index: 1;
-  width: 10px;
-  height: 14px;
-  border: 2px solid var(--ink);
-  border-radius: 3px;
-  pointer-events: none;
-  animation: confetti 1.5s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
-}
-
-@keyframes confetti {
-  0%   { opacity: 1; transform: translate(0, 0) rotate(0) scale(0.4); }
-  20%  { opacity: 1; transform: translate(calc(var(--dx) * 0.4), -120px) rotate(calc(var(--rot) * 0.3)) scale(1); }
-  100% { opacity: 0; transform: translate(var(--dx), 260px) rotate(var(--rot)) scale(1); }
-}
-
 /* ふきだしが変わったら、ぽんと出る */
 .notice.pop {
   animation: bubble-pop 320ms var(--ease-spring);

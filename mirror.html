@@ -143,24 +143,6 @@ const canvas = document.getElementById('board');
     }
   }
 
-  // 紙ふぶきを飛ばす
-  function celebrate() {
-    if (reduceMotion) { return; }
-    const stage = canvas.closest('.sim-stage');
-    const colors = ['#ffd23f', '#ff5fa2', '#3d7bff', '#2ec66a', '#b65cff', '#ff8a2a'];
-    for (let i = 0; i < 40; i++) {
-      const piece = document.createElement('span');
-      piece.className = 'confetti';
-      piece.setAttribute('aria-hidden', 'true');
-      piece.style.left = (10 + Math.random() * 80) + '%';
-      piece.style.backgroundColor = colors[i % colors.length];
-      piece.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
-      piece.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
-      piece.style.animationDelay = (Math.random() * 0.2) + 's';
-      piece.addEventListener('animationend', function () { piece.remove(); });
-      stage.appendChild(piece);
-    }
-  }
 
   const S = 2;            // 縮尺：1cm を 2px で描く
   const GROUND_Y = 440;   // 床の高さ
@@ -223,7 +205,6 @@ const canvas = document.getElementById('board');
     if (!celebrated && paths.some(reachesHead) && paths.some(reachesFoot)) {
       celebrated = true;
       say('やった！頭の先と足もと、両方の光がかけた。2つの光が鏡に当たった点の間を、方眼で数えてみよう。', true);
-      celebrate();
     } else {
       say(message);
     }

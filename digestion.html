@@ -125,24 +125,6 @@ const canvas = document.getElementById('board');
     }
   }
 
-  // 紙ふぶきを飛ばす
-  function celebrate() {
-    if (reduceMotion) { return; }
-    const stage = canvas.closest('.sim-stage');
-    const colors = ['#ffd23f', '#ff5fa2', '#3d7bff', '#2ec66a', '#b65cff', '#ff8a2a'];
-    for (let i = 0; i < 40; i++) {
-      const piece = document.createElement('span');
-      piece.className = 'confetti';
-      piece.setAttribute('aria-hidden', 'true');
-      piece.style.left = (10 + Math.random() * 80) + '%';
-      piece.style.backgroundColor = colors[i % colors.length];
-      piece.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
-      piece.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
-      piece.style.animationDelay = (Math.random() * 0.2) + 's';
-      piece.addEventListener('animationend', function () { piece.remove(); });
-      stage.appendChild(piece);
-    }
-  }
 
   const INK = '#1b1b2f';      // 文字・線
   const RESULT = '#2446d8';   // 分解されてできたものの名前
@@ -340,7 +322,6 @@ const canvas = document.getElementById('board');
   function afterBreak(message) {
     if (rows.every(function (row) { return row.broken; })) {
       say(message + ' これで3つの栄養素が全部分解された！', true);
-      celebrate();
     } else {
       say(message, true);
     }
