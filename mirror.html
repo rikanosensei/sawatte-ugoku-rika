@@ -179,7 +179,6 @@ const canvas = document.getElementById('board');
   let drawing = false;     // 線を引いている最中かどうか
   let pointer = { x: 0, y: 0 };
   let celebrated = false;  // 頭の先と足もとの両方をかいて、お祝いしたかどうか
-  let looping = false;     // 光の粒を動かしている最中かどうか
   const START_MSG = '自分の目（黒い点）から、鏡にうつる像の頭の先や足もとに向かってドラッグしよう。';
 
   // ===== 位置の計算 =====
@@ -228,24 +227,7 @@ const canvas = document.getElementById('board');
     } else {
       say(message);
     }
-    startLoop();
     draw();
-  }
-
-  // 光の粒を動かし続ける（線があるあいだだけ）
-  function startLoop() {
-    if (looping || reduceMotion) { return; }
-    looping = true;
-    requestAnimationFrame(loop);
-  }
-  function loop(time) {
-    if (paths.length === 0) {
-      looping = false;
-      draw();
-      return;
-    }
-    draw(time);
-    requestAnimationFrame(loop);
   }
 
   // 画面上の位置を、キャンバスの座標に直す（キャンバスが縮小されていてもずれないように）
@@ -258,8 +240,7 @@ const canvas = document.getElementById('board');
   }
 
   // ===== 描画 =====
-  // time があるときは、光の道筋の上を光の粒が進む
-  function draw(time) {
+  function draw() {
     const pos = getPositions();
 
     ctx.fillStyle = '#ffffff';
@@ -274,7 +255,7 @@ const canvas = document.getElementById('board');
     // 記録した線
     paths.forEach(function (p) {
       const t = targetOf(p, pos);
-      drawReflection(pos.eyeX, pos.eyeY, t.x, t.y, LIGHT, time);
+      drawReflection(pos.eyeX, pos.eyeY, t.x, t.y, LIGHT);
     });
 
     // ドラッグ中の線
@@ -473,7 +454,7 @@ const canvas = document.getElementById('board');
   }
 
   // 目から鏡にうつる像の点(tx, ty)を見たときの、光の道筋を描く
-  function drawReflection(eyeX, eyeY, tx, ty, color, time) {
+  function drawReflection(eyeX, eyeY, tx, ty, color) {
     const t = (MIRROR_X - eyeX) / (tx - eyeX);
     const hitY = eyeY + t * (ty - eyeY);   // 鏡で反射する点の高さ
     const realX = MIRROR_X * 2 - tx;        // 鏡にうつる像の点に対応する、自分の体の点
@@ -508,35 +489,6 @@ const canvas = document.getElementById('board');
     ctx.beginPath();
     ctx.arc(realX, ty, 5, 0, Math.PI * 2);
     ctx.fill();
-
-    // 光の粒：体の点 → 鏡 → 目 の向きに進む
-    if (time !== undefined) {
-      const a = Math.hypot(MIRROR_X - realX, hitY - ty);
-      const b = Math.hypot(eyeX - MIRROR_X, eyeY - hitY);
-      for (let k = 0; k < 3; k++) {
-        const s = ((time / 1600 + k / 3) % 1) * (a + b);
-        let px;
-        let py;
-        if (s < a) {
-          px = realX + (MIRROR_X - realX) * s / a;
-          py = ty + (hitY - ty) * s / a;
-        } else {
-          px = MIRROR_X + (eyeX - MIRROR_X) * (s - a) / b;
-          py = hitY + (eyeY - hitY) * (s - a) / b;
-        }
-        ctx.save();
-        ctx.shadowColor = '#ffd23f';
-        ctx.shadowBlur = 12;
-        ctx.fillStyle = '#fffbe0';
-        ctx.strokeStyle = LIGHT;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(px, py, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
   }
 
   // ===== 操作（マウス・タッチ・ペン共通） =====
