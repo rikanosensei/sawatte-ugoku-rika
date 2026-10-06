@@ -254,7 +254,7 @@ test.describe('イカの解剖', () => {
     await expect(msg(page)).toContainText('もう見つけた');
   });
 
-  test('②切り開く：点線にそってドラッグすると先端まで切り開ける', async ({ page }) => {
+  test('②切り開く：点線にそってドラッグして切り、ふちを引っぱって広げる', async ({ page }) => {
     await page.getByRole('button', { name: '次の手順へ進む' }).click();
     await expect(page.getByRole('button', { name: /^② 外とう膜を切り開く/ })).toHaveAttribute('aria-pressed', 'true');
 
@@ -266,21 +266,34 @@ test.describe('イカの解剖', () => {
     await page.mouse.move(off.x, off.y, { steps: 5 });
     await expect(msg(page)).toContainText('内臓に傷をつけてしまう');   // 点線からはずれると注意が出る
 
-    for (const x of [320, 380, 440, 500, 540]) {
+    const beforeCut = await canvasImage(page);
+    for (const x of [320, 380, 440, 500, 544]) {
       const p = await toScreen(page, x, 181);
       await page.mouse.move(p.x, p.y, { steps: 5 });
     }
     await page.mouse.up();
-    await expect(msg(page)).toContainText('先端まで切り開けた');
+    await expect(msg(page)).toContainText('先端まで切れた');
+    expect(await canvasImage(page)).not.toBe(beforeCut);
+
+    // 切り口のふちをつまんで、下に引っぱる
+    const edge = await toScreen(page, 370, 182);
+    const pulled = await toScreen(page, 370, 270);
+    await page.mouse.move(edge.x, edge.y);
+    await page.mouse.down();
+    await page.mouse.move(pulled.x, pulled.y, { steps: 8 });
+    await page.mouse.up();
+    await expect(msg(page)).toContainText('外とう膜を広げた');
   });
 
-  test('②切り開く：ボタンでも少しずつ切り進められる', async ({ page }) => {
+  test('②切り開く：ボタンでも切り進めて、広げられる', async ({ page }) => {
     await page.getByRole('button', { name: /^② 外とう膜を切り開く/ }).click();
     const cut = page.getByRole('button', { name: 'はさみで少し切り進める' });
     await cut.click();
     await expect(msg(page)).toContainText('少し切り進めた');
     for (let i = 0; i < 3; i++) await cut.click();
-    await expect(msg(page)).toContainText('先端まで切り開けた');
+    await expect(msg(page)).toContainText('先端まで切れた');
+    await page.getByRole('button', { name: '外とう膜を広げる' }).click();
+    await expect(msg(page)).toContainText('外とう膜を広げた');
   });
 
   test('③内臓：内臓をタップすると名前が見つかり、全部見つけるとお祝い', async ({ page }) => {
@@ -296,13 +309,25 @@ test.describe('イカの解剖', () => {
     await expect(msg(page)).toContainText('内臓を全部見つけた');
   });
 
-  test('④消化管：スポイトをおすと、赤インクが食道、胃、腸を通って肛門から出る', async ({ page }) => {
+  test('④消化管：切りはなして裏返し、スポイトをおすと、赤インクが肛門から出る', async ({ page }) => {
     await page.getByRole('button', { name: /^④ 消化管のつながり/ }).click();
     const ink = page.locator('#inkValue');
 
-    // スポイトを当てる前におしても、何をすればよいかが出る
-    await tap(page, 400, 300);
-    await expect(msg(page)).toContainText('口（あしのつけねの真ん中）をタップ');
+    // 点線にそってはさみをドラッグして、内臓と外とう膜を切りはなす
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const start = await toScreen(page, 290, 216);
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    for (const x of [340, 390, 440, 455]) {
+      const p = await toScreen(page, x, 216);
+      await page.mouse.move(p.x, p.y, { steps: 5 });
+    }
+    await page.mouse.up();
+    await expect(msg(page)).toContainText('切りはなせた');
+
+    // 内臓をタップして裏返す
+    await tap(page, 360, 180);
+    await expect(msg(page)).toContainText('内臓を裏返した');
 
     await tap(page, 168, 180);
     await expect(msg(page)).toContainText('スポイトを口に当てた');
@@ -316,6 +341,20 @@ test.describe('イカの解剖', () => {
     await expect(msg(page)).toContainText('肛門から出てきた');
   });
 
+  test('④消化管：スポイトをおしつづけると、赤インクが進む', async ({ page }) => {
+    await page.getByRole('button', { name: /^④ 消化管のつながり/ }).click();
+    await page.getByRole('button', { name: '内臓と外とう膜を切りはなす' }).click();
+    await page.getByRole('button', { name: '内臓を裏返す' }).click();
+    await page.getByRole('button', { name: 'スポイトを口に当てる' }).click();
+
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const dropper = await toScreen(page, 166, 110);
+    await page.mouse.move(dropper.x, dropper.y);
+    await page.mouse.down();
+    await expect(page.locator('#inkValue')).not.toHaveText('まだ');
+    await page.mouse.up();
+  });
+
   test('最初からやり直すと、手順・数・図が最初に戻る', async ({ page }) => {
     const reset = page.getByRole('button', { name: '最初からやり直す' });
     const before = await canvasImage(page);
@@ -326,7 +365,10 @@ test.describe('イカの解剖', () => {
 
     await page.getByRole('button', { name: '名前を1つ教えてもらう' }).click();
     await page.getByRole('button', { name: /^④ 消化管のつながり/ }).click();
+    await page.getByRole('button', { name: '内臓と外とう膜を切りはなす' }).click();
+    await page.getByRole('button', { name: '内臓を裏返す' }).click();
     await page.getByRole('button', { name: 'スポイトを口に当てる' }).click();
+    await page.getByRole('button', { name: 'スポイトをおす' }).click();
     await reset.click();
 
     await expect(page.getByRole('button', { name: /^① 外観の観察/ })).toHaveAttribute('aria-pressed', 'true');
