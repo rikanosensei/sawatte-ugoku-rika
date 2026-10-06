@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>イカの解剖｜さわってうごく理科教材</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="appbar-back" href="grade2.html" aria-label="中学2年の教材にもどる"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <p class="logo"><a href="index.html">さわってうごく理科教材</a></p>
+      <nav class="tabbar" aria-label="学年">
+        <ul>
+          <li><a href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 10.2 12 3.5l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z"/></svg><span>ホーム</span></a></li>
+          <li><a href="grade1.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">1</text></svg><span>1年</span></a></li>
+          <li><a href="grade2.html" aria-current="true"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">2</text></svg><span>2年</span></a></li>
+          <li><a href="grade3.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">3</text></svg><span>3年</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+
+  <main id="main" class="page">
+    <nav class="breadcrumb" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade2.html">中学2年</a></li>
+        <li><span aria-current="page">イカの解剖</span></li>
+      </ol>
+    </nav>
+
+    <div class="page-head">
+      <ul class="chips" aria-label="分野と学年"><li class="chip field-biology">生物</li><li class="chip">中学2年</li></ul>
+      <h1 class="page-title">イカの解剖</h1>
+      <p class="lead">手順にそってイカを解剖して、体のつくりと消化管のつながりを観察しよう。</p>
+    </div>
+
+    <div class="sim-layout">
+      <section class="card sim-stage" aria-label="シミュレーション">
+        <canvas id="board" class="sim-canvas" width="600" height="360" role="img"
+            aria-label="解剖皿にのせたイカを、ろうとのある側から見た図。左があし、右がひれ。体の部分をタップすると名前が出る。"></canvas>
+        <dl class="readout">
+          <div><dt>外観</dt><dd><span id="outsideValue">0</span> / 6</dd></div>
+          <div><dt>内臓</dt><dd><span id="organValue">0</span> / 7</dd></div>
+          <div><dt>赤インク</dt><dd id="inkValue">まだ</dd></div>
+        </dl>
+        <div class="guide">
+          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
+          <p id="msg" class="notice" aria-live="polite">①イカを解剖皿にのせたよ。全身の外観を観察しよう。体の部分をタップして、名前を見つけよう。</p>
+        </div>
+      </section>
+
+      <div class="card panel">
+            <h2 class="panel-title">解剖の手順</h2>
+            <div class="choice-list">
+              <button class="btn-choice step-btn" data-step="1" aria-pressed="true">① 外観の観察<small>全身のようすを見る</small></button>
+              <button class="btn-choice step-btn" data-step="2" aria-pressed="false">② 外とう膜を切り開く<small>はさみで先端まで</small></button>
+              <button class="btn-choice step-btn" data-step="3" aria-pressed="false">③ 内臓の観察<small>えらや肝臓、胃など</small></button>
+              <button class="btn-choice step-btn" data-step="4" aria-pressed="false">④ 消化管のつながり<small>赤インクを入れる</small></button>
+            </div>
+            <div class="panel-actions">
+              <button id="nextBtn" class="btn btn-primary btn-block">次の手順へ進む</button>
+              <button id="helpBtn" class="btn btn-secondary btn-block">名前を1つ教えてもらう</button>
+              <button id="resetBtn" class="btn btn-tertiary btn-block">最初からやり直す</button>
+            </div>
+      </div>
+    </div>
+
+    <div class="info">
+      <details class="accordion" open>
+        <summary>使い方</summary>
+        <div class="accordion-body">
+          <ol class="steps">
+              <li>外観の観察：イカの体の部分をタップして、あし・目・ろうと・外とう膜・ひれ・口を見つける。</li>
+              <li>外とう膜を切り開く：ろうとのある側を上にして、外とう膜の下から先端まで、点線にそってはさみをドラッグする。内臓に傷をつけないように、点線からはずれないように切る。</li>
+              <li>内臓の観察：えらや肝臓、胃などの内臓をタップして、名前を見つける。</li>
+              <li>消化管のつながり：口をタップしてスポイトを当て、スポイトをおして赤インクを入れる。食道、胃、腸を通り、肛門から出るようすを見る。</li>
+          </ol>
+          <p>画面をさわらなくても、「次の手順へ進む」の下のボタンで同じ操作ができます。本物の解剖では、はさみでけがをしないように注意しよう。</p>
+        </div>
+      </details>
+      <details class="accordion">
+        <summary>このモデルについて</summary>
+        <div class="accordion-body prose">
+          <p>イカの絵は、教科書の図をもとに単純にしたものです。器官の形や大きさ、位置は、本物のイカとは少しちがいます。心臓は、教科書の図と同じように、3か所の小さなかたまりで表しています。</p>
+          <p>④では、本物は内臓と外とう膜を切りはなして裏側の食道を見ますが、ここでは口から肛門までの消化管だけを取り出したように描いています。本物の観察では、赤インクはうすめて使い、スポイトで少しずつ入れます。</p>
+        </div>
+      </details>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
+  const nextBtn = document.getElementById('nextBtn');
+  const helpBtn = document.getElementById('helpBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const stepButtons = document.querySelectorAll('.step-btn');
+  const outsideValue = document.getElementById('outsideValue');
+  const organValue = document.getElementById('organValue');
+  const inkValue = document.getElementById('inkValue');
+
+  // キャンバスで使う文字（ページと同じ書体）
+  const FONT = '"Noto Sans JP", sans-serif';
+
+  // 高解像度の画面（タブレットなど）でもくっきり見えるように、画素を細かくする。
+  // 図は W × H の大きさを基準に描く。
+  const W = canvas.width;
+  const H = canvas.height;
+  const RATIO = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * RATIO;
+  canvas.height = H * RATIO;
+  canvas.dataset.w = W;
+  canvas.dataset.h = H;
+  ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
+
+  // 動きを減らす設定の人には、演出の動きを出さない（結果はそのまま見せる）
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふきだしで話す。cheer が true なら、フラスコがよろこぶ
+  function say(text, cheer) {
+    msg.textContent = text;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;          // いったん描き直させて、動きを最初からにする
+    msg.classList.add('pop');
+    if (cheer) {
+      const icon = document.querySelector('.guide-icon');
+      icon.classList.remove('cheer');
+      void icon.offsetWidth;
+      icon.classList.add('cheer');
+    }
+  }
+
+  // ===== 色 =====
+  const INK = '#1b1b2f';        // 線・文字
+  const SKIN = '#fbe7dc';       // イカの体
+  const SPOT = '#d99a85';       // 体の小さなはん点
+  const INSIDE = '#f6cfc0';     // 切り開いた体の内側
+  const RED = '#e0245e';        // 赤インク
+  const DISH = '#e3ecf6';       // 解剖皿
+  const MARK = '#ffd23f';       // 見つけた部分の印（黄色）
+
+  const CY = 180;               // イカの体の中心の高さ
+  const CUT_START = 262;        // 切り始め（外とう膜の下＝ろうとのそば）
+  const CUT_END = 536;          // 切り終わり（先端）
+  const CLOSED = 52;            // 閉じているときの外とう膜の半分の太さ
+  const OPENED = 104;           // 切り開いたときの半分の太さ
+
+  // ===== 手順ごとの文 =====
+  const START_MSG = '①イカを解剖皿にのせたよ。全身の外観を観察しよう。体の部分をタップして、名前を見つけよう。';
+  const STEP_MSG = {
+    1: START_MSG,
+    2: '②ろうとのある側を上にしたよ。はさみのところから、点線にそって先端までドラッグして、外とう膜を切り開こう。内臓に傷をつけないように注意！',
+    3: '③内臓（えらや肝臓、胃など）を観察しよう。内臓をタップして、名前を見つけよう。',
+    4: '④内臓と外とう膜を切りはなして、裏側の食道まで見えるようにしたよ。口をタップして、うすめた赤インクの入ったスポイトを当てよう。'
+  };
+  const HELP_LABEL = { 1: '名前を1つ教えてもらう', 2: 'はさみで少し切り進める', 3: '名前を1つ教えてもらう', 4: 'スポイトを口に当てる' };
+  const STEP_LABEL = {
+    1: '解剖皿にのせたイカを、ろうとのある側から見た図。左があし、右がひれ。体の部分をタップすると名前が出る。',
+    2: 'ろうとのある側を上にしたイカの図。外とう膜の下から先端まで点線があり、点線にそってはさみを動かすと切り開ける。',
+    3: '外とう膜を切り開いたイカの図。えら、心臓、肝臓、墨袋、胃、腸、肛門が見える。内臓をタップすると名前が出る。',
+    4: '口から肛門までの消化管の図。口、食道、胃、腸、肛門の順につながっている。スポイトで口から赤インクを入れると、管の中を進む。'
+  };
+  const INK_PLACE = ['まだ', '食道', '胃', '腸', '肛門'];
+
+  // ===== 見つける部分（名前・印の場所・名前を書く場所・タップしたかの判定） =====
+  function near(x, y, cx, cy, r) { return Math.hypot(x - cx, y - cy) <= r; }
+
+  const OUTSIDE = [
+    { name: '口', at: [168, 180], label: [118, 330], hit: function (x, y) { return near(x, y, 168, 180, 16); } },
+    { name: '目', at: [207, 141], label: [207, 30], hit: function (x, y) { return near(x, y, 207, 141, 18) || near(x, y, 207, 219, 18); } },
+    { name: 'ろうと', at: [244, 180], label: [262, 330], hit: function (x, y) { return near(x, y, 244, 180, 18); } },
+    { name: 'ひれ', at: [500, 100], label: [528, 30], hit: function (x, y) { return x > 440 && Math.abs(y - CY) > 30 && Math.abs(y - CY) < 120; } },
+    { name: '外とう膜', at: [360, 150], label: [360, 30], hit: function (x, y) { return x > 258 && x < 540 && Math.abs(y - CY) < halfAt(x, CLOSED) + 4; } },
+    { name: 'あし', at: [100, 165], label: [70, 30], hit: function (x, y) { return x < 180 && x > 10 && Math.abs(y - CY) < 130; } }
+  ];
+
+  const ORGANS = [
+    { name: '肛門', at: [270, 180], label: [222, 30], hit: function (x, y) { return near(x, y, 270, 180, 14); } },
+    { name: '心臓', at: [418, 150], label: [470, 30], hit: function (x, y) { return near(x, y, 418, 150, 14) || near(x, y, 418, 210, 14) || near(x, y, 430, 180, 14); } },
+    { name: '胃', at: [470, 182], label: [552, 182], hit: function (x, y) { return near(x, y, 470, 182, 28); } },
+    { name: '墨袋', at: [340, 168], label: [300, 330], hit: function (x, y) { return x > 290 && x < 390 && Math.abs(y - 168) < 8; } },
+    { name: '腸', at: [380, 194], label: [400, 330], hit: function (x, y) { return x > 276 && x < 446 && Math.abs(y - 194) < 7; } },
+    { name: '肝臓', at: [330, 182], label: [500, 330], hit: function (x, y) { return ((x - 335) / 72) ** 2 + ((y - 178) / 22) ** 2 <= 1; } },
+    { name: 'えら', at: [330, 116], label: [344, 30], hit: function (x, y) { return x > 268 && x < 405 && Math.abs(Math.abs(y - CY) - 64) < 18; } }
+  ];
+
+  // ===== いまの状態 =====
+  let step = 1;
+  let foundOutside = [];        // 見つけた外観の部分の名前
+  let foundOrgans = [];         // 見つけた内臓の名前
+  let cutX = CUT_START;         // どこまで切ったか（x 座標）
+  let cutDone = false;          // 先端まで切り開いたか
+  let openK = 0;                // 開き具合（0 閉じている 〜 1 開いた）。見た目だけの値
+  let openStart = null;         // 開く動きが始まった時刻
+  let attached = false;         // スポイトを口に当てたか
+  let inkLevel = 0;             // 赤インクがどこまで進んだか（0 まだ、1 食道、2 胃、3 腸、4 肛門から出た）
+  let inkShown = 0;             // 絵の上で赤インクが見えている位置（見た目だけの値）
+  let squeezeAt = null;         // スポイトをおした時刻（見た目だけ）
+  let dragging = false;
+  let warned = false;           // このドラッグで、はずれたことをもう伝えたか
+
+  // 外とう膜の、x の位置での半分の太さ（先端に向かって細くなる）
+  function halfAt(x, half) {
+    if (x <= 262) { return half; }
+    const t = Math.min(1, (x - 262) / (546 - 262));
+    return half * Math.sqrt(Math.max(0, 1 - t * t * t));
+  }
+
+  // ===== 描く部品 =====
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // 解剖皿
+  function drawDish() {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = DISH;
+    ctx.strokeStyle = '#c9d9ea';
+    ctx.lineWidth = 3;
+    roundRect(6, 46, W - 12, 268, 26);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // あし（8本）と、長いあし（2本）
+  function drawArms() {
+    ctx.lineCap = 'round';
+    const arms = [];
+    for (let i = 0; i < 8; i++) {
+      const k = i - 3.5;
+      arms.push({ y0: CY + k * 7, x1: 62 + Math.abs(k) * 9, y1: CY + k * 21, bend: (i % 2 ? 8 : -8), w: 9 });
+    }
+    arms.push({ y0: CY - 14, x1: 22, y1: 74, bend: 18, w: 6, club: true });
+    arms.push({ y0: CY + 14, x1: 22, y1: 286, bend: -18, w: 6, club: true });
+    arms.forEach(function (a) {
+      const mx = (175 + a.x1) / 2;
+      const my = (a.y0 + a.y1) / 2 + a.bend;
+      [[a.w + 3, INK], [a.w, SKIN]].forEach(function (s) {
+        ctx.strokeStyle = s[1];
+        ctx.lineWidth = s[0];
+        ctx.beginPath();
+        ctx.moveTo(176, a.y0);
+        ctx.quadraticCurveTo(mx, my, a.x1, a.y1);
+        ctx.stroke();
+      });
+      if (a.club) {
+        ctx.fillStyle = SKIN;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(a.x1 + 8, a.y1 + (a.y1 < CY ? 6 : -6), 14, 7, a.y1 < CY ? 0.5 : -0.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+    });
+  }
+
+  // 頭と目
+  function drawHead() {
+    ctx.fillStyle = SKIN;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.ellipse(210, CY, 40, 42, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    [141, 219].forEach(function (ey) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(207, ey, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = INK;
+      ctx.beginPath();
+      ctx.arc(205, ey, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(203, ey - 2, 2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  // 口（あしのつけねの真ん中）
+  function drawMouth() {
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(168, CY, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#5a4a7a';
+    ctx.beginPath();
+    ctx.moveTo(162, CY);
+    ctx.lineTo(172, CY - 5);
+    ctx.lineTo(172, CY + 5);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // ろうと（頭のつけねにある、つつのような部分）
+  function drawFunnel() {
+    ctx.fillStyle = '#f3d2c4';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(232, CY - 7);
+    ctx.lineTo(258, CY - 15);
+    ctx.lineTo(258, CY + 15);
+    ctx.lineTo(232, CY + 7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // 外とう膜の形（half は半分の太さ）
+  function bodyPath(half) {
+    ctx.beginPath();
+    ctx.moveTo(246, CY - half);
+    for (let x = 262; x <= 546; x += 4) { ctx.lineTo(x, CY - halfAt(x, half)); }
+    for (let x = 546; x >= 262; x -= 4) { ctx.lineTo(x, CY + halfAt(x, half)); }
+    ctx.lineTo(246, CY + half);
+    ctx.closePath();
+  }
+
+  // ひれ（先端の両側）
+  function drawFins(half) {
+    ctx.fillStyle = SKIN;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    [-1, 1].forEach(function (s) {
+      ctx.beginPath();
+      ctx.moveTo(430, CY + s * halfAt(430, half) * 0.9);
+      ctx.quadraticCurveTo(470, CY + s * (half + 40), 512, CY + s * (half + 52));
+      ctx.lineTo(552, CY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
+
+  // 体の小さなはん点（いつも同じ場所に描くため、決まった並びで作る）
+  const spots = [];
+  for (let i = 0; i < 46; i++) {
+    const x = 275 + ((i * 53) % 250);
+    const y = ((i * 37) % 90) / 90 * 2 - 1;     // -1 〜 1
+    spots.push([x, y]);
+  }
+  function drawSpots(half) {
+    ctx.fillStyle = SPOT;
+    spots.forEach(function (p) {
+      const hh = halfAt(p[0], half) - 6;
+      if (hh <= 0) { return; }
+      ctx.beginPath();
+      ctx.arc(p[0], CY + p[1] * hh, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  // 閉じた体（外観）
+  function drawClosedBody() {
+    drawFins(CLOSED);
+    ctx.fillStyle = SKIN;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    bodyPath(CLOSED);
+    ctx.fill();
+    ctx.stroke();
+    drawSpots(CLOSED);
+  }
+
+  // 切り開いた体と内臓。k は開き具合
+  function drawOpenBody(k) {
+    const half = CLOSED + (OPENED - CLOSED) * k;
+    drawFins(half);
+    ctx.fillStyle = SKIN;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    bodyPath(half);
+    ctx.fill();
+    ctx.stroke();
+    ctx.globalAlpha = 1 - k;
+    drawSpots(half);
+    ctx.globalAlpha = 1;
+    // 内側
+    ctx.save();
+    ctx.globalAlpha = k;
+    ctx.fillStyle = INSIDE;
+    bodyPath(half - 12);
+    ctx.fill();
+    drawOrgans();
+    ctx.restore();
+    // 切ったあと（真ん中の線）は、開くと左右に分かれる
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    if (k < 1) {
+      ctx.globalAlpha = 1 - k;
+      ctx.beginPath();
+      ctx.moveTo(CUT_START, CY);
+      ctx.lineTo(CUT_END, CY);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // 内臓
+  function drawOrgans() {
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    // えら（上と下に1つずつ。羽根のような形）
+    [-1, 1].forEach(function (s) {
+      const y = CY + s * 64;
+      ctx.fillStyle = '#f9e3dc';
+      ctx.beginPath();
+      ctx.ellipse(336, y, 68, 15, s * -0.08, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.strokeStyle = '#c98b7a';
+      ctx.lineWidth = 1.5;
+      for (let x = 280; x <= 392; x += 8) {
+        ctx.beginPath();
+        ctx.moveTo(x, y - 10);
+        ctx.lineTo(x + 4, y + 10);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = 2;
+    });
+    // 肝臓（長くて大きい）
+    ctx.fillStyle = '#e8a860';
+    ctx.beginPath();
+    ctx.ellipse(335, 178, 72, 22, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // 墨袋（肝臓の上の、黒くて細長い袋）
+    ctx.fillStyle = '#34344a';
+    ctx.beginPath();
+    ctx.ellipse(340, 168, 50, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.beginPath();
+    ctx.ellipse(326, 166, 20, 1.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 腸（胃から肛門へもどる細い管）
+    tube([[446, 192], [380, 194], [300, 192], [272, 182]], 6, '#f4b8a8');
+    // 肛門
+    ctx.fillStyle = '#f4b8a8';
+    ctx.beginPath();
+    ctx.arc(270, 180, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // 心臓（3か所の小さなかたまり）
+    [[418, 150], [418, 210], [430, 180]].forEach(function (p) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(p[0], p[1], 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
+    // 胃（むらさき色のふくろ）
+    ctx.fillStyle = '#a58ad8';
+    ctx.beginPath();
+    ctx.ellipse(470, 182, 26, 18, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.beginPath();
+    ctx.ellipse(462, 175, 8, 4, -0.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 管を描く（ふちどりの線と、中の色）
+  function tube(points, width, color) {
+    [[width + 3, INK], [width, color]].forEach(function (s) {
+      ctx.strokeStyle = s[1];
+      ctx.lineWidth = s[0];
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      points.forEach(function (p, i) { if (i === 0) { ctx.moveTo(p[0], p[1]); } else { ctx.lineTo(p[0], p[1]); } });
+      ctx.stroke();
+    });
+  }
+
+  // 折れ線の、はじめから rate（0〜1）の割合までを描く
+  function partialLine(points, rate, width, color) {
+    let total = 0;
+    for (let i = 1; i < points.length; i++) { total += Math.hypot(points[i][0] - points[i - 1][0], points[i][1] - points[i - 1][1]); }
+    let left = total * rate;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length && left > 0; i++) {
+      const a = points[i - 1];
+      const b = points[i];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const t = Math.min(1, left / len);
+      ctx.lineTo(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t);
+      left -= len;
+    }
+    ctx.stroke();
+  }
+
+  // 名前の札（見つけた部分に付ける）
+  function drawLabel(part) {
+    const ax = part.at[0];
+    const ay = part.at[1];
+    const lx = part.label[0];
+    const ly = part.label[1];
+    // 見つけた部分の黄色い印
+    ctx.fillStyle = MARK;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(ax, ay, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // 引き出し線
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(lx, ly);
+    ctx.stroke();
+    // 札
+    ctx.font = '700 17px ' + FONT;
+    const w = ctx.measureText(part.name).width + 20;
+    const x = Math.max(4, Math.min(W - w - 4, lx - w / 2));
+    ctx.fillStyle = '#ffffff';
+    roundRect(x, ly - 15, w, 30, 15);
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.fillStyle = INK;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(part.name, x + w / 2, ly + 1);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // はさみ（drawScissors は「消化酵素のはたらき」と同じ形）
+  function drawScissors(x, y, open) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    [-1, 1].forEach(function (side) {
+      ctx.save();
+      ctx.rotate(side * open);
+      ctx.fillStyle = '#e8edf7';
+      ctx.beginPath();
+      ctx.moveTo(-2, -4);
+      ctx.lineTo(28, 0);
+      ctx.lineTo(-2, 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = side < 0 ? '#ff5fa2' : '#ffd23f';
+      ctx.beginPath();
+      ctx.arc(-13, 0, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    });
+    ctx.fillStyle = INK;
+    ctx.beginPath();
+    ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // スポイト（先が下。tipX, tipY が先の位置）。squeeze はゴムのつぶれ具合
+  function drawDropper(tipX, tipY, squeeze) {
+    ctx.save();
+    ctx.translate(tipX, tipY);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    // ガラスの管
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(-3, 0);
+    ctx.lineTo(-8, -16);
+    ctx.lineTo(-8, -62);
+    ctx.lineTo(8, -62);
+    ctx.lineTo(8, -16);
+    ctx.lineTo(3, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // 中の赤インク
+    ctx.fillStyle = RED;
+    ctx.fillRect(-5.5, -40, 11, 22);
+    // ゴム
+    const sw = 12 - squeeze * 4;
+    ctx.fillStyle = '#ff5fa2';
+    ctx.beginPath();
+    ctx.ellipse(0, -76, sw, 16, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ④の消化管：口 → 食道 → 胃 → 腸 → 肛門
+  const GULLET = [[170, 180], [236, 176], [330, 172], [446, 176]];
+  const GUT = [[492, 196], [446, 202], [360, 206], [282, 202]];
+  const ANUS = [276, 201];
+  const STOMACH = [470, 184];
+
+  function drawTract() {
+    // 頭とあし
+    drawArms();
+    drawHead();
+    drawMouth();
+    // 食道・胃・腸・肛門
+    tube(GULLET, 7, '#f4b8a8');
+    tube(GUT, 7, '#f4b8a8');
+    ctx.fillStyle = '#a58ad8';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.ellipse(STOMACH[0], STOMACH[1], 30, 22, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#f4b8a8';
+    ctx.beginPath();
+    ctx.arc(ANUS[0], ANUS[1], 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // 赤インク（inkShown：0〜1 食道、1〜2 胃、2〜3 腸、3〜4 肛門から出る）
+    const p = inkShown;
+    if (p > 0) { partialLine(GULLET, Math.min(1, p), 4, RED); }
+    if (p > 1) {
+      ctx.fillStyle = RED;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.ellipse(STOMACH[0], STOMACH[1], 24 * Math.min(1, p - 1), 16 * Math.min(1, p - 1), 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    if (p > 2) { partialLine(GUT, Math.min(1, p - 2), 4, RED); }
+    if (p > 3) {
+      // 肛門から出てきたインクのもや
+      const q = Math.min(1, p - 3);
+      ctx.fillStyle = 'rgba(224, 36, 94, 0.35)';
+      [[0, 0, 10], [-14, -6, 8], [-24, 4, 7], [-34, -2, 6]].forEach(function (c) {
+        ctx.beginPath();
+        ctx.arc(ANUS[0] - 4 + c[0] * q, ANUS[1] + 12 + c[1] * q, c[2] * q, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    // 名前はいつも出しておく
+    [
+      { name: '口', at: [168, 180], label: [118, 330] },
+      { name: '食道', at: [330, 172], label: [330, 30] },
+      { name: '胃', at: [470, 184], label: [510, 330] },
+      { name: '腸', at: [400, 205], label: [430, 330] },
+      { name: '肛門', at: [276, 201], label: [250, 330] }
+    ].forEach(drawLabel);
+
+    // スポイト
+    const squeeze = squeezeAt === null ? 0 : Math.max(0, 1 - (performance.now() - squeezeAt) / 300);
+    if (attached) {
+      drawDropper(168, 168, squeeze);
+    } else {
+      drawDropper(560, 150, 0);
+    }
+  }
+
+  // ===== 画面全体を描く =====
+  // 線の形などの設定が前の絵から持ちこされないように、毎回まっさらにしてから描く
+  function draw() {
+    ctx.save();
+    drawScene();
+    ctx.restore();
+  }
+  function drawScene() {
+    drawDish();
+    if (step === 4) {
+      drawTract();
+      return;
+    }
+    drawArms();
+    if (step === 1) {
+      drawClosedBody();
+    } else {
+      drawOpenBody(step === 3 ? 1 : openK);
+    }
+    drawHead();
+    drawMouth();
+    drawFunnel();
+
+    if (step === 1) {
+      OUTSIDE.forEach(function (p) { if (foundOutside.indexOf(p.name) >= 0) { drawLabel(p); } });
+    }
+    if (step === 2 && !cutDone) {
+      // 切るところの点線と、切ったところ
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([7, 6]);
+      ctx.beginPath();
+      ctx.moveTo(cutX, CY);
+      ctx.lineTo(CUT_END, CY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(CUT_START, CY);
+      ctx.lineTo(cutX, CY);
+      ctx.stroke();
+      // 切り終わりの印
+      ctx.fillStyle = MARK;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(CUT_END, CY, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      drawScissors(cutX, CY, dragging ? 0.18 + 0.22 * Math.abs(Math.sin(performance.now() / 70)) : 0.35);
+    }
+    if (step === 3) {
+      ORGANS.forEach(function (p) { if (foundOrgans.indexOf(p.name) >= 0) { drawLabel(p); } });
+    }
+  }
+
+  // ===== 動き（開く・インクが進む・スポイトをおす） =====
+  let animating = false;
+  const OPEN_TIME = 700;        // 外とう膜が開く時間（ミリ秒）
+  const INK_SPEED = 1 / 650;    // 赤インクが1区切り進むのにかかる時間の逆数
+
+  function tick(now) {
+    let moving = false;
+    if (openStart !== null) {
+      openK = Math.min(1, (now - openStart) / OPEN_TIME);
+      if (openK < 1) { moving = true; } else { openStart = null; }
+    }
+    if (inkShown < inkLevel) {
+      inkShown = Math.min(inkLevel, inkShown + INK_SPEED * 16.7);
+      moving = true;
+    }
+    if (squeezeAt !== null && now - squeezeAt < 300) { moving = true; }
+    draw();
+    if (moving) {
+      requestAnimationFrame(tick);
+    } else {
+      squeezeAt = null;
+      animating = false;
+      draw();
+    }
+  }
+  function animate() {
+    if (reduceMotion) {
+      // 動かさずに、結果だけを見せる
+      if (openStart !== null) { openK = 1; openStart = null; }
+      inkShown = inkLevel;
+      squeezeAt = null;
+      draw();
+      return;
+    }
+    if (!animating) {
+      animating = true;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  // ===== 表示を合わせる =====
+  function updatePanel() {
+    stepButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.step) === step)); });
+    helpBtn.textContent = step === 4 && attached ? 'スポイトをおす' : HELP_LABEL[step];
+    outsideValue.textContent = foundOutside.length;
+    organValue.textContent = foundOrgans.length;
+    inkValue.textContent = INK_PLACE[inkLevel];
+    canvas.setAttribute('aria-label', STEP_LABEL[step]);
+  }
+
+  // 手順を変える
+  function goStep(n) {
+    step = n;
+    dragging = false;
+    if (n === 2 && !cutDone) { openK = 0; }
+    if (n >= 3) {
+      // 内臓を見る手順からは、切り開いたあとの体にする
+      cutDone = true;
+      cutX = CUT_END;
+      openK = 1;
+      openStart = null;
+    }
+    updatePanel();
+    say(n === 2 && cutDone ? '外とう膜はもう切り開いたよ。「次の手順へ進む」で内臓を観察しよう。' : STEP_MSG[n]);
+    draw();
+  }
+
+  // ===== 見つける（①外観・③内臓） =====
+  function find(parts, found, name, allMessage) {
+    if (found.indexOf(name) >= 0) {
+      say('「' + name + '」はもう見つけたよ。ほかの部分もさがしてみよう。');
+      return;
+    }
+    found.push(name);
+    const left = parts.length - found.length;
+    if (left === 0) {
+      say('「' + name + '」を見つけた！ ' + allMessage, true);
+    } else {
+      say('「' + name + '」を見つけた！（あと ' + left + ' つ）');
+    }
+    updatePanel();
+    draw();
+  }
+  const OUTSIDE_ALL = '外観の部分を全部見つけた！次は「次の手順へ進む」を押して、外とう膜を切り開こう。';
+  const ORGANS_ALL = '内臓を全部見つけた！次は「次の手順へ進む」を押して、消化管のつながりを観察しよう。';
+
+  function tapParts(parts, found, allMessage, x, y, missMessage) {
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].hit(x, y)) {
+        find(parts, found, parts[i].name, allMessage);
+        return;
+      }
+    }
+    say(missMessage);
+  }
+
+  // ===== 切り開く（②） =====
+  function cutTo(x) {
+    cutX = Math.max(cutX, Math.min(CUT_END, x));
+    if (cutX >= CUT_END - 2 && !cutDone) {
+      cutDone = true;
+      dragging = false;
+      openStart = performance.now();
+      say('先端まで切り開けた！内臓が見えたね。「次の手順へ進む」を押して、内臓を観察しよう。', true);
+      animate();
+    }
+    draw();
+  }
+
+  // ===== 赤インク（④） =====
+  function attachDropper() {
+    attached = true;
+    updatePanel();
+    say('スポイトを口に当てた。スポイトをおして、赤インクを入れよう。');
+    draw();
+  }
+  function squeeze() {
+    if (inkLevel >= 4) {
+      say('赤インクは、もう肛門から出てきたよ。もう一度やるなら「最初からやり直す」を押そう。');
+      return;
+    }
+    inkLevel += 1;
+    squeezeAt = performance.now();
+    updatePanel();
+    if (inkLevel === 1) { say('赤インクが口から入って、食道を通っていく。もう一度おしてみよう。'); }
+    if (inkLevel === 2) { say('赤インクが胃に入った。もう一度おしてみよう。'); }
+    if (inkLevel === 3) { say('赤インクが胃から腸を通っていく。もう一度おしてみよう。'); }
+    if (inkLevel === 4) { say('赤インクが肛門から出てきた！口から入れたものが、食道、胃、腸を通り、肛門から出されることが分かったね。', true); }
+    animate();
+  }
+
+  // ===== 画面の操作（マウス・タッチ・ペン共通） =====
+  // 画面上の位置を、キャンバスの座標に直す（キャンバスが縮小されていてもずれないように）
+  function toCanvas(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * W / rect.width,
+      y: (e.clientY - rect.top) * H / rect.height
+    };
+  }
+
+  canvas.addEventListener('pointerdown', function (e) {
+    const p = toCanvas(e);
+    if (step === 1) {
+      tapParts(OUTSIDE, foundOutside, OUTSIDE_ALL, p.x, p.y, 'そこには名前を見つける部分がないよ。あし・目・ろうと・外とう膜・ひれ・口をさがしてみよう。');
+    } else if (step === 2) {
+      if (cutDone) { say('外とう膜はもう切り開いたよ。「次の手順へ進む」で内臓を観察しよう。'); return; }
+      if (near(p.x, p.y, cutX, CY, 34)) {
+        dragging = true;
+        warned = false;
+        canvas.setPointerCapture(e.pointerId);
+        say('そのまま、点線にそって先端（黄色の印）までドラッグしよう。');
+        animate();
+      } else {
+        say('はさみのところをさわって、点線にそって先端までドラッグしよう。');
+      }
+    } else if (step === 3) {
+      tapParts(ORGANS, foundOrgans, ORGANS_ALL, p.x, p.y, 'そこには名前を見つける内臓がないよ。えらや肝臓、胃などをタップしてみよう。');
+    } else if (step === 4) {
+      if (!attached) {
+        if (near(p.x, p.y, 168, 180, 30) || near(p.x, p.y, 560, 110, 45)) {
+          attachDropper();
+        } else {
+          say('口（あしのつけねの真ん中）をタップして、スポイトを当てよう。');
+        }
+      } else if (near(p.x, p.y, 168, 130, 60)) {
+        squeeze();
+      } else {
+        say('口に当てたスポイトをタップして、おしてみよう。');
+      }
+    }
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (!dragging || step !== 2) { return; }
+    const p = toCanvas(e);
+    if (Math.abs(p.y - CY) > 24) {
+      // 点線からはなれたら、そこでは切らない
+      if (!warned) {
+        warned = true;
+        say('点線からはずれると、内臓に傷をつけてしまうよ。点線にそってゆっくり切ろう。');
+      }
+      return;
+    }
+    if (p.x > cutX + 60) { return; }       // とびこえて切ることはできない
+    cutTo(p.x);
+  });
+
+  function endPointer() {
+    if (dragging && step === 2 && !cutDone) {
+      say('とちゅうまで切れた。はさみのところから、続きを先端まで切ろう。');
+    }
+    dragging = false;
+    draw();
+  }
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+
+  // ===== ボタン =====
+  stepButtons.forEach(function (b) {
+    b.addEventListener('click', function () { goStep(Number(b.dataset.step)); });
+  });
+
+  nextBtn.addEventListener('click', function () {
+    if (step === 4) {
+      say('④が最後の手順だよ。もう一度やるなら「最初からやり直す」を押そう。');
+      return;
+    }
+    goStep(step + 1);
+  });
+
+  // 画面をさわらずに同じ操作をするボタン
+  helpBtn.addEventListener('click', function () {
+    if (step === 1 || step === 3) {
+      const parts = step === 1 ? OUTSIDE : ORGANS;
+      const found = step === 1 ? foundOutside : foundOrgans;
+      const rest = parts.filter(function (p) { return found.indexOf(p.name) < 0; });
+      if (rest.length === 0) {
+        say('もう全部見つけたよ。「次の手順へ進む」を押そう。');
+        return;
+      }
+      find(parts, found, rest[0].name, step === 1 ? OUTSIDE_ALL : ORGANS_ALL);
+    } else if (step === 2) {
+      if (cutDone) { say('外とう膜はもう切り開いたよ。「次の手順へ進む」で内臓を観察しよう。'); return; }
+      cutTo(cutX + 70);
+      if (!cutDone) { say('はさみで少し切り進めた。先端まで続けよう。'); }
+    } else if (!attached) {
+      attachDropper();
+    } else {
+      squeeze();
+    }
+  });
+
+  // 最初からやり直す（まだ何もしていないときは、何をすればよいかを伝える）
+  resetBtn.addEventListener('click', function () {
+    const nothing = step === 1 && foundOutside.length === 0 && foundOrgans.length === 0 && !cutDone && cutX === CUT_START && !attached;
+    if (nothing) {
+      say('まだ何もしていないよ。イカの体の部分をタップしてみよう。');
+      return;
+    }
+    foundOutside = [];
+    foundOrgans = [];
+    cutX = CUT_START;
+    cutDone = false;
+    openK = 0;
+    openStart = null;
+    attached = false;
+    inkLevel = 0;
+    inkShown = 0;
+    squeezeAt = null;
+    goStep(1);
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  updatePanel();
+  draw();
+  document.fonts.load('700 17px ' + FONT, '口目ろうとひれ外膜あし肛門心臓胃墨袋腸肝えら食道').finally(function () {
+    if (!animating) { draw(); }
+  });
+</script>
+
+  <footer class="site-footer">
+    <p>© 2026 さわってうごく理科教材</p>
+  </footer>
+</body>
+</html>
