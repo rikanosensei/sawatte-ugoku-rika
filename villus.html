@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>栄養分の吸収｜さわってうごく理科教材</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="appbar-back" href="grade2.html" aria-label="中学2年の教材にもどる"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <p class="logo"><a href="index.html">さわってうごく理科教材</a></p>
+      <nav class="tabbar" aria-label="学年">
+        <ul>
+          <li><a href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 10.2 12 3.5l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z"/></svg><span>ホーム</span></a></li>
+          <li><a href="grade1.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">1</text></svg><span>1年</span></a></li>
+          <li><a href="grade2.html" aria-current="true"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">2</text></svg><span>2年</span></a></li>
+          <li><a href="grade3.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">3</text></svg><span>3年</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+
+  <main id="main" class="page">
+    <nav class="breadcrumb" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade2.html">中学2年</a></li>
+        <li><span aria-current="page">栄養分の吸収</span></li>
+      </ol>
+    </nav>
+
+    <div class="page-head">
+      <ul class="chips" aria-label="分野と学年"><li class="chip field-biology">生物</li><li class="chip">中学2年</li></ul>
+      <h1 class="page-title">栄養分の吸収</h1>
+      <p class="lead">消化された栄養分を柔毛に運んで、毛細血管とリンパ管のどちらに入るか確かめよう。</p>
+    </div>
+
+    <div class="sim-layout">
+      <section class="card sim-stage" aria-label="シミュレーション">
+        <canvas id="board" class="sim-canvas" width="600" height="360" role="img"
+            aria-label="小腸のかべの断面の図。大きなひだの表面に、柔毛という小さな突起がたくさん並んでいる。"></canvas>
+        <dl class="readout">
+          <div><dt>毛細血管へ</dt><dd><span id="bloodValue">0</span> こ</dd></div>
+          <div><dt>リンパ管へ</dt><dd><span id="lymphValue">0</span> こ</dd></div>
+          <div><dt>のこり</dt><dd><span id="leftValue">9</span> こ</dd></div>
+        </dl>
+        <div class="guide">
+          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
+          <p id="msg" class="notice" aria-live="polite">小腸のかべには、たくさんのひだがあり、その表面には柔毛という小さな突起が多数ある。黄色でかこんだ柔毛をタップして、大きくして見よう。</p>
+        </div>
+      </section>
+
+      <div class="card panel">
+            <h2 class="panel-title">見る場所</h2>
+            <div class="choice-list">
+              <button class="btn-choice view-btn" data-view="1" aria-pressed="true">① 小腸のかべ<small>ひだと柔毛</small></button>
+              <button class="btn-choice view-btn" data-view="2" aria-pressed="false">② 柔毛の中<small>栄養分を運ぶ</small></button>
+            </div>
+            <div class="panel-actions">
+              <button id="helpBtn" class="btn btn-secondary btn-block">かべの表面の長さをくらべる</button>
+              <button id="resetBtn" class="btn btn-tertiary btn-block">もとに戻す</button>
+            </div>
+      </div>
+    </div>
+
+    <div class="info">
+      <details class="accordion" open>
+        <summary>使い方</summary>
+        <div class="accordion-body">
+          <ol class="steps">
+              <li>「① 小腸のかべ」で、ひだと柔毛を見る。「かべの表面の長さをくらべる」を押して、でこぼこがあると表面の長さがどうなるか見る。</li>
+              <li>黄色でかこんだ柔毛をタップして、大きくする。</li>
+              <li>小腸の中の栄養分を指でつまんで、柔毛まで運ぶ。毛細血管とリンパ管のどちらに入るか予想して、その上で指をはなす。</li>
+              <li>5種類の栄養分を全部運んで、2つの道すじを確かめる。</li>
+          </ol>
+          <p>画面をさわらなくても、「1つ運んでもらう」のボタンで運べます。</p>
+        </div>
+      </details>
+      <details class="accordion">
+        <summary>このモデルについて</summary>
+        <div class="accordion-body prose">
+          <p>栄養分の粒の色と形は、「消化酵素のはたらき」の教材と同じにしています。脂肪は、モノグリセリド1つと脂肪酸2つが結びついたものとして描いています。柔毛の形や大きさ、毛細血管とリンパ管の形は、分かりやすくするために単純にしています。</p>
+          <p>「かべの表面の長さをくらべる」の倍率は、この絵の線の長さから計算したもので、本物の小腸の値ではありません。</p>
+          <p>毛細血管に入ったブドウ糖は、肝臓を通って全身に運ばれます。肝臓では、ブドウ糖の一部がグリコーゲンという物質にかえられてたくわえられます。また、水分はおもに小腸で吸収され、残りは大腸で吸収されます。</p>
+        </div>
+      </details>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
+  const helpBtn = document.getElementById('helpBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const viewButtons = document.querySelectorAll('.view-btn');
+  const bloodValue = document.getElementById('bloodValue');
+  const lymphValue = document.getElementById('lymphValue');
+  const leftValue = document.getElementById('leftValue');
+
+  // キャンバスで使う文字（ページと同じ書体）
+  const FONT = '"Noto Sans JP", sans-serif';
+
+  // 高解像度の画面（タブレットなど）でもくっきり見えるように、画素を細かくする。
+  // 図は W × H の大きさを基準に描く。
+  const W = canvas.width;
+  const H = canvas.height;
+  const RATIO = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * RATIO;
+  canvas.height = H * RATIO;
+  canvas.dataset.w = W;
+  canvas.dataset.h = H;
+  ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
+
+  // 動きを減らす設定の人には、演出の動きを出さない（結果はそのまま見せる）
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふきだしで話す。cheer が true なら、フラスコがよろこぶ
+  function say(text, cheer) {
+    msg.textContent = text;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;          // いったん描き直させて、動きを最初からにする
+    msg.classList.add('pop');
+    if (cheer) {
+      const icon = document.querySelector('.guide-icon');
+      icon.classList.remove('cheer');
+      void icon.offsetWidth;
+      icon.classList.add('cheer');
+    }
+  }
+
+  // ===== 色 =====
+  const INK = '#1b1b2f';        // 線・文字
+  const LUMEN = '#fff8ea';      // 小腸の中
+  const WALL = '#f4c4b5';       // 小腸のかべ
+  const WALL_DEEP = '#dc9a8a';  // かべの奥（筋肉の層）
+  const BLOOD = '#e2364f';      // 毛細血管
+  const LYMPH = '#ffe066';      // リンパ管
+  const LIGHT = '#ff3d8b';      // 表面の長さをくらべる線（光の色）
+  const MARK = '#ffd23f';       // えらぶ印（黄色）
+
+  const START_MSG = '小腸のかべには、たくさんのひだがあり、その表面には柔毛という小さな突起が多数ある。黄色でかこんだ柔毛をタップして、大きくして見よう。';
+  const VILLUS_MSG = '柔毛の中には、毛細血管とリンパ管がある。小腸の中の栄養分を指でつまんで、どちらの管に入るか予想して運ぼう。';
+  const VIEW_LABEL = {
+    1: '小腸のかべの断面の図。大きなひだの表面に、柔毛という小さな突起がたくさん並んでいる。',
+    2: '柔毛を大きくした図。柔毛の中に、毛細血管（赤）とリンパ管（黄色）がある。まわりの小腸の中に、ブドウ糖、アミノ酸、無機物、脂肪酸、モノグリセリドの粒がある。粒を柔毛に運ぶと、どちらかの管に入る。'
+  };
+
+  // ===== ① 小腸のかべ =====
+  // かべの表面の高さ：3つの大きなひだ
+  function foldY(x) {
+    let f = 0;
+    [120, 300, 480].forEach(function (c) { f += Math.exp(-Math.pow((x - c) / 48, 2)); });
+    return 228 - 72 * f;
+  }
+  const PERIOD = 13;            // 柔毛のならぶ間かく
+  const VILLUS_H = 24;          // 柔毛の高さ
+  // x の位置の、柔毛をふくめた表面の高さ
+  function surfaceY(x) {
+    const u = (((x - 1) % PERIOD) + PERIOD) % PERIOD / PERIOD;
+    let h = 0;
+    if (u > 0.2 && u < 0.8) { h = VILLUS_H * Math.sqrt(1 - Math.pow((u - 0.5) / 0.3, 2)); }
+    return foldY(x) - h;
+  }
+  const WALL_LEFT = 10;
+  const WALL_RIGHT = 590;
+  // 黄色でかこむ柔毛（まん中のひだのいちばん上）
+  const PICK_X = 1 + PERIOD * Math.round((300 - 1 - PERIOD / 2) / PERIOD) + PERIOD / 2;
+  const PICK_Y = surfaceY(PICK_X);
+
+  // 表面の線の長さを、絵の線から計算する（でこぼこの表面と、平らなときをくらべる）
+  function surfaceLength() {
+    let total = 0;
+    let px = WALL_LEFT;
+    let py = surfaceY(px);
+    for (let x = WALL_LEFT + 0.25; x <= WALL_RIGHT; x += 0.25) {
+      const y = surfaceY(x);
+      total += Math.hypot(x - px, y - py);
+      px = x;
+      py = y;
+    }
+    return total;
+  }
+  const SURFACE_TIMES = Math.round(surfaceLength() / (WALL_RIGHT - WALL_LEFT));
+
+  // ===== ② 柔毛 =====
+  const VX = 300;               // 柔毛の中心
+  const V_HALF = 85;            // 柔毛の太さの半分
+  const V_TOP = 130;            // 柔毛の先の丸いところの中心の高さ
+  const V_BASE = 300;           // 柔毛のつけね（かべの上の面）
+  const SKIN = 14;              // 柔毛の表面の細胞の厚さ
+  const LYMPH_HALF = 18;        // リンパ管の太さの半分
+  const LYMPH_TOP = 150;        // リンパ管の先
+  const CAP_X = [245, 355];     // 毛細血管の太い2本
+
+  function inVillus(x, y) {
+    if (y > V_BASE + 6) { return false; }
+    if (y >= V_TOP) { return Math.abs(x - VX) <= V_HALF; }
+    return Math.hypot(x - VX, y - V_TOP) <= V_HALF;
+  }
+  // 柔毛の中で指をはなした場所が、どちらの管か
+  function zoneAt(x, y) {
+    if (!inVillus(x, y)) { return null; }
+    return Math.abs(x - VX) < LYMPH_HALF + 8 ? 'lymph' : 'blood';
+  }
+
+  // ===== 栄養分の粒 =====
+  // to：入る管（blood 毛細血管、lymph リンパ管）
+  const KINDS = {
+    glucose: { name: 'ブドウ糖', to: 'blood' },
+    amino: { name: 'アミノ酸', to: 'blood' },
+    mineral: { name: '無機物', to: 'blood' },
+    fatty: { name: '脂肪酸', to: 'lymph' },
+    mono: { name: 'モノグリセリド', to: 'lymph' }
+  };
+  const START_PARTICLES = [
+    ['glucose', 72, 82, '#ffd23f'], ['amino', 165, 96, '#ff7a7a'], ['mineral', 66, 168, '#9fe3ff'],
+    ['fatty', 158, 184, '#ffb057'], ['glucose', 86, 226, '#ffd23f'],
+    ['amino', 446, 82, '#5b9bff'], ['mineral', 540, 96, '#9fe3ff'], ['mono', 452, 176, '#ffffff'],
+    ['fatty', 528, 198, '#ffb057']
+  ];
+  // 脂肪酸とモノグリセリドが待つ場所（柔毛の先の、リンパ管の上）
+  const WAIT_SPOTS = { mono: [VX, 104], fatty: [[VX - 24, 112], [VX + 24, 112]] };
+
+  // ===== いまの状態 =====
+  let view = 1;
+  let compare = false;          // 表面の長さをくらべる線を出しているか
+  let zoomStart = null;         // ①から②へ大きくする動きが始まった時刻（見た目だけ）
+  let particles = [];
+  let fat = null;               // 再びできた脂肪 { x, y, path }
+  let bloodCount = 0;
+  let lymphCount = 0;
+  let dragging = null;          // つまんでいる粒
+  let hoverZone = null;         // つまんだ粒を、いまどちらの管の上にのせているか
+  let animating = false;
+  let lastTime = null;
+
+  function resetParticles() {
+    particles = START_PARTICLES.map(function (p, i) {
+      return { id: i, kind: p[0], home: [p[1], p[2]], x: p[1], y: p[2], color: p[3], state: 'lumen', path: [] };
+    });
+    fat = null;
+    bloodCount = 0;
+    lymphCount = 0;
+  }
+  resetParticles();
+
+  // ===== 描く部品 =====
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // 名前の札。at があれば、引き出し線をかく
+  function pill(text, cx, cy, at, size) {
+    ctx.font = '700 ' + (size || 15) + 'px ' + FONT;
+    const w = ctx.measureText(text).width + 18;
+    const x = Math.max(4, Math.min(W - w - 4, cx - w / 2));
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    if (at) {
+      ctx.beginPath();
+      ctx.moveTo(at[0], at[1]);
+      ctx.lineTo(cx, cy);
+      ctx.stroke();
+      ctx.fillStyle = MARK;
+      ctx.beginPath();
+      ctx.arc(at[0], at[1], 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#ffffff';
+    roundRect(x, cy - 14, w, 28, 14);
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.fillStyle = INK;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x + w / 2, cy + 1);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // 粒を1つ描く（つやのあるあめ玉のように。「消化酵素のはたらき」と同じ）
+  function drawBead(x, y, color, r) {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.beginPath();
+    ctx.ellipse(x - r * 0.38, y - r * 0.38, r * 0.32, r * 0.19, -0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 無機物は小さな結晶の形
+  function drawCrystal(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x, y - 12);
+    ctx.lineTo(x + 10, y);
+    ctx.lineTo(x, y + 12);
+    ctx.lineTo(x - 10, y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    ctx.beginPath();
+    ctx.moveTo(x - 1, y - 8);
+    ctx.lineTo(x + 3, y - 3);
+    ctx.lineTo(x - 2, y - 2);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawParticle(p, withName) {
+    if (p.kind === 'mineral') {
+      drawCrystal(p.x, p.y, p.color);
+    } else {
+      drawBead(p.x, p.y, p.color, p.kind === 'fatty' ? 12 : 13);
+    }
+    if (withName) {
+      ctx.font = '700 14px ' + FONT;
+      ctx.textAlign = 'center';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.strokeText(KINDS[p.kind].name, p.x, p.y + 31);
+      ctx.fillStyle = INK;
+      ctx.fillText(KINDS[p.kind].name, p.x, p.y + 31);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  // ===== ① 小腸のかべを描く =====
+  function drawWall(zooming) {
+    ctx.fillStyle = LUMEN;
+    ctx.fillRect(0, 0, W, H);
+    // かべ
+    ctx.beginPath();
+    ctx.moveTo(WALL_LEFT, H);
+    for (let x = WALL_LEFT; x <= WALL_RIGHT; x += 0.5) { ctx.lineTo(x, surfaceY(x)); }
+    ctx.lineTo(WALL_RIGHT, H);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, 120, 0, 340);
+    g.addColorStop(0, '#fbd6ca');
+    g.addColorStop(1, WALL);
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+    // かべの奥の層
+    ctx.fillStyle = WALL_DEEP;
+    ctx.beginPath();
+    ctx.moveTo(WALL_LEFT, 318);
+    for (let x = WALL_LEFT; x <= WALL_RIGHT; x += 4) { ctx.lineTo(x, 318 + 4 * Math.sin(x / 30)); }
+    ctx.lineTo(WALL_RIGHT, H);
+    ctx.lineTo(WALL_LEFT, H);
+    ctx.closePath();
+    ctx.fill();
+    // 柔毛の中の毛細血管（細い赤い線）
+    ctx.strokeStyle = 'rgba(226, 54, 79, 0.55)';
+    ctx.lineWidth = 1.2;
+    for (let c = 1 + PERIOD / 2; c < WALL_RIGHT; c += PERIOD) {
+      if (c < WALL_LEFT + 3) { continue; }
+      ctx.beginPath();
+      ctx.moveTo(c - 2, foldY(c) + 6);
+      ctx.lineTo(c - 2, foldY(c) - VILLUS_H + 7);
+      ctx.lineTo(c + 2, foldY(c) - VILLUS_H + 7);
+      ctx.lineTo(c + 2, foldY(c) + 6);
+      ctx.stroke();
+    }
+    // 黄色でかこむ柔毛
+    ctx.strokeStyle = MARK;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.ellipse(PICK_X, PICK_Y + 14, 12, 21, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(PICK_X, PICK_Y + 14, 14.5, 23.5, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    if (zooming) { return; }       // 大きくしているあいだは、名前の札を出さない
+    pill('小腸の中', 300, 30);
+    pill('ひだ', 120, 84, [120, 150]);
+    pill('柔毛', 420, 70, [PICK_X + 10, PICK_Y + 4]);
+
+    if (compare) {
+      // でこぼこの表面の線と、平らなときの線
+      ctx.strokeStyle = LIGHT;
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      for (let x = WALL_LEFT; x <= WALL_RIGHT; x += 0.5) {
+        if (x === WALL_LEFT) { ctx.moveTo(x, surfaceY(x)); } else { ctx.lineTo(x, surfaceY(x)); }
+      }
+      ctx.stroke();
+      ctx.setLineDash([10, 6]);
+      ctx.beginPath();
+      ctx.moveTo(WALL_LEFT, 296);
+      ctx.lineTo(WALL_RIGHT, 296);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      pill('平らなときの長さ', 300, 296, null, 14);
+      pill('でこぼこの表面の長さは、平らなときの 約 ' + SURFACE_TIMES + ' 倍', 300, 30, null, 16);
+    }
+  }
+
+  // ===== ② 柔毛を描く =====
+  function villusPath(inset) {
+    const r = V_HALF - inset;
+    ctx.beginPath();
+    ctx.moveTo(VX - r, V_BASE + 10);
+    ctx.lineTo(VX - r, V_TOP);
+    ctx.arc(VX, V_TOP, r, Math.PI, 0);
+    ctx.lineTo(VX + r, V_BASE + 10);
+    ctx.closePath();
+  }
+
+  // となりの柔毛（少しだけ見える）
+  function drawNeighbor(cx) {
+    ctx.fillStyle = '#f7d3c7';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 40, V_BASE + 10);
+    ctx.lineTo(cx - 40, 190);
+    ctx.arc(cx, 190, 40, Math.PI, 0);
+    ctx.lineTo(cx + 40, V_BASE + 10);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function drawVillusScene(now) {
+    ctx.fillStyle = LUMEN;
+    ctx.fillRect(0, 0, W, H);
+    drawNeighbor(-6);
+    drawNeighbor(606);
+
+    // かべ（柔毛のつけね）
+    ctx.fillStyle = WALL;
+    ctx.fillRect(0, V_BASE, W, H - V_BASE);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, V_BASE);
+    ctx.lineTo(W, V_BASE);
+    ctx.stroke();
+
+    // 毛細血管の出口（左へ → 肝臓へ）と、リンパ管の出口（右へ）
+    tube([[CAP_X[0], V_BASE - 10], [CAP_X[0], 318], [200, 322], [0, 322]], 8, BLOOD);
+    tube([[CAP_X[1], V_BASE - 10], [CAP_X[1], 312], [300, 316], [CAP_X[0] + 6, 318]], 8, BLOOD);
+    tube([[VX, V_BASE - 10], [VX, 326], [360, 330], [W, 330]], 14, LYMPH);
+
+    // 柔毛：表面の細胞の層と、内側
+    villusPath(0);
+    ctx.fillStyle = '#ffd5c6';
+    ctx.fill();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    // 表面の細胞のしきり
+    ctx.strokeStyle = 'rgba(176, 87, 74, 0.45)';
+    ctx.lineWidth = 1.2;
+    for (let y = V_BASE; y > V_TOP; y -= 15) {
+      [-1, 1].forEach(function (s) {
+        ctx.beginPath();
+        ctx.moveTo(VX + s * V_HALF, y);
+        ctx.lineTo(VX + s * (V_HALF - SKIN), y);
+        ctx.stroke();
+      });
+    }
+    for (let a = Math.PI; a < Math.PI * 2; a += Math.PI / 12) {
+      ctx.beginPath();
+      ctx.moveTo(VX + Math.cos(a) * V_HALF, V_TOP + Math.sin(a) * V_HALF);
+      ctx.lineTo(VX + Math.cos(a) * (V_HALF - SKIN), V_TOP + Math.sin(a) * (V_HALF - SKIN));
+      ctx.stroke();
+    }
+    villusPath(SKIN);
+    ctx.fillStyle = '#fff1ea';
+    ctx.fill();
+
+    // 毛細血管の入るところ（運んでいるときは、うすく光らせる）
+    ctx.save();
+    villusPath(SKIN);
+    ctx.clip();
+    ctx.fillStyle = hoverZone === 'blood' ? 'rgba(255, 210, 63, 0.45)' : 'rgba(226, 54, 79, 0.08)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // 毛細血管（2本の太い管と、そのあいだの網）
+    ctx.strokeStyle = BLOOD;
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(CAP_X[0], V_BASE);
+    ctx.lineTo(CAP_X[0], V_TOP + 10);
+    ctx.arc(VX, V_TOP + 10, VX - CAP_X[0], Math.PI, 0);
+    ctx.lineTo(CAP_X[1], V_BASE);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+    for (let y = 160; y < V_BASE; y += 26) {
+      [[CAP_X[0], VX - LYMPH_HALF - 4], [VX + LYMPH_HALF + 4, CAP_X[1]]].forEach(function (pair) {
+        ctx.beginPath();
+        ctx.moveTo(pair[0], y);
+        ctx.quadraticCurveTo((pair[0] + pair[1]) / 2, y - 12, pair[1], y + 4);
+        ctx.quadraticCurveTo((pair[0] + pair[1]) / 2, y + 16, pair[0], y + 13);
+        ctx.stroke();
+      });
+    }
+    for (let a = Math.PI * 1.15; a < Math.PI * 1.9; a += Math.PI / 6) {
+      ctx.beginPath();
+      ctx.moveTo(VX + Math.cos(a) * (VX - CAP_X[0]), V_TOP + 10 + Math.sin(a) * (VX - CAP_X[0]));
+      ctx.lineTo(VX + Math.cos(a) * 30, V_TOP + 10 + Math.sin(a) * 30);
+      ctx.stroke();
+    }
+
+    // リンパ管（まん中の黄色い管）
+    ctx.fillStyle = hoverZone === 'lymph' ? '#fff3a6' : LYMPH;
+    ctx.strokeStyle = hoverZone === 'lymph' ? MARK : INK;
+    ctx.lineWidth = hoverZone === 'lymph' ? 4 : 2;
+    ctx.beginPath();
+    ctx.moveTo(VX - LYMPH_HALF, V_BASE + 4);
+    ctx.lineTo(VX - LYMPH_HALF, LYMPH_TOP);
+    ctx.arc(VX, LYMPH_TOP, LYMPH_HALF, Math.PI, 0);
+    ctx.lineTo(VX + LYMPH_HALF, V_BASE + 4);
+    ctx.fill();
+    ctx.stroke();
+    if (hoverZone === 'lymph') {
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // 柔毛のふちを、もう一度くっきり
+    villusPath(0);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // 名前
+    pill('柔毛', VX, 26);
+    pill('毛細血管', 150, 282, [CAP_X[0], 262], 15);
+    pill('リンパ管', 450, 282, [VX + LYMPH_HALF - 4, 262], 15);
+    pill('毛細血管 → 肝臓へ', 112, 346, null, 14);
+    pill('リンパ管 → 首の下で血管と合流', 452, 346, null, 14);
+
+    // 脂肪酸・モノグリセリドが待っているところ、管の中を流れる粒
+    particles.forEach(function (p) {
+      if (p.state === 'wait' || p.state === 'flow' || p.state === 'gather') { drawParticle(p, false); }
+    });
+    if (fat) { drawFat(fat.x, fat.y); }
+    // 小腸の中の粒
+    particles.forEach(function (p) {
+      if (p.state === 'lumen' || p.state === 'return') { drawParticle(p, true); }
+    });
+    if (dragging) { drawParticle(dragging, true); }
+  }
+
+  // 再びできた脂肪（モノグリセリド1つに、脂肪酸2つがつながる）
+  function drawFat(x, y) {
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(x - 22, y);
+    ctx.lineTo(x + 22, y);
+    ctx.stroke();
+    drawBead(x - 22, y, '#ffb057', 10);
+    drawBead(x, y, '#ffffff', 11);
+    drawBead(x + 22, y, '#ffb057', 10);
+  }
+
+  // 管を描く（ふちどりの線と、中の色）
+  function tube(points, width, color) {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    [[width + 4, INK], [width, color]].forEach(function (s) {
+      ctx.strokeStyle = s[1];
+      ctx.lineWidth = s[0];
+      ctx.beginPath();
+      points.forEach(function (p, i) { if (i === 0) { ctx.moveTo(p[0], p[1]); } else { ctx.lineTo(p[0], p[1]); } });
+      ctx.stroke();
+    });
+  }
+
+  // ===== 画面全体を描く =====
+  // 線の形などの設定が前の絵から持ちこされないように、毎回まっさらにしてから描く
+  function draw() {
+    const now = performance.now();
+    ctx.save();
+    if (zoomStart !== null) {
+      // ①の柔毛に近づいていき、②の絵にかわる
+      const t = Math.min(1, (now - zoomStart) / 900);
+      const e = t * t * (3 - 2 * t);
+      const s = 1 + 7 * e;
+      ctx.save();
+      ctx.translate(PICK_X + (VX - PICK_X) * e, PICK_Y + 10 + (180 - PICK_Y - 10) * e);
+      ctx.scale(s, s);
+      ctx.translate(-PICK_X, -(PICK_Y + 10));
+      drawWall(true);
+      ctx.restore();
+      if (t > 0.55) {
+        ctx.globalAlpha = (t - 0.55) / 0.45;
+        drawVillusScene(now);
+        ctx.globalAlpha = 1;
+      }
+    } else if (view === 1) {
+      drawWall();
+    } else {
+      drawVillusScene(now);
+    }
+    ctx.restore();
+  }
+
+  // ===== 動き =====
+  const SPEED = 240;            // 粒が進む速さ（1秒に進む長さ）
+
+  // 粒を、道すじにそって進める。着いたら done を呼ぶ
+  function stepAlong(p, dist) {
+    while (dist > 0 && p.path.length > 0) {
+      const t = p.path[0];
+      const d = Math.hypot(t[0] - p.x, t[1] - p.y);
+      if (d <= dist) {
+        p.x = t[0];
+        p.y = t[1];
+        p.path.shift();
+        dist -= d;
+      } else {
+        p.x += (t[0] - p.x) / d * dist;
+        p.y += (t[1] - p.y) / d * dist;
+        dist = 0;
+      }
+    }
+    if (p.path.length === 0 && p.done) {
+      const done = p.done;
+      p.done = null;
+      done();
+    }
+  }
+  // 道すじの終わりまで、すぐに動かす（動きを減らす設定のとき）
+  function jumpAlong(p) {
+    while (p.path.length > 0 || p.done) { stepAlong(p, 100000); }
+  }
+  function moveAlong(p, path, done) {
+    p.path = path.slice();
+    p.done = done || null;
+    if (reduceMotion) { jumpAlong(p); }
+  }
+
+  function busy() {
+    return zoomStart !== null || particles.some(function (p) { return p.path.length > 0 || p.done; }) || (fat && (fat.path.length > 0 || fat.done));
+  }
+  function tick(now) {
+    const dt = lastTime === null ? 0 : Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
+    // もとの場所へもどるときは、速く動く
+    particles.forEach(function (p) { if (p.path.length > 0 || p.done) { stepAlong(p, SPEED * (p.state === 'return' ? 2.5 : 1) * dt); } });
+    if (fat) { stepAlong(fat, SPEED * 0.6 * dt); }
+    if (zoomStart !== null && now - zoomStart >= 900) { finishZoom(); }
+    draw();
+    if (busy()) {
+      requestAnimationFrame(tick);
+    } else {
+      animating = false;
+      lastTime = null;
+      draw();
+    }
+  }
+  function animate() {
+    if (reduceMotion) {
+      if (zoomStart !== null) { finishZoom(); }
+      draw();
+      return;
+    }
+    if (!animating) {
+      animating = true;
+      lastTime = null;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  // ===== 表示を合わせる =====
+  function updatePanel() {
+    viewButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.view) === view)); });
+    helpBtn.textContent = view === 1 ? (compare ? 'くらべる線を消す' : 'かべの表面の長さをくらべる') : '1つ運んでもらう';
+    bloodValue.textContent = bloodCount;
+    lymphValue.textContent = lymphCount;
+    leftValue.textContent = particles.filter(function (p) { return p.state === 'lumen' || p.state === 'return'; }).length;
+    canvas.setAttribute('aria-label', VIEW_LABEL[view]);
+  }
+
+  function goView(n) {
+    zoomStart = null;
+    view = n;
+    dragging = null;
+    hoverZone = null;
+    updatePanel();
+    say(n === 1 ? START_MSG : VILLUS_MSG);
+    draw();
+  }
+
+  // ①の柔毛を大きくして、②へ
+  function zoomIn() {
+    zoomStart = performance.now();
+    say('柔毛を大きくしていくよ。');
+    animate();
+  }
+  function finishZoom() {
+    zoomStart = null;
+    view = 2;
+    updatePanel();
+    say(VILLUS_MSG);
+  }
+
+  // ===== 栄養分を運ぶ =====
+  const ALL_MSG = '5種類の栄養分を全部吸収できた！ブドウ糖・アミノ酸・無機物は毛細血管に入って肝臓へ、脂肪酸とモノグリセリドは柔毛の中で再び脂肪になってリンパ管に入ったね。';
+
+  function absorbedAll() {
+    return particles.every(function (p) { return p.state !== 'lumen' && p.state !== 'return'; });
+  }
+
+  // 正しい管に入れたとき
+  function accept(p, x, y) {
+    const name = KINDS[p.kind].name;
+    if (KINDS[p.kind].to === 'blood') {
+      // 近いほうの毛細血管に入って、下へ流れて、左の出口へ
+      const cx = x < VX ? CAP_X[0] : CAP_X[1];
+      p.state = 'flow';
+      bloodCount += 1;
+      moveAlong(p, [[cx, Math.max(V_TOP + 10, y)], [cx, 318], [cx === CAP_X[0] ? 200 : 300, 320], [-30, 322]], function () { p.state = 'done'; });
+      if (absorbedAll()) { say(ALL_MSG, true); } else {
+        say('「' + name + '」が毛細血管に入った！ 毛細血管から肝臓を通って、全身へ運ばれるよ。');
+      }
+    } else {
+      // 脂肪酸・モノグリセリドは、柔毛の中で待つ
+      p.state = 'wait';
+      lymphCount += 1;
+      let spot = WAIT_SPOTS.mono;
+      if (p.kind === 'fatty') {
+        const taken = particles.filter(function (q) { return q.kind === 'fatty' && q !== p && (q.state === 'wait' || q.state === 'gather'); }).length;
+        spot = WAIT_SPOTS.fatty[taken];
+      }
+      moveAlong(p, [spot], function () { tryMakeFat(); });
+      const waiting = particles.filter(function (q) { return q.state === 'wait'; }).length;
+      if (absorbedAll()) {
+        say(ALL_MSG, true);
+      } else if (waiting < 3) {
+        say('「' + name + '」が柔毛の中に入った。脂肪酸とモノグリセリドの、のこりも運んでみよう。');
+      }
+    }
+    updatePanel();
+    animate();
+  }
+
+  // 脂肪酸2つとモノグリセリドがそろったら、再び脂肪になってリンパ管へ
+  function tryMakeFat() {
+    const waiting = particles.filter(function (q) { return q.state === 'wait' && q.path.length === 0 && !q.done; });
+    if (waiting.length < 3 || fat) { return; }
+    waiting.forEach(function (q) { q.state = 'gather'; });
+    let arrived = 0;
+    let f = 0;
+    waiting.forEach(function (q) {
+      const dx = q.kind === 'mono' ? 0 : (f++ === 0 ? -22 : 22);
+      moveAlong(q, [[VX + dx, 128]], function () {
+        arrived += 1;
+        if (arrived === 3) {
+          waiting.forEach(function (r) { r.state = 'done'; });
+          fat = { x: VX, y: 128, path: [], done: null };
+          moveAlong(fat, [[VX, 160], [VX, 326], [360, 330], [W + 40, 330]], function () { fat = null; });
+          if (!absorbedAll()) {
+            say('脂肪酸とモノグリセリドが、柔毛の中で再び脂肪になって、リンパ管に入った！ リンパ管は首の下で血管と合流するよ。', true);
+          }
+        }
+      });
+    });
+    animate();
+  }
+
+  // まちがった管に入れたとき：はね返って、もとの場所へ
+  function reject(p, zone) {
+    const name = KINDS[p.kind].name;
+    const here = zone === 'blood' ? '毛細血管' : 'リンパ管';
+    p.state = 'return';
+    moveAlong(p, [p.home], function () { p.state = 'lumen'; draw(); });
+    say('「' + name + '」は、' + here + 'には入らないみたい。もう一方の管に入れてみよう。');
+    updatePanel();
+    animate();
+  }
+
+  // ===== 画面の操作（マウス・タッチ・ペン共通） =====
+  // 画面上の位置を、キャンバスの座標に直す（キャンバスが縮小されていてもずれないように）
+  function toCanvas(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * W / rect.width,
+      y: (e.clientY - rect.top) * H / rect.height
+    };
+  }
+
+  canvas.addEventListener('pointerdown', function (e) {
+    const p = toCanvas(e);
+    if (zoomStart !== null) { return; }
+    if (view === 1) {
+      if (near(p.x, p.y, PICK_X, PICK_Y + 12, 34)) {
+        zoomIn();
+      } else {
+        say('黄色でかこんだ柔毛をタップして、大きくして見よう。');
+      }
+      return;
+    }
+    // いちばん近い、小腸の中の粒をつまむ
+    let best = null;
+    let bestD = 30;
+    particles.forEach(function (q) {
+      if (q.state !== 'lumen' && q.state !== 'return') { return; }
+      const d = Math.hypot(q.x - p.x, q.y - p.y);
+      if (d < bestD) { best = q; bestD = d; }
+    });
+    if (!best) {
+      say(absorbedAll() ? 'もう全部運んだよ。もう一度やるなら「もとに戻す」を押そう。' : '小腸の中の栄養分の粒をつまんで、柔毛まで運ぼう。');
+      return;
+    }
+    dragging = best;
+    dragging.state = 'drag';
+    dragging.path = [];
+    dragging.done = null;
+    dragging.grab = [best.x - p.x, best.y - p.y];
+    canvas.setPointerCapture(e.pointerId);
+    say('「' + KINDS[best.kind].name + '」をつまんだ。毛細血管とリンパ管の、どちらに入るかな？');
+    draw();
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (!dragging) { return; }
+    const p = toCanvas(e);
+    dragging.x = Math.max(10, Math.min(W - 10, p.x + dragging.grab[0]));
+    dragging.y = Math.max(10, Math.min(H - 10, p.y + dragging.grab[1]));
+    hoverZone = zoneAt(dragging.x, dragging.y);
+    draw();
+  });
+
+  function endPointer() {
+    if (!dragging) { return; }
+    const p = dragging;
+    dragging = null;
+    const zone = zoneAt(p.x, p.y);
+    hoverZone = null;
+    if (!zone) {
+      p.state = 'return';
+      moveAlong(p, [p.home], function () { p.state = 'lumen'; draw(); });
+      say('柔毛の中の、毛細血管かリンパ管の上で指をはなそう。');
+      animate();
+    } else if (zone === KINDS[p.kind].to) {
+      accept(p, p.x, p.y);
+    } else {
+      reject(p, zone);
+    }
+    draw();
+  }
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+
+  function near(x, y, cx, cy, r) { return Math.hypot(x - cx, y - cy) <= r; }
+
+  // ===== ボタン =====
+  viewButtons.forEach(function (b) {
+    b.addEventListener('click', function () { goView(Number(b.dataset.view)); });
+  });
+
+  helpBtn.addEventListener('click', function () {
+    if (view === 1) {
+      compare = !compare;
+      updatePanel();
+      if (compare) {
+        say('ピンクの線が、でこぼこの表面の長さ。この絵では、平らなときの約' + SURFACE_TIMES + '倍の長さになる。柔毛がたくさんあることは、栄養分を吸収するうえでどのように都合がよいかな？');
+      } else {
+        say(START_MSG);
+      }
+      draw();
+      return;
+    }
+    // 1つ運んでもらう（画面をさわらなくても運べるように）
+    const next = particles.find(function (q) { return q.state === 'lumen'; });
+    if (!next) {
+      say('もう全部運んだよ。もう一度やるなら「もとに戻す」を押そう。');
+      return;
+    }
+    if (KINDS[next.kind].to === 'blood') {
+      next.x = CAP_X[0];
+      next.y = 220;
+    } else {
+      next.x = VX;
+      next.y = 220;
+    }
+    accept(next, next.x, next.y);
+    draw();
+  });
+
+  // もとに戻す（まだ何もしていないときは、何をすればよいかを伝える）
+  resetBtn.addEventListener('click', function () {
+    const moved = particles.some(function (q) { return q.state !== 'lumen'; });
+    if (!moved && view === 1 && !compare) {
+      say('まだ何もしていないよ。黄色でかこんだ柔毛をタップして、大きくして見よう。');
+      return;
+    }
+    if (!moved && view === 2) {
+      say('まだ何も運んでいないよ。小腸の中の栄養分の粒をつまんで、柔毛まで運ぼう。');
+      return;
+    }
+    resetParticles();
+    compare = false;
+    goView(1);
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  updatePanel();
+  draw();
+  Promise.all([
+    document.fonts.load('700 15px ' + FONT, '小腸の中ひだ柔毛毛細血管リンパ管→肝臓へ首の下で血管と合流'),
+    document.fonts.load('700 16px ' + FONT, 'でこぼこの表面の長さは、平らなときの約倍0123456789'),
+    document.fonts.load('700 14px ' + FONT, 'ブドウ糖アミノ酸無機物脂肪酸モノグリセリド平らなときの長さ')
+  ]).finally(function () {
+    if (!animating) { draw(); }
+  });
+</script>
+
+  <footer class="site-footer">
+    <p>© 2026 さわってうごく理科教材</p>
+  </footer>
+</body>
+</html>

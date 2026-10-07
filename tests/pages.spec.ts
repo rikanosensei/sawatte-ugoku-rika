@@ -8,6 +8,8 @@ const PAGES = [
   'grade3.html',
   'mirror.html',
   'digestion.html',
+  'squid.html',
+  'villus.html',
   'fall.html',
 ];
 
@@ -95,14 +97,17 @@ test('学年のナビゲーションで、いまの学年に印がつく', async
 
 test('トップには全部の教材が並ぶ', async ({ page }) => {
   await page.goto('index.html');
-  await expect(page.locator('.m-card')).toHaveCount(3);
+  await expect(page.locator('.m-card')).toHaveCount(5);
 });
 
 test('教材がまだない分野は「準備中」と出て、リンクにはならない', async ({ page }) => {
   await page.goto('grade2.html');
   await expect(page.locator('.empty')).toHaveCount(3);
-  await expect(page.locator('.m-card')).toHaveCount(1);
-  await expect(page.locator('.field-section.field-biology .m-card')).toHaveAttribute('href', 'digestion.html');
+  await expect(page.locator('.m-card')).toHaveCount(3);
+  const bio = page.locator('.field-section.field-biology .m-card');
+  await expect(bio.nth(0)).toHaveAttribute('href', 'digestion.html');
+  await expect(bio.nth(1)).toHaveAttribute('href', 'squid.html');
+  await expect(bio.nth(2)).toHaveAttribute('href', 'villus.html');
 });
 
 test('パソコンではパンくずが出て、スマホでは隠れる', async ({ page }) => {

@@ -220,6 +220,256 @@ test.describe('落下運動と反発係数', () => {
   });
 });
 
+test.describe('イカの解剖', () => {
+  // キャンバスの中の座標（600 × 360 を基準）をタップする
+  // （スマホでは手順のボタンがキャンバスの下にあるので、先にキャンバスを画面に出す）
+  async function tap(page: Page, x: number, y: number) {
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const p = await toScreen(page, x, y);
+    await page.mouse.click(p.x, p.y);
+  }
+  const msg = (page: Page) => page.locator('#msg');
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('squid.html');
+    await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
+  });
+
+  test('①外観：体の部分をタップすると名前が見つかり、全部見つけるとお祝い', async ({ page }) => {
+    const before = await canvasImage(page);
+    const parts: [string, number, number][] = [
+      ['口', 168, 180], ['目', 207, 141], ['ろうと', 244, 180], ['ひれ', 500, 100], ['外とう膜', 360, 160], ['あし', 90, 140],
+    ];
+    for (const [name, x, y] of parts.slice(0, 5)) {
+      await tap(page, x, y);
+      await expect(msg(page)).toContainText(`「${name}」を見つけた`);
+    }
+    expect(await canvasImage(page)).not.toBe(before);
+    await expect(page.locator('#outsideValue')).toHaveText('5');
+    await tap(page, 90, 140);
+    await expect(msg(page)).toContainText('外観の部分を全部見つけた');
+
+    // もう見つけた部分をもう一度タップしたとき
+    await tap(page, 168, 180);
+    await expect(msg(page)).toContainText('もう見つけた');
+  });
+
+  test('②切り開く：点線にそってドラッグして切り、ふちを引っぱって広げる', async ({ page }) => {
+    await page.getByRole('button', { name: '次の手順へ進む' }).click();
+    await expect(page.getByRole('button', { name: /^② 外とう膜を切り開く/ })).toHaveAttribute('aria-pressed', 'true');
+
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const start = await toScreen(page, 262, 180);
+    const off = await toScreen(page, 330, 240);
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    await page.mouse.move(off.x, off.y, { steps: 5 });
+    await expect(msg(page)).toContainText('内臓に傷をつけてしまう');   // 点線からはずれると注意が出る
+
+    const beforeCut = await canvasImage(page);
+    for (const x of [320, 380, 440, 500, 544]) {
+      const p = await toScreen(page, x, 181);
+      await page.mouse.move(p.x, p.y, { steps: 5 });
+    }
+    await page.mouse.up();
+    await expect(msg(page)).toContainText('先端まで切れた');
+    expect(await canvasImage(page)).not.toBe(beforeCut);
+
+    // 切り口のふちをつまんで、下に引っぱる
+    const edge = await toScreen(page, 370, 182);
+    const pulled = await toScreen(page, 370, 270);
+    await page.mouse.move(edge.x, edge.y);
+    await page.mouse.down();
+    await page.mouse.move(pulled.x, pulled.y, { steps: 8 });
+    await page.mouse.up();
+    await expect(msg(page)).toContainText('外とう膜を広げた');
+  });
+
+  test('②切り開く：ボタンでも切り進めて、広げられる', async ({ page }) => {
+    await page.getByRole('button', { name: /^② 外とう膜を切り開く/ }).click();
+    const cut = page.getByRole('button', { name: 'はさみで少し切り進める' });
+    await cut.click();
+    await expect(msg(page)).toContainText('少し切り進めた');
+    for (let i = 0; i < 3; i++) await cut.click();
+    await expect(msg(page)).toContainText('先端まで切れた');
+    await page.getByRole('button', { name: '外とう膜を広げる' }).click();
+    await expect(msg(page)).toContainText('外とう膜を広げた');
+  });
+
+  test('③内臓：内臓をタップすると名前が見つかり、全部見つけるとお祝い', async ({ page }) => {
+    await page.getByRole('button', { name: /^③ 内臓の観察/ }).click();
+    const organs: [string, number, number][] = [
+      ['肛門', 270, 180], ['心臓', 418, 150], ['胃', 470, 182], ['墨袋', 340, 168], ['腸', 380, 194], ['肝臓', 330, 184], ['えら', 330, 116],
+    ];
+    for (const [name, x, y] of organs) {
+      await tap(page, x, y);
+      await expect(msg(page)).toContainText(`「${name}」を見つけた`);
+    }
+    await expect(page.locator('#organValue')).toHaveText('7');
+    await expect(msg(page)).toContainText('内臓を全部見つけた');
+  });
+
+  test('④消化管：切りはなして裏返し、スポイトをおすと、赤インクが肛門から出る', async ({ page }) => {
+    await page.getByRole('button', { name: /^④ 消化管のつながり/ }).click();
+    const ink = page.locator('#inkValue');
+
+    // 点線にそってはさみをドラッグして、内臓と外とう膜を切りはなす
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const start = await toScreen(page, 290, 216);
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    for (const x of [340, 390, 440, 455]) {
+      const p = await toScreen(page, x, 216);
+      await page.mouse.move(p.x, p.y, { steps: 5 });
+    }
+    await page.mouse.up();
+    await expect(msg(page)).toContainText('切りはなせた');
+
+    // 内臓をタップして裏返す
+    await tap(page, 360, 180);
+    await expect(msg(page)).toContainText('内臓を裏返した');
+
+    await tap(page, 168, 180);
+    await expect(msg(page)).toContainText('スポイトを口に当てた');
+    const press = page.getByRole('button', { name: 'スポイトをおす' });
+    for (const place of ['食道', '胃', '腸']) {
+      await press.click();
+      await expect(ink).toHaveText(place);
+    }
+    await press.click();
+    await expect(ink).toHaveText('肛門');
+    await expect(msg(page)).toContainText('肛門から出てきた');
+  });
+
+  test('④消化管：スポイトをおしつづけると、赤インクが進む', async ({ page }) => {
+    await page.getByRole('button', { name: /^④ 消化管のつながり/ }).click();
+    await page.getByRole('button', { name: '内臓と外とう膜を切りはなす' }).click();
+    await page.getByRole('button', { name: '内臓を裏返す' }).click();
+    await page.getByRole('button', { name: 'スポイトを口に当てる' }).click();
+
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const dropper = await toScreen(page, 166, 110);
+    await page.mouse.move(dropper.x, dropper.y);
+    await page.mouse.down();
+    await expect(page.locator('#inkValue')).not.toHaveText('まだ');
+    await page.mouse.up();
+  });
+
+  test('最初からやり直すと、手順・数・図が最初に戻る', async ({ page }) => {
+    const reset = page.getByRole('button', { name: '最初からやり直す' });
+    const before = await canvasImage(page);
+
+    // まだ何もしていないときに押すと、何をすればよいかが出る
+    await reset.click();
+    await expect(msg(page)).toContainText('まだ何もしていない');
+
+    await page.getByRole('button', { name: '名前を1つ教えてもらう' }).click();
+    await page.getByRole('button', { name: /^④ 消化管のつながり/ }).click();
+    await page.getByRole('button', { name: '内臓と外とう膜を切りはなす' }).click();
+    await page.getByRole('button', { name: '内臓を裏返す' }).click();
+    await page.getByRole('button', { name: 'スポイトを口に当てる' }).click();
+    await page.getByRole('button', { name: 'スポイトをおす' }).click();
+    await reset.click();
+
+    await expect(page.getByRole('button', { name: /^① 外観の観察/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#outsideValue')).toHaveText('0');
+    await expect(page.locator('#inkValue')).toHaveText('まだ');
+    await expect(msg(page)).toContainText('全身の外観を観察しよう');
+    expect(await canvasImage(page)).toBe(before);
+  });
+});
+
+test.describe('栄養分の吸収', () => {
+  const msg = (page: Page) => page.locator('#msg');
+
+  // 粒をつまんで、(tx, ty) まで運んで指をはなす（座標は 600 × 360 を基準）
+  async function carry(page: Page, x: number, y: number, tx: number, ty: number) {
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const from = await toScreen(page, x, y);
+    const to = await toScreen(page, tx, ty);
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.mouse.move(to.x, to.y, { steps: 8 });
+    await page.mouse.up();
+  }
+
+  // ①の黄色でかこんだ柔毛をタップして、②へ
+  async function zoomIn(page: Page) {
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const p = await toScreen(page, 300, 152);
+    await page.mouse.click(p.x, p.y);
+    await expect(page.getByRole('button', { name: /^② 柔毛の中/ })).toHaveAttribute('aria-pressed', 'true');
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('villus.html');
+    await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
+  });
+
+  test('①かべの表面の長さをくらべると、倍率が出て図が変わる', async ({ page }) => {
+    const before = await canvasImage(page);
+    await page.getByRole('button', { name: 'かべの表面の長さをくらべる' }).click();
+    await expect(msg(page)).toContainText(/平らなときの約\d+倍/);
+    expect(await canvasImage(page)).not.toBe(before);
+    await page.getByRole('button', { name: 'くらべる線を消す' }).click();
+    expect(await canvasImage(page)).toBe(before);
+  });
+
+  test('柔毛をタップすると、大きくして柔毛の中を見られる', async ({ page }) => {
+    await zoomIn(page);
+    await expect(msg(page)).toContainText('どちらの管に入るか予想して運ぼう');
+  });
+
+  test('ブドウ糖をリンパ管に入れるとはね返り、毛細血管に入れると吸収される', async ({ page }) => {
+    await zoomIn(page);
+    await carry(page, 72, 82, 300, 230);
+    await expect(msg(page)).toContainText('リンパ管には入らないみたい');
+    await expect(page.locator('#leftValue')).toHaveText('9');
+
+    await page.waitForTimeout(800);        // はね返った粒が、もとの場所にもどるまで待つ
+    await carry(page, 72, 82, 250, 220);
+    await expect(msg(page)).toContainText('「ブドウ糖」が毛細血管に入った');
+    await expect(page.locator('#bloodValue')).toHaveText('1');
+    await expect(page.locator('#leftValue')).toHaveText('8');
+  });
+
+  test('脂肪酸を毛細血管に入れるとはね返る', async ({ page }) => {
+    await zoomIn(page);
+    await carry(page, 158, 184, 250, 220);
+    await expect(msg(page)).toContainText('毛細血管には入らないみたい');
+  });
+
+  test('脂肪酸2つとモノグリセリドをリンパ管に入れると、再び脂肪になる', async ({ page }) => {
+    await zoomIn(page);
+    await carry(page, 158, 184, 300, 230);
+    await expect(msg(page)).toContainText('「脂肪酸」が柔毛の中に入った');
+    await carry(page, 452, 176, 300, 230);
+    await carry(page, 528, 198, 300, 230);
+    await expect(msg(page)).toContainText('再び脂肪になって、リンパ管に入った');
+    await expect(page.locator('#lymphValue')).toHaveText('3');
+  });
+
+  test('5種類を全部運ぶとお祝いが出て、もとに戻すと最初にもどる', async ({ page }) => {
+    const before = await canvasImage(page);
+    const reset = page.getByRole('button', { name: 'もとに戻す' });
+    await reset.click();
+    await expect(msg(page)).toContainText('まだ何もしていない');
+
+    await page.getByRole('button', { name: /^② 柔毛の中/ }).click();
+    const help = page.getByRole('button', { name: '1つ運んでもらう' });
+    for (let i = 0; i < 9; i++) await help.click();
+    await expect(msg(page)).toContainText('5種類の栄養分を全部吸収できた');
+    await expect(page.locator('#bloodValue')).toHaveText('6');
+    await expect(page.locator('#lymphValue')).toHaveText('3');
+    await expect(page.locator('#leftValue')).toHaveText('0');
+
+    await reset.click();
+    await expect(page.getByRole('button', { name: /^① 小腸のかべ/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#leftValue')).toHaveText('9');
+    expect(await canvasImage(page)).toBe(before);
+  });
+});
+
 test('キャンバスは、画面の細かさに合わせてくっきり描かれる', async ({ page }) => {
   await page.goto('fall.html');
   const info = await page.locator('#board').evaluate((c: HTMLCanvasElement) => ({
