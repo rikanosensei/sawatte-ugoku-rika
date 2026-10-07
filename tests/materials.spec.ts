@@ -379,6 +379,97 @@ test.describe('イカの解剖', () => {
   });
 });
 
+test.describe('栄養分の吸収', () => {
+  const msg = (page: Page) => page.locator('#msg');
+
+  // 粒をつまんで、(tx, ty) まで運んで指をはなす（座標は 600 × 360 を基準）
+  async function carry(page: Page, x: number, y: number, tx: number, ty: number) {
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const from = await toScreen(page, x, y);
+    const to = await toScreen(page, tx, ty);
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.mouse.move(to.x, to.y, { steps: 8 });
+    await page.mouse.up();
+  }
+
+  // ①の黄色でかこんだ柔毛をタップして、②へ
+  async function zoomIn(page: Page) {
+    await page.locator('#board').scrollIntoViewIfNeeded();
+    const p = await toScreen(page, 300, 152);
+    await page.mouse.click(p.x, p.y);
+    await expect(page.getByRole('button', { name: /^② 柔毛の中/ })).toHaveAttribute('aria-pressed', 'true');
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('villus.html');
+    await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
+  });
+
+  test('①かべの表面の長さをくらべると、倍率が出て図が変わる', async ({ page }) => {
+    const before = await canvasImage(page);
+    await page.getByRole('button', { name: 'かべの表面の長さをくらべる' }).click();
+    await expect(msg(page)).toContainText(/平らなときの約\d+倍/);
+    expect(await canvasImage(page)).not.toBe(before);
+    await page.getByRole('button', { name: 'くらべる線を消す' }).click();
+    expect(await canvasImage(page)).toBe(before);
+  });
+
+  test('柔毛をタップすると、大きくして柔毛の中を見られる', async ({ page }) => {
+    await zoomIn(page);
+    await expect(msg(page)).toContainText('どちらの管に入るか予想して運ぼう');
+  });
+
+  test('ブドウ糖をリンパ管に入れるとはね返り、毛細血管に入れると吸収される', async ({ page }) => {
+    await zoomIn(page);
+    await carry(page, 72, 82, 300, 230);
+    await expect(msg(page)).toContainText('リンパ管には入らないみたい');
+    await expect(page.locator('#leftValue')).toHaveText('9');
+
+    await page.waitForTimeout(800);        // はね返った粒が、もとの場所にもどるまで待つ
+    await carry(page, 72, 82, 250, 220);
+    await expect(msg(page)).toContainText('「ブドウ糖」が毛細血管に入った');
+    await expect(page.locator('#bloodValue')).toHaveText('1');
+    await expect(page.locator('#leftValue')).toHaveText('8');
+  });
+
+  test('脂肪酸を毛細血管に入れるとはね返る', async ({ page }) => {
+    await zoomIn(page);
+    await carry(page, 158, 184, 250, 220);
+    await expect(msg(page)).toContainText('毛細血管には入らないみたい');
+  });
+
+  test('脂肪酸2つとモノグリセリドをリンパ管に入れると、再び脂肪になる', async ({ page }) => {
+    await zoomIn(page);
+    await carry(page, 158, 184, 300, 230);
+    await expect(msg(page)).toContainText('「脂肪酸」が柔毛の中に入った');
+    await carry(page, 452, 176, 300, 230);
+    await carry(page, 528, 198, 300, 230);
+    await expect(msg(page)).toContainText('再び脂肪になって、リンパ管に入った');
+    await expect(page.locator('#lymphValue')).toHaveText('3');
+  });
+
+  test('5種類を全部運ぶとお祝いが出て、もとに戻すと最初にもどる', async ({ page }) => {
+    const before = await canvasImage(page);
+    const reset = page.getByRole('button', { name: 'もとに戻す' });
+    await reset.click();
+    await expect(msg(page)).toContainText('まだ何もしていない');
+
+    await page.getByRole('button', { name: /^② 柔毛の中/ }).click();
+    const help = page.getByRole('button', { name: '1つ運んでもらう' });
+    for (let i = 0; i < 9; i++) await help.click();
+    await expect(msg(page)).toContainText('5種類の栄養分を全部吸収できた');
+    await expect(page.locator('#bloodValue')).toHaveText('6');
+    await expect(page.locator('#lymphValue')).toHaveText('3');
+    await expect(page.locator('#leftValue')).toHaveText('0');
+
+    await reset.click();
+    await expect(page.getByRole('button', { name: /^① 小腸のかべ/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#leftValue')).toHaveText('9');
+    expect(await canvasImage(page)).toBe(before);
+  });
+});
+
 test('キャンバスは、画面の細かさに合わせてくっきり描かれる', async ({ page }) => {
   await page.goto('fall.html');
   const info = await page.locator('#board').evaluate((c: HTMLCanvasElement) => ({
