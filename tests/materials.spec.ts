@@ -223,10 +223,12 @@ test.describe('落下運動と反発係数', () => {
 test.describe('イカの解剖', () => {
   const msg = (page: Page) => page.locator('#msg');
   const tool = (page: Page, name: string) => page.locator('.tool-btn', { hasText: name }).click();
+  const record = (page: Page, group: string, name: string) => page.locator(`.check-list li[data-group="${group}"][data-name="${name}"]`);
 
-  // キャンバスの座標（600 × 360 を基準）を、画面の座標に直す。先にキャンバスを画面に出す
+  // キャンバスの座標（600 × 360 を基準）を、画面の座標に直す。
+  // 先にキャンバスを画面のまん中に出す（上のバーにかくれないように）
   async function at(page: Page, x: number, y: number) {
-    await page.locator('#board').scrollIntoViewIfNeeded();
+    await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
     return toScreen(page, x, y);
   }
   async function tap(page: Page, x: number, y: number) {
@@ -251,6 +253,34 @@ test.describe('イカの解剖', () => {
     return pts;
   };
 
+  // よく使う操作
+  async function turnOver(page: Page) {
+    await tool(page, '手');
+    await tap(page, 360, 180);
+    await page.waitForTimeout(600);   // 裏返す動きが終わるまで待つ
+  }
+  async function cutMantle(page: Page) {
+    await tool(page, 'はさみ');
+    await dragThrough(page, line(260, 546, 180));
+    await expect(msg(page)).toContainText('先端まで切れた');
+  }
+  async function openMantle(page: Page) {
+    await tool(page, 'ピンセット');
+    await dragThrough(page, [[380, 176], [380, 150], [380, 120], [380, 95]]);
+    await dragThrough(page, [[380, 184], [380, 220], [380, 250], [380, 270]]);
+    await expect(msg(page)).toContainText('外とう膜を広げた');
+    await page.waitForTimeout(600);
+  }
+  async function severAndFlip(page: Page) {
+    await tool(page, 'はさみ');
+    await dragThrough(page, line(290, 454, 218));
+    await expect(msg(page)).toContainText('切りはなせた');
+    await tool(page, 'ピンセット');
+    await dragThrough(page, [[372, 182], [372, 165], [372, 150], [372, 125]]);
+    await expect(msg(page)).toContainText('内臓を裏返した');
+    await page.waitForTimeout(800);
+  }
+
   test.beforeEach(async ({ page }) => {
     await page.goto('squid.html');
     await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
@@ -266,89 +296,66 @@ test.describe('イカの解剖', () => {
     await expect(loupe).toHaveAttribute('aria-pressed', 'false');
   });
 
-  test('①ルーペで外観を見つけ、手で裏返すと、ろうとも見つかる', async ({ page }) => {
+  test('ルーペで外観を見つけると記録に印がつき、手で裏返すと、ろうとも見つかる', async ({ page }) => {
     await tool(page, 'ルーペ');
     for (const [name, x, y] of [['口', 166, 180], ['あし', 96, 162], ['目', 206, 138], ['外とう膜', 360, 152], ['ひれ', 478, 100]] as const) {
       await tap(page, x, y);
       await expect(msg(page)).toContainText(`「${name}」を見つけた`);
+      await expect(record(page, 'outside', name)).toHaveClass(/is-found/);
     }
     await expect(msg(page)).toContainText('裏返してみよう');
-    await tool(page, '手');
-    await tap(page, 360, 180);
-    await expect(msg(page)).toContainText('ろうとのある側が上');
+    await turnOver(page);
     await tool(page, 'ルーペ');
-    await page.waitForTimeout(600);   // 裏返す動きが終わるまで待つ
     await tap(page, 246, 180);
     await expect(msg(page)).toContainText('外観の部分を全部見つけた');
     await expect(page.locator('#foundValue')).toHaveText('6');
   });
 
-  test('②背中側のままでは切れず、ゆっくり切ると傷をつけずに切れる', async ({ page }) => {
-    await page.locator('.step-btn', { hasText: '外とう膜を切る' }).click();
+  test('背中側からは切れず、裏返してゆっくり切ると傷をつけずに切れる', async ({ page }) => {
     await tool(page, 'はさみ');
     await tap(page, 260, 180);
-    await expect(msg(page)).toContainText('ろうとのある側を上にしよう');
-
-    await tool(page, '手');
-    await tap(page, 360, 180);
-    await page.waitForTimeout(600);
-    await tool(page, 'はさみ');
-    await dragThrough(page, line(260, 546, 180));
+    await expect(msg(page)).toContainText('ろうとのある側から切るよ');
+    await turnOver(page);
+    await cutMantle(page);
     await expect(msg(page)).toContainText('内臓に傷をつけずに切れた');
     await expect(page.locator('#scratchValue')).toHaveText('0');
   });
 
-  test('②はさみを速く動かすと、内臓に傷がつく', async ({ page }) => {
-    await page.locator('.step-btn', { hasText: '外とう膜を切る' }).click();
-    await page.getByRole('button', { name: 'やり方を見せてもらう' }).click();   // ろうとのある側を上にする
-    await page.waitForTimeout(600);
+  test('はさみを速く動かすと、内臓に傷がつく', async ({ page }) => {
+    await turnOver(page);
     await tool(page, 'はさみ');
     await dragThrough(page, [[260, 180], [300, 180], [380, 180], [460, 180]], 5);
     await expect(msg(page)).toContainText('内臓に傷をつけてしまった');
     await expect(page.locator('#scratchValue')).not.toHaveText('0');
   });
 
-  test('③ピンセットで上と下の切り口を引っぱると、外とう膜が開く', async ({ page }) => {
-    await page.locator('.step-btn', { hasText: '外とう膜を広げる' }).click();
-    await tool(page, 'ピンセット');
-    await dragThrough(page, [[380, 176], [380, 150], [380, 120], [380, 95]]);
-    await expect(msg(page)).toContainText('上が開いた');
-    await dragThrough(page, [[380, 184], [380, 220], [380, 250], [380, 270]]);
-    await expect(msg(page)).toContainText('外とう膜を広げた');
-  });
-
-  test('④ピンセットで内臓にさわると、名前が見つかる', async ({ page }) => {
-    await page.locator('.step-btn', { hasText: '内臓の観察' }).click();
-    await tool(page, 'ピンセット');
+  test('切ってから切り口を広げると、内臓の名前が見つかる', async ({ page }) => {
+    await turnOver(page);
+    await cutMantle(page);
+    await openMantle(page);
     const organs = [['肛門', 270, 181], ['心臓', 421, 148], ['胃', 472, 182], ['墨袋', 342, 167], ['腸', 380, 196], ['肝臓', 330, 184], ['えら', 330, 118]] as const;
     for (const [name, x, y] of organs) {
       await tap(page, x, y);
       await expect(msg(page)).toContainText(`「${name}」を見つけた`);
+      await expect(record(page, 'organ', name)).toHaveClass(/is-found/);
     }
     await expect(msg(page)).toContainText('内臓を全部見つけた');
   });
 
-  test('⑤切りはなして、ピンセットで引っぱると内臓が裏返る', async ({ page }) => {
-    await page.locator('.step-btn', { hasText: '切りはなして裏返す' }).click();
-    await tool(page, 'はさみ');
-    await dragThrough(page, line(290, 454, 218));
-    await expect(msg(page)).toContainText('切りはなせた');
-    await tool(page, 'ピンセット');
-    await dragThrough(page, [[372, 182], [372, 165], [372, 150], [372, 125]]);
-    await expect(msg(page)).toContainText('内臓を裏返した');
-    await expect(page.locator('.step-btn', { hasText: '消化管のつながり' })).toHaveAttribute('aria-pressed', 'true');
-  });
+  test('内臓を切りはなして裏返し、スポイトで赤インクを入れると肛門から出る', async ({ page }) => {
+    await turnOver(page);
+    await cutMantle(page);
+    await openMantle(page);
 
-  test('⑥スポイトで赤インクを吸い、口でおしつづけると肛門から出る', async ({ page }) => {
-    await page.locator('.step-btn', { hasText: '消化管のつながり' }).click();
+    // 裏返す前に口へ入れようとすると、先に食道を見えるようにするよう伝える
     await tool(page, 'スポイト');
+    await tap(page, 166, 180);
+    await expect(msg(page)).toContainText('食道が見えるようにしてから');
 
-    // 口の外でおすと、皿にこぼれる
-    await tap(page, 400, 300);
-    await expect(msg(page)).toContainText('ビーカーの赤インクの中でおして');
-
+    await severAndFlip(page);
+    await tool(page, 'スポイト');
     const suck = async () => {
-      await tap(page, 547, 95);
+      await tap(page, 558, 52);
       await expect(msg(page)).toContainText('スポイトに赤インクを吸った');
     };
     const mouth = await at(page, 166, 180);
@@ -365,39 +372,44 @@ test.describe('イカの解剖', () => {
     await expect(msg(page)).toContainText('肛門から出てきた', { timeout: 8000 });
     await page.mouse.up();
     await expect(page.locator('#inkValue')).toHaveText('肛門');
+    await expect(record(page, 'tract', '食道')).toHaveClass(/is-found/);
+    await expect(record(page, 'tract', '肛門')).toHaveClass(/is-found/);
   });
 
-  test('「やり方を見せてもらう」だけでも最後まで進められ、やり直すと最初にもどる', async ({ page }) => {
+  test('ヒントは、いまの状態に合わせて変わる', async ({ page }) => {
+    const hint = page.getByRole('button', { name: 'ヒントを見る' });
+    await hint.click();
+    await expect(msg(page)).toContainText('「ルーペ」でイカの上をなぞって');
+    await tool(page, 'ルーペ');
+    for (const [x, y] of [[166, 180], [96, 162], [206, 138], [360, 152], [478, 100]]) await tap(page, x, y);
+    await hint.click();
+    await expect(msg(page)).toContainText('「手」でイカを裏返すと');
+    await turnOver(page);
+    await tool(page, 'ルーペ');
+    await tap(page, 246, 180);
+    await hint.click();
+    await expect(msg(page)).toContainText('「はさみ」を持って');
+  });
+
+  test('最初からやり直すと、記録と図が最初にもどる', async ({ page }) => {
     const before = await canvasImage(page);
     const reset = page.getByRole('button', { name: '最初からやり直す' });
     await reset.click();
     await expect(msg(page)).toContainText('まだ何もしていない');
 
-    const help = page.getByRole('button', { name: 'やり方を見せてもらう' });
-    const next = page.getByRole('button', { name: '次の手順へ進む' });
-    for (let i = 0; i < 7; i++) { await help.click(); await page.waitForTimeout(550); }
-    await expect(msg(page)).toContainText('外観の部分を全部見つけた');
-    await next.click();
-    for (let i = 0; i < 4; i++) await help.click();
-    await expect(msg(page)).toContainText('先端まで切れた');
-    await next.click();
-    await help.click();
-    await expect(msg(page)).toContainText('外とう膜を広げた');
-    await next.click();
-    for (let i = 0; i < 7; i++) await help.click();
-    await expect(msg(page)).toContainText('内臓を全部見つけた');
-    await next.click();
-    await help.click();
-    await help.click();
-    await expect(msg(page)).toContainText('内臓を裏返した');
-    await page.waitForTimeout(800);
-    for (let i = 0; i < 8; i++) { await help.click(); await page.waitForTimeout(150); }
-    await expect(msg(page)).toContainText('肛門から出てきた');
-
+    await tool(page, 'ルーペ');
+    await tap(page, 166, 180);
+    await turnOver(page);
+    await tool(page, 'はさみ');
+    await dragThrough(page, line(260, 330, 180));
     await reset.click();
-    await expect(page.locator('.step-btn').first()).toHaveAttribute('aria-pressed', 'true');
+
     await expect(page.locator('#foundValue')).toHaveText('0');
-    await page.waitForTimeout(100);
+    await expect(page.locator('.check-list li.is-found')).toHaveCount(0);
+    await expect(msg(page)).toContainText('自由に観察・解剖してみよう');
+    // 道具を持っていると図の上に道具が描かれるので、指を図の外に出してからくらべる
+    await page.mouse.move(0, 0);
+    await page.locator('#board').dispatchEvent('pointerleave', { pointerType: 'mouse' });
     expect(await canvasImage(page)).toBe(before);
   });
 });

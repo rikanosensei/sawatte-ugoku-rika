@@ -40,7 +40,7 @@
     <div class="page-head">
       <ul class="chips" aria-label="分野と学年"><li class="chip field-biology">生物</li><li class="chip">中学2年</li></ul>
       <h1 class="page-title">イカの解剖</h1>
-      <p class="lead">道具を持って、手順にそってイカを解剖しよう。体のつくりと、消化管のつながりを観察しよう。</p>
+      <p class="lead">道具を持って、自由にイカを解剖しよう。体のつくりと、消化管のつながりを観察しよう。</p>
     </div>
 
     <div class="sim-layout">
@@ -61,23 +61,41 @@
         </dl>
         <div class="guide">
           <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
-          <p id="msg" class="notice" aria-live="polite">①イカを解剖皿にのせたよ。下の道具から「ルーペ」を選んで、イカの上をなぞって外観を観察しよう。「手」でさわると、イカを裏返せるよ。</p>
+          <p id="msg" class="notice" aria-live="polite">イカを解剖皿にのせたよ。下の道具を選んで、自由に観察・解剖してみよう。困ったら「ヒントを見る」を押そう。</p>
         </div>
       </section>
 
       <div class="card panel">
-            <h2 class="panel-title">解剖の手順</h2>
-            <div class="choice-list">
-              <button class="btn-choice step-btn" data-step="1" aria-pressed="true">① 外観の観察<small>ルーペで全身を見る</small></button>
-              <button class="btn-choice step-btn" data-step="2" aria-pressed="false">② 外とう膜を切る<small>はさみで先端まで</small></button>
-              <button class="btn-choice step-btn" data-step="3" aria-pressed="false">③ 外とう膜を広げる<small>ピンセットで開く</small></button>
-              <button class="btn-choice step-btn" data-step="4" aria-pressed="false">④ 内臓の観察<small>えらや肝臓、胃など</small></button>
-              <button class="btn-choice step-btn" data-step="5" aria-pressed="false">⑤ 切りはなして裏返す<small>はさみとピンセット</small></button>
-              <button class="btn-choice step-btn" data-step="6" aria-pressed="false">⑥ 消化管のつながり<small>スポイトで赤インク</small></button>
-            </div>
+            <h2 class="panel-title">観察のきろく</h2>
+            <h3 class="panel-sub">外観</h3>
+            <ul class="check-list">
+                <li data-group="outside" data-name="あし">あし<span class="sr-state">（まだ）</span></li>
+                <li data-group="outside" data-name="目">目<span class="sr-state">（まだ）</span></li>
+                <li data-group="outside" data-name="口">口<span class="sr-state">（まだ）</span></li>
+                <li data-group="outside" data-name="ろうと">ろうと<span class="sr-state">（まだ）</span></li>
+                <li data-group="outside" data-name="外とう膜">外とう膜<span class="sr-state">（まだ）</span></li>
+                <li data-group="outside" data-name="ひれ">ひれ<span class="sr-state">（まだ）</span></li>
+            </ul>
+            <h3 class="panel-sub">内臓</h3>
+            <ul class="check-list">
+                <li data-group="organ" data-name="えら">えら<span class="sr-state">（まだ）</span></li>
+                <li data-group="organ" data-name="心臓">心臓<span class="sr-state">（まだ）</span></li>
+                <li data-group="organ" data-name="肝臓">肝臓<span class="sr-state">（まだ）</span></li>
+                <li data-group="organ" data-name="墨袋">墨袋<span class="sr-state">（まだ）</span></li>
+                <li data-group="organ" data-name="胃">胃<span class="sr-state">（まだ）</span></li>
+                <li data-group="organ" data-name="腸">腸<span class="sr-state">（まだ）</span></li>
+                <li data-group="organ" data-name="肛門">肛門<span class="sr-state">（まだ）</span></li>
+            </ul>
+            <h3 class="panel-sub">赤インクが通ったところ</h3>
+            <ul class="check-list">
+                <li data-group="tract" data-name="口">口<span class="sr-state">（まだ）</span></li>
+                <li data-group="tract" data-name="食道">食道<span class="sr-state">（まだ）</span></li>
+                <li data-group="tract" data-name="胃">胃<span class="sr-state">（まだ）</span></li>
+                <li data-group="tract" data-name="腸">腸<span class="sr-state">（まだ）</span></li>
+                <li data-group="tract" data-name="肛門">肛門<span class="sr-state">（まだ）</span></li>
+            </ul>
             <div class="panel-actions">
-              <button id="nextBtn" class="btn btn-primary btn-block">次の手順へ進む</button>
-              <button id="helpBtn" class="btn btn-secondary btn-block">やり方を見せてもらう</button>
+              <button id="hintBtn" class="btn btn-secondary btn-block">ヒントを見る</button>
               <button id="resetBtn" class="btn btn-tertiary btn-block">最初からやり直す</button>
             </div>
       </div>
@@ -88,14 +106,13 @@
         <summary>使い方</summary>
         <div class="accordion-body">
           <ol class="steps">
-              <li>外観の観察：ルーペを持って、イカの上をなぞる。あし・目・外とう膜・ひれ・口を見つける。手でイカを裏返すと、ろうとのある側が見える。</li>
-              <li>外とう膜を切る：ろうとのある側を上にして、はさみで外とう膜の下から先端まで、点線にそってゆっくり切る。速く動かすと、内臓に傷がつく。</li>
-              <li>外とう膜を広げる：ピンセットで切り口のふちをつまんで、上と下に開く。</li>
-              <li>内臓の観察：ピンセットかルーペで、えらや肝臓、胃などの内臓を見つける。</li>
-              <li>切りはなして裏返す：はさみで点線にそって内臓と外とう膜を切りはなし、ピンセットで内臓をつまんで上に引き、裏返す。</li>
-              <li>消化管のつながり：スポイトをビーカーの赤インクの中でおして、はなして吸う。口に差しこんでおしつづけ、赤インクが食道、胃、腸を通り、肛門から出るようすを見る。</li>
+              <li>下の道具（手・ルーペ・はさみ・ピンセット・スポイト）から1つ選ぶ。選んだ道具で、イカにさわる。</li>
+              <li>ルーペでなぞると大きく見え、少し見つめると名前が分かる。手でさわると、イカを裏返せる。</li>
+              <li>ろうとのある側を上にして、はさみで外とう膜の下から先端まで、ゆっくり切る。速く動かすと、内臓に傷がつく。</li>
+              <li>ピンセットで切り口を上と下に広げて、内臓を観察する。はさみで内臓と外とう膜を切りはなし、内臓をつまんで上に引っぱると裏返る。</li>
+              <li>スポイトをビーカーの赤インクの中でおして、はなして吸う。口に差しこんでおしつづけ、赤インクが食道、胃、腸を通り、肛門から出るようすを見る。</li>
           </ol>
-          <p>画面をさわらなくても、「やり方を見せてもらう」のボタンで同じ操作ができます。本物の解剖では、はさみでけがをしないように注意しよう。</p>
+          <p>見つけたものは「観察のきろく」に印がつきます。次に何をすればよいか迷ったら「ヒントを見る」を押そう。本物の解剖では、はさみでけがをしないように注意しよう。</p>
         </div>
       </details>
       <details class="accordion">
@@ -103,7 +120,7 @@
         <div class="accordion-body prose">
           <p>イカの絵は、本物のイカと教科書の図をもとに描いたものです。器官の形や大きさ、位置、色は、本物と少しちがいます。心臓は、教科書の図と同じように、3か所の小さなかたまりで表しています。体の小さな点は、イカの皮ふにある色のつぶです。</p>
           <p>はさみを速く動かすと内臓に傷がつく、というのは、本物の解剖で「刃先を上に向けて、少しずつ切る」ことを、画面の上で表したものです。ピンセットやルーペは教科書のこのページには出てきませんが、解剖でよく使う道具なので入れています。</p>
-          <p>⑥で裏返したあとの図では、外とう膜をはずし、頭と内臓だけを描いています。食道・胃・腸の通り道は、分かりやすくするために単純にしています。本物の観察では、赤インクはうすめて使い、スポイトで少しずつ入れます。</p>
+          <p>内臓を裏返したあとの図では、外とう膜をはずし、頭と内臓だけを描いています。食道・胃・腸の通り道は、分かりやすくするために単純にしています。本物の観察では、赤インクはうすめて使い、スポイトで少しずつ入れます。</p>
         </div>
       </details>
     </div>
@@ -113,10 +130,9 @@
   const canvas = document.getElementById('board');
   const ctx = canvas.getContext('2d');
   const msg = document.getElementById('msg');
-  const nextBtn = document.getElementById('nextBtn');
-  const helpBtn = document.getElementById('helpBtn');
+  const hintBtn = document.getElementById('hintBtn');
   const resetBtn = document.getElementById('resetBtn');
-  const stepButtons = document.querySelectorAll('.step-btn');
+  const recordItems = document.querySelectorAll('.check-list li');
   const toolButtons = document.querySelectorAll('.tool-btn');
   const foundValue = document.getElementById('foundValue');
   const scratchValue = document.getElementById('scratchValue');
@@ -169,30 +185,26 @@
   const SEVER_START = 290;
   const SEVER_END = 452;
   const MOUTH = [166, 180];     // 口（あしのつけねの真ん中）
-  const BEAKER = { x: 520, y: 54, w: 54, h: 58 };   // 赤インクのビーカー
+  const BEAKER = { x: 534, y: 18, w: 48, h: 50 };   // 赤インクのビーカー（皿の右上）
   const FAST = 420;             // これより速くはさみを動かすと、内臓に傷がつく（1秒に進む長さ）
 
-  // ===== 手順ごとの文 =====
-  const STEP_MSG = {
-    1: '①イカを解剖皿にのせたよ。下の道具から「ルーペ」を選んで、イカの上をなぞって外観を観察しよう。「手」でさわると、イカを裏返せるよ。',
-    2: '②ろうとのある側を上にして、「はさみ」で外とう膜の下（ろうとのそば）から、点線にそって先端までゆっくり切ろう。速く動かすと内臓に傷がつくよ。',
-    3: '③「ピンセット」で切り口のふちをつまんで、上と下に引っぱって外とう膜を広げよう。',
-    4: '④内臓（えらや肝臓、胃など）を観察しよう。「ピンセット」か「ルーペ」で内臓にさわって、名前を見つけよう。',
-    5: '⑤「はさみ」で点線にそって、内臓と外とう膜を切りはなそう。切りはなせたら、「ピンセット」で内臓をつまんで上に引っぱり、裏返そう。',
-    6: '⑥「スポイト」を選んで、ビーカーの赤インクの中でおして、はなして吸おう。それから口に差しこんで、おしつづけよう。'
-  };
+  // ===== ふきだしと図の説明の文 =====
+  const START_MSG = 'イカを解剖皿にのせたよ。下の道具を選んで、自由に観察・解剖してみよう。困ったら「ヒントを見る」を押そう。';
   const SIDE_LABEL = {
-    dorsal: '解剖皿にのせたイカを、背中側から見た図。左があし、右がひれ。',
-    ventral: '解剖皿にのせたイカを、ろうとのある側から見た図。左があし、右がひれ。真ん中に外とう膜を切る点線がある。'
+    dorsal: '解剖皿にのせたイカを、背中側から見た図。左があし、右がひれ。右上に赤インクのビーカーがある。',
+    ventral: '解剖皿にのせたイカを、ろうとのある側から見た図。左があし、右がひれ。真ん中に、外とう膜を切るめやすの点線がある。'
   };
-  const STEP_LABEL = {
-    3: '外とう膜を切ったイカの図。切り口のふちをピンセットで引っぱると、外とう膜が開いて内臓が見える。',
-    4: '外とう膜を広げたイカの図。えら、心臓、肝臓、墨袋、胃、腸、肛門が見える。',
-    5: '外とう膜を広げたイカの図。内臓の下に、切りはなす点線がある。',
-    6: '内臓を裏返して、口から肛門までの消化管を見る図。右上に赤インクのビーカーがある。'
+  const CUT_LABEL = '外とう膜をはさみで切っているイカの図。切り口のすき間から、中が少し見える。';
+  const OPEN_LABEL = '外とう膜を切り開いて広げたイカの図。えら、心臓、肝臓、墨袋、胃、腸、肛門が見える。';
+  const TRACT_LABEL = '内臓を裏返して、口から肛門までの消化管を見る図。右上に赤インクのビーカーがある。';
+  const TOOL_HINT = {
+    hand: '「手」を持った。イカにさわると、裏返せるよ。切り口や内臓をつまむこともできるよ。',
+    loupe: '「ルーペ」を持った。イカの上をなぞると、大きく見えるよ。',
+    scissors: '「はさみ」を持った。刃先を上に向けて、ゆっくり動かして切ろう。',
+    tweezers: '「ピンセット」を持った。さわったり、つまんで引っぱったりできるよ。',
+    dropper: '「スポイト」を持った。ビーカーの赤インクの中でおして、はなすと吸えるよ。'
   };
   const INK_PLACE = ['まだ', '食道', '胃', '腸', '肛門'];
-  const TOOL_NAME = { hand: '手', loupe: 'ルーペ', scissors: 'はさみ', tweezers: 'ピンセット', dropper: 'スポイト' };
 
   // ===== 見つける部分（名前・印の場所・名前を書く場所・さわったかの判定） =====
   function near(x, y, cx, cy, r) { return Math.hypot(x - cx, y - cy) <= r; }
@@ -219,11 +231,11 @@
   ];
 
   // ===== いまの状態 =====
-  let step = 1;
   let tool = null;              // いま持っている道具
   let side = 'dorsal';          // 上を向いている側（dorsal 背中側、ventral ろうとのある側）
   let flipStart = null;         // イカを裏返す動きが始まった時刻（見た目だけ）
   let found = [];               // 見つけた名前
+  let inkSeen = [];             // 赤インクが通った消化管の部分
   let cutX = CUT_START;         // 外とう膜をどこまで切ったか（x 座標）
   let cutDone = false;
   let openTop = 0;              // 上の切り口の開き具合（0 〜 1）
@@ -242,7 +254,6 @@
   let inkPos = 0;               // 赤インクの先が進んだところ（0 まだ 〜 1 食道 〜 2 胃 〜 3 腸 〜 4 肛門から出た）
   let inkTarget = 0;            // ボタンで進める先
   let spills = [];              // 解剖皿にこぼした赤インク { x, y, r }
-  let done = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
 
   // 指（マウス・ペン）の位置
   const pointer = { x: 0, y: 0, inside: false, down: false };
@@ -1247,7 +1258,7 @@
     const now = performance.now();
     drawTray();
     drawSpills();
-    if (step === 6 && (flipped || massStart !== null)) {
+    if (flipped || massStart !== null) {
       // 内臓を裏返す動き：たてにつぶれて、裏側が出てくる
       let k = 1;
       if (massStart !== null) { k = Math.min(1, (now - massStart) / 700); }
@@ -1273,7 +1284,7 @@
       drawOpenSquid();
       ctx.restore();
     }
-    if (step === 6) { drawBeaker(); }
+    drawBeaker();
   }
 
   // イカ（背中側・ろうとのある側。切ったり広げたりしたようすもふくむ）
@@ -1286,15 +1297,18 @@
     if (which === 'ventral') { drawFunnel(); }
   }
 
+  function inTract() { return flipped || massStart !== null; }
+
   function draw() {
     ctx.save();
     drawWorld();
+    const still = flipStart === null && massStart === null;
 
-    // 手順の点線
-    if (step === 2 && side === 'ventral' && !cutDone && flipStart === null) {
+    // 切るところのめやすの点線
+    if (still && !inTract() && side === 'ventral' && !cutDone) {
       drawGuide(CUT_START, CUT_END, CY, cutX);
     }
-    if (step === 5 && !severed) {
+    if (still && opened && !severed) {
       ctx.strokeStyle = 'rgba(110, 40, 30, 0.8)';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -1303,7 +1317,7 @@
       ctx.stroke();
       drawGuide(SEVER_START, SEVER_END, SEVER_Y, severX);
     }
-    if (step === 5 && severed && !flipped && massStart === null) {
+    if (still && severed && !flipped) {
       // 切りはなした内臓のまわり（つまんで引っぱるところ）
       ctx.strokeStyle = 'rgba(27, 27, 47, 0.45)';
       ctx.lineWidth = 1.5;
@@ -1315,14 +1329,16 @@
     }
 
     // 見つけた名前
-    if (flipStart === null && massStart === null) {
-      if (step === 1) {
+    if (still) {
+      if (!inTract() && cutX <= CUT_START) {
         OUTSIDE.forEach(function (p) { if (found.indexOf(p.name) >= 0 && (!p.ventral || side === 'ventral')) { pill(p.name, p.label[0], p.label[1], p.at); } });
       }
-      if (step === 4) {
+      if (!inTract() && opened) {
         ORGANS.forEach(function (p) { if (found.indexOf(p.name) >= 0) { pill(p.name, p.label[0], p.label[1], p.at); } });
       }
-      if (step === 6 && flipped) { TRACT_LABELS.forEach(function (p) { pill(p.name, p.label[0], p.label[1], p.at); }); }
+      if (flipped) {
+        TRACT_LABELS.forEach(function (p) { if (inkSeen.indexOf(p.name) >= 0) { pill(p.name, p.label[0], p.label[1], p.at); } });
+      }
     }
 
     // 持っている道具
@@ -1392,12 +1408,20 @@
 
   // ===== 表示を合わせる =====
   function updatePanel() {
-    stepButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.step) === step)); });
     toolButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.tool === tool)); });
     foundValue.textContent = found.length;
     scratchValue.textContent = scratches.length;
     inkValue.textContent = INK_PLACE[Math.ceil(inkPos - 1e-9)];
-    canvas.setAttribute('aria-label', STEP_LABEL[step] || SIDE_LABEL[side]);
+    // 観察のきろく：見つけたものに印をつける
+    recordItems.forEach(function (li) {
+      const name = li.dataset.name;
+      const ok = li.dataset.group === 'tract' ? inkSeen.indexOf(name) >= 0 : found.indexOf(name) >= 0;
+      li.classList.toggle('is-found', ok);
+      li.querySelector('.sr-state').textContent = ok ? '（見つけた）' : '（まだ）';
+    });
+    let label = SIDE_LABEL[side];
+    if (inTract()) { label = TRACT_LABEL; } else if (opened) { label = OPEN_LABEL; } else if (cutX > CUT_START) { label = CUT_LABEL; }
+    canvas.setAttribute('aria-label', label);
   }
 
   function chooseTool(t) {
@@ -1406,64 +1430,18 @@
     squeezing = false;
     drag = null;
     updatePanel();
-    const hint = {
-      hand: '「手」を持った。イカにさわると、裏返せるよ。',
-      loupe: '「ルーペ」を持った。イカの上をなぞると、大きく見えるよ。',
-      scissors: '「はさみ」を持った。点線のはしから、ゆっくり動かして切ろう。',
-      tweezers: '「ピンセット」を持った。つまみたいところをおさえて、引っぱろう。',
-      dropper: '「スポイト」を持った。' + (step === 6 ? 'ビーカーの赤インクの中でおして、はなして吸おう。' : '⑥で使う道具だよ。')
-    };
-    say(hint[t]);
+    say(TOOL_HINT[t]);
     draw();
   }
 
-  // 手順を変える（前の手順が終わっていなければ、終わったことにする）
-  function goStep(n) {
-    step = n;
-    drag = null;
-    inMouth = false;
-    squeezing = false;
-    flipStart = null;
-    if (n >= 3) {
-      side = 'ventral';
-      cutDone = true;
-      cutX = CUT_END;
-    }
-    if (n >= 4) {
-      opened = true;
-      openTop = 1;
-      openBottom = 1;
-      openAnim = null;
-    }
-    if (n >= 6) {
-      severed = true;
-      severX = SEVER_END;
-      flipped = true;
-      massStart = null;
-    }
-    if (n < 6) { lift = 0; }
-    updatePanel();
-    say(stepMessage(n));
-    draw();
-  }
-  function stepMessage(n) {
-    if (n === 2 && cutDone) { return '外とう膜はもう切れているよ。「次の手順へ進む」を押そう。'; }
-    if (n === 5 && severed) { return '内臓と外とう膜はもう切りはなしたよ。「ピンセット」で内臓をつまんで上に引っぱり、裏返そう。'; }
-    return STEP_MSG[n];
-  }
-
-  // 手順が終わったとき
-  function finishStep(n, text) {
-    done[n] = true;
-    say(text, true);
-    updatePanel();
-  }
-
-  // ===== ①④ 見つける =====
+  // ===== 見つける（ルーペ・ピンセット） =====
+  // いま見えている部分
   function partsNow() {
-    if (step === 1) { return OUTSIDE.filter(function (p) { return !p.ventral || side === 'ventral'; }); }
-    if (step === 4) { return ORGANS; }
-    return [];
+    if (inTract()) { return []; }
+    if (opened) {
+      return ORGANS.concat(OUTSIDE.filter(function (p) { return p.name !== '外とう膜' && p.name !== 'ろうと'; }));
+    }
+    return OUTSIDE.filter(function (p) { return !p.ventral || side === 'ventral'; });
   }
   function partAt(x, y) {
     const list = partsNow();
@@ -1474,15 +1452,15 @@
     if (found.indexOf(part.name) >= 0) { return false; }
     found.push(part.name);
     updatePanel();
-    const all = step === 1 ? OUTSIDE : ORGANS;
-    const left = all.filter(function (p) { return found.indexOf(p.name) < 0; });
+    const group = OUTSIDE.indexOf(part) >= 0 ? OUTSIDE : ORGANS;
+    const left = group.filter(function (p) { return found.indexOf(p.name) < 0; });
     if (left.length === 0) {
-      finishStep(step, step === 1
-        ? '「' + part.name + '」を見つけた！外観の部分を全部見つけた。「次の手順へ進む」を押して、外とう膜を切ろう。'
-        : '「' + part.name + '」を見つけた！内臓を全部見つけた。「次の手順へ進む」を押そう。');
+      say(group === OUTSIDE
+        ? '「' + part.name + '」を見つけた！外観の部分を全部見つけた。'
+        : '「' + part.name + '」を見つけた！内臓を全部見つけた。', true);
     } else {
-      let extra = '（あと ' + left.length + ' つ）';
-      if (step === 1 && left.length === 1 && left[0].ventral && side !== 'ventral') { extra = '（あと 1 つ。「手」でイカを裏返してみよう）'; }
+      let extra = '';
+      if (group === OUTSIDE && left.length === 1 && left[0].ventral && side !== 'ventral') { extra = '（外観はあと 1 つ。「手」でイカを裏返してみよう）'; }
       say('「' + part.name + '」を見つけた！' + extra);
     }
     draw();
@@ -1506,7 +1484,7 @@
     }
   }
 
-  // ===== ② 切る =====
+  // ===== 外とう膜を切る =====
   // 指の速さ（最近 120 ミリ秒のあいだに動いた長さから求める）
   function speedNow() {
     if (trail.length < 2) { return 0; }
@@ -1531,26 +1509,28 @@
     if (speed > FAST && next > cutX + 2) { addScratch(next, CY + 6); }
     snipPhase += (next - cutX) / 5;
     cutX = next;
+    updatePanel();
     if (cutX >= CUT_END - 2 && !cutDone) {
       cutX = CUT_END;
       cutDone = true;
       drag = null;
-      finishStep(2, scratches.length === 0
-        ? '先端まで切れた！内臓に傷をつけずに切れたね。「次の手順へ進む」を押して、外とう膜を広げよう。'
-        : '先端まで切れた！「次の手順へ進む」を押して、外とう膜を広げよう。');
+      say(scratches.length === 0
+        ? '先端まで切れた！内臓に傷をつけずに切れたね。切り口のふちをつまんで、広げてみよう。'
+        : '先端まで切れた！切り口のふちをつまんで、広げてみよう。', true);
     }
   }
 
-  // ===== ③ 広げる =====
+  // ===== 外とう膜を広げる =====
   function finishOpen() {
     if (opened) { return; }
     opened = true;
     openAnim = { top: openTop, bottom: openBottom, start: performance.now() };
     animate();
-    finishStep(3, '外とう膜を広げた！えらや肝臓、胃などの内臓が見えたね。「次の手順へ進む」で観察しよう。');
+    updatePanel();
+    say('外とう膜を広げた！えらや肝臓、胃などの内臓が見えたね。ルーペやピンセットで観察しよう。', true);
   }
 
-  // ===== ⑤ 切りはなす・裏返す =====
+  // ===== 内臓と外とう膜を切りはなして、裏返す =====
   function severTo(x, speed) {
     const next = Math.max(severX, Math.min(SEVER_END, x));
     if (speed > FAST && next > severX + 2) { addScratch(next, SEVER_Y - 14); }
@@ -1560,21 +1540,20 @@
       severX = SEVER_END;
       severed = true;
       drag = null;
-      say('内臓と外とう膜を切りはなせた！「ピンセット」で内臓をつまんで、上に引っぱって裏返そう。', true);
+      say('内臓と外とう膜を切りはなせた！内臓をつまんで、上に引っぱると裏返せるよ。', true);
     }
   }
   function flipMass() {
     lift = 0;
     massStart = performance.now();
-    step = 6;
     updatePanel();
     animate();
-    finishStep(5, '内臓を裏返した！裏側に食道が見えるね。⑥「スポイト」で、赤インクを入れてみよう。');
+    say('内臓を裏返した！裏側に食道が見えるね。スポイトで、口から赤インクを入れてみよう。', true);
   }
 
-  // ===== ⑥ 赤インク =====
+  // ===== 赤インク =====
   function inBeaker(x, y) {
-    return x > BEAKER.x && x < BEAKER.x + BEAKER.w && y > BEAKER.y + 14 && y < BEAKER.y + BEAKER.h;
+    return x > BEAKER.x && x < BEAKER.x + BEAKER.w && y > BEAKER.y + 12 && y < BEAKER.y + BEAKER.h;
   }
   function fillDropper() {
     dropperInk = 1;
@@ -1588,7 +1567,11 @@
     inkPos = pos;
     const after = Math.ceil(inkPos - 1e-9);
     if (after !== before) {
-      inkValue.textContent = INK_PLACE[after];
+      // 赤インクが通ったところを、消化管のきろくに入れる
+      ['口', '食道', '胃', '腸', '肛門'].slice(0, after + 1).forEach(function (n) {
+        if (inkSeen.indexOf(n) < 0 && (n !== '肛門' || pos >= 4)) { inkSeen.push(n); }
+      });
+      updatePanel();
       if (after === 1) { say('赤インクが口から入って、食道を通っていく。'); }
       if (after === 2) { say('赤インクが胃に入った。'); }
       if (after === 3) { say('赤インクが胃から腸を通っていく。'); }
@@ -1596,10 +1579,33 @@
     }
     if (!wasOut && inkPos >= 4) {
       inMouth = false;
-      done[6] = true;
+      if (inkSeen.indexOf('肛門') < 0) { inkSeen.push('肛門'); }
+      updatePanel();
       const care = scratches.length === 0 ? '内臓に傷をつけずに、最後まで解剖できたね！' : '内臓の傷は ' + scratches.length + ' か所だった。次は、もっとゆっくり切ってみよう。';
       say('赤インクが肛門から出てきた！口から入れたものが、食道、胃、腸を通り、肛門から出されることが分かったね。' + care, true);
     }
+  }
+
+  // ===== 次にできること（ヒント） =====
+  function hintText() {
+    const outsideLeft = OUTSIDE.filter(function (p) { return found.indexOf(p.name) < 0; });
+    if (!cutDone && cutX <= CUT_START && outsideLeft.length > 0) {
+      if (outsideLeft.every(function (p) { return p.ventral; }) && side !== 'ventral') { return 'ヒント：「手」でイカを裏返すと、反対側も見られるよ。'; }
+      return 'ヒント：「ルーペ」でイカの上をなぞって、外観をよく見よう。まだ見つけていないものは「観察のきろく」で分かるよ。（口はとても小さいので、あしのつけねをよく見よう）';
+    }
+    if (!cutDone) {
+      if (side !== 'ventral') { return 'ヒント：外とう膜は、ろうとのある側から切るよ。「手」でイカを裏返そう。'; }
+      return 'ヒント：「はさみ」を持って、外とう膜の下（ろうとのそば）から先端まで、点線にそってゆっくり切ろう。';
+    }
+    if (!opened) { return 'ヒント：「ピンセット」で切り口のふちをつまんで、上と下に引っぱって広げよう。'; }
+    if (ORGANS.some(function (p) { return found.indexOf(p.name) < 0; })) { return 'ヒント：「ルーペ」や「ピンセット」で内臓にさわって、名前を見つけよう。'; }
+    if (!severed) { return 'ヒント：「はさみ」で、内臓の下の点線にそって切ると、内臓と外とう膜を切りはなせるよ。'; }
+    if (!flipped) { return 'ヒント：「ピンセット」で内臓をつまんで、上に引っぱると裏返せるよ。'; }
+    if (inkPos < 4) {
+      if (dropperInk <= 0) { return 'ヒント：「スポイト」を持って、ビーカーの赤インクの中でおして、はなすと吸えるよ。'; }
+      return 'ヒント：スポイトを口（あしのつけねの真ん中）に差しこんで、おしつづけよう。';
+    }
+    return 'ぜんぶ観察できたよ。もう一度やるなら「最初からやり直す」を押そう。';
   }
 
   // ===== 画面の操作（マウス・タッチ・ペン共通） =====
@@ -1630,20 +1636,26 @@
     canvas.setPointerCapture(e.pointerId);
     const onSquid = p.x > 10 && p.x < 560 && Math.abs(p.y - CY) < 130;
 
-    // 手：イカを裏返す（①②で、まだ切っていないとき）
     if (tool === 'hand') {
-      if ((step === 1 || step === 2) && cutX <= CUT_START && onSquid) {
+      if (inTract()) {
+        say('内臓はもう裏返したよ。');
+      } else if (cutX > CUT_START) {
+        if (opened && !severed) {
+          say('手では内臓は取り出せないよ。はさみで内臓と外とう膜を切りはなそう。');
+        } else if (severed || (cutDone && !opened)) {
+          grabWithFingers(p);
+        } else {
+          say('切りはじめたら、イカは裏返さないでおこう。');
+        }
+      } else if (onSquid) {
+        // 手でイカを裏返す
         side = side === 'dorsal' ? 'ventral' : 'dorsal';
         flipStart = now;
         updatePanel();
         say(side === 'ventral' ? 'イカを裏返した。ろうとのある側が上になったよ。' : 'イカを裏返した。背中側が上になったよ。');
         animate();
-      } else if (step === 3 || (step === 5 && severed)) {
-        grabWithFingers(p);
-      } else if (cutX > CUT_START && step <= 2) {
-        say('切りはじめたら、イカは裏返さないでおこう。');
       } else {
-        say(toolHint());
+        say('イカにさわると、裏返せるよ。');
       }
       draw();
       return;
@@ -1651,60 +1663,68 @@
 
     if (tool === 'loupe') {
       const part = partAt(p.x, p.y);
-      if (part) { find(part); } else if (step !== 1 && step !== 4) { say('ルーペで大きくして見られるよ。この手順で使う道具は「' + TOOL_NAME[stepTool()] + '」だよ。'); }
+      if (part) {
+        if (!find(part)) { say('「' + part.name + '」だね。ルーペでなぞって、ほかのところもよく見てみよう。'); }
+      } else {
+        say(inTract() ? 'ルーペで大きくして見られるよ。食道は、どこからどこへつながっているかな？' : 'ルーペでなぞると、大きくして見られるよ。');
+      }
       draw();
       return;
     }
 
     if (tool === 'scissors') {
-      if (step === 2) {
-        if (side !== 'ventral') { say('ろうとのある側を上にしよう。「手」でイカを裏返そう。'); return; }
-        if (cutDone) { say('外とう膜はもう切れたよ。「次の手順へ進む」を押そう。'); return; }
-        if (near(p.x, p.y, cutX, CY, 30)) {
+      if (inTract()) {
+        say('もう切るところはないよ。スポイトで赤インクを入れてみよう。');
+      } else if (!cutDone) {
+        if (side !== 'ventral') {
+          say('外とう膜は、ろうとのある側から切るよ。「手」でイカを裏返そう。');
+        } else if (near(p.x, p.y, cutX, CY, 30)) {
           drag = 'cut';
           say('そのまま、点線にそってゆっくり先端（黄色の印）まで切ろう。');
-        } else {
+        } else if (Math.abs(p.y - CY) < 60 && p.x > MANTLE_X) {
           say('はさみの先を、点線のはし（' + (cutX <= CUT_START ? 'ろうとのそば' : '切ったところの先') + '）に当てよう。');
-        }
-      } else if (step === 5 && !severed) {
-        if (near(p.x, p.y, severX, SEVER_Y, 26)) {
-          drag = 'sever';
         } else {
-          say('はさみの先を、内臓の下の点線のはしに当てよう。');
+          say('切るのは外とう膜だよ。はさみの先を、ろうとのそばの点線のはしに当てよう。');
         }
-      } else if (step === 4 && partAt(p.x, p.y)) {
+      } else if (opened && !severed && near(p.x, p.y, severX, SEVER_Y, 26)) {
+        drag = 'sever';
+      } else if (opened && partAt(p.x, p.y) && ORGANS.indexOf(partAt(p.x, p.y)) >= 0) {
         addScratch(p.x, p.y);
         say('はさみで内臓をつつくと、傷がついてしまう。観察には「ピンセット」か「ルーペ」を使おう。');
+      } else if (opened && !severed) {
+        say('内臓と外とう膜を切りはなすなら、はさみの先を、内臓の下の点線のはしに当てよう。');
+      } else if (!opened) {
+        say('外とう膜はもう切れたよ。ピンセットで切り口を広げてみよう。');
       } else {
-        say(toolHint());
+        say('内臓はもう切りはなしたよ。ピンセットで内臓をつまんで、裏返そう。');
       }
       draw();
       return;
     }
 
     if (tool === 'tweezers') {
-      if (step === 4) {
-        const part = partAt(p.x, p.y);
-        if (part) {
-          if (!find(part)) { say('「' + part.name + '」は、もう見つけたよ。ほかの内臓もさがしてみよう。'); }
-        } else {
-          say('ピンセットで、えらや肝臓、胃などの内臓にさわってみよう。');
-        }
-      } else if (step === 3 || (step === 5 && severed)) {
+      const part = partAt(p.x, p.y);
+      if (inTract()) {
+        say('ピンセットで内臓をおさえると、こわれてしまうかも。スポイトで赤インクを入れてみよう。');
+      } else if ((cutDone && !opened) || severed) {
         grabWithFingers(p);
+      } else if (part) {
+        if (!find(part)) { say('「' + part.name + '」は、もう見つけたよ。'); }
+      } else if (cutX > CUT_START && !cutDone) {
+        say('先に、はさみで外とう膜を先端まで切ろう。');
       } else {
-        say(toolHint());
+        say('ピンセットでさわった部分の名前が分かるよ。');
       }
       draw();
       return;
     }
 
     if (tool === 'dropper') {
-      if (step !== 6 || !flipped) { say('スポイトは⑥で使うよ。' + toolHint()); return; }
       if (inBeaker(p.x, p.y)) {
         squeezing = true;
         drag = 'beaker';
       } else if (near(p.x, p.y, MOUTH[0], MOUTH[1], 22)) {
+        if (!inTract()) { say('食道が見えるようにしてから入れよう。内臓と外とう膜を切りはなして、内臓を裏返すと、裏側に食道があるよ。'); return; }
         if (inkPos >= 4) { say('赤インクは、もう肛門から出てきたよ。もう一度やるなら「最初からやり直す」を押そう。'); return; }
         if (dropperInk <= 0) { say('スポイトが空だよ。先にビーカーの赤インクを吸おう。'); return; }
         squeezing = true;
@@ -1727,17 +1747,16 @@
     }
   });
 
-  // ③⑤：切り口のふちや内臓を、つまむ
+  // 手やピンセットで、切り口のふちや内臓をつまむ
   function grabWithFingers(p) {
-    if (step === 3) {
-      if (opened) { say('外とう膜はもう広げたよ。「次の手順へ進む」を押そう。'); return; }
+    if (cutDone && !opened) {
       if (p.x > CUT_START && p.x < CUT_END && Math.abs(p.y - CY) < 24 + Math.max(gapAt(p.x, -1), gapAt(p.x, 1))) {
         drag = p.y < CY ? 'top' : 'bottom';
         say(drag === 'top' ? '上の切り口をつまんだ。上に引っぱろう。' : '下の切り口をつまんだ。下に引っぱろう。');
       } else {
         say('切り口のふち（真ん中の線）をつまもう。');
       }
-    } else if (step === 5 && severed) {
+    } else if (severed && !flipped) {
       if (Math.abs(p.x - 372) < 128 && Math.abs(p.y - CY) < 50) {
         drag = 'mass';
         dragFrom = p;
@@ -1746,14 +1765,6 @@
         say('点線でかこんだ内臓をつまもう。');
       }
     }
-  }
-
-  // この手順で使う道具
-  function stepTool() {
-    return { 1: 'loupe', 2: side === 'ventral' ? 'scissors' : 'hand', 3: 'tweezers', 4: 'tweezers', 5: severed ? 'tweezers' : 'scissors', 6: 'dropper' }[step];
-  }
-  function toolHint() {
-    return 'この手順では「' + TOOL_NAME[stepTool()] + '」を使おう。';
   }
 
   canvas.addEventListener('pointermove', function (e) {
@@ -1846,81 +1857,20 @@
   toolButtons.forEach(function (b) {
     b.addEventListener('click', function () { chooseTool(b.dataset.tool); });
   });
-  stepButtons.forEach(function (b) {
-    b.addEventListener('click', function () { goStep(Number(b.dataset.step)); });
-  });
 
-  nextBtn.addEventListener('click', function () {
-    if (step === 6) {
-      say('⑥が最後の手順だよ。もう一度やるなら「最初からやり直す」を押そう。');
-      return;
-    }
-    goStep(step + 1);
-  });
-
-  // やり方を見せてもらう（画面をさわらなくても、同じ操作ができるように）
-  helpBtn.addEventListener('click', function () {
-    if (flipStart !== null || massStart !== null) { return; }
-    if (step === 1 || step === 4) {
-      const all = step === 1 ? OUTSIDE : ORGANS;
-      const rest = all.filter(function (p) { return found.indexOf(p.name) < 0; });
-      if (rest.length === 0) { say('もう全部見つけたよ。「次の手順へ進む」を押そう。'); return; }
-      const next = rest.find(function (p) { return !p.ventral || side === 'ventral'; });
-      if (!next) {
-        side = 'ventral';
-        flipStart = performance.now();
-        say('手でイカを裏返して、ろうとのある側を上にしたよ。');
-        animate();
-        updatePanel();
-        return;
-      }
-      find(next);
-    } else if (step === 2) {
-      if (cutDone) { say('外とう膜はもう切れたよ。「次の手順へ進む」を押そう。'); return; }
-      if (side !== 'ventral') {
-        side = 'ventral';
-        flipStart = performance.now();
-        updatePanel();
-        say('手でイカを裏返して、ろうとのある側を上にしたよ。');
-        animate();
-        return;
-      }
-      cutTo(cutX + 75, 0);
-      if (!cutDone) { say('はさみで、ゆっくり少し切り進めた。先端まで続けよう。'); }
-      draw();
-    } else if (step === 3) {
-      if (opened) { say('外とう膜はもう広げたよ。「次の手順へ進む」を押そう。'); return; }
-      finishOpen();
-    } else if (step === 5) {
-      if (!severed) {
-        severTo(SEVER_END, 0);
-        draw();
-      } else {
-        flipMass();
-      }
-    } else if (step === 6) {
-      if (inkPos >= 4 || inkTarget >= 4) { say('赤インクは、もう肛門から出てきたよ。もう一度やるなら「最初からやり直す」を押そう。'); return; }
-      if (dropperInk <= 0.05) {
-        fillDropper();
-        return;
-      }
-      // スポイトを口に差しこんで、1区切り分おす
-      const nextTarget = Math.min(4, Math.floor(Math.max(inkTarget, inkPos) + 1e-9) + 1);
-      dropperInk = Math.max(0, dropperInk - (nextTarget - inkPos) / 2.6);
-      inkTarget = nextTarget;
-      animate();
-    }
-  });
+  hintBtn.addEventListener('click', function () { say(hintText()); });
 
   // 最初からやり直す（まだ何もしていないときは、何をすればよいかを伝える）
   resetBtn.addEventListener('click', function () {
-    const nothing = step === 1 && found.length === 0 && side === 'dorsal' && cutX === CUT_START && !severed && spills.length === 0;
+    const nothing = found.length === 0 && side === 'dorsal' && cutX === CUT_START && spills.length === 0 && dropperInk === 0;
     if (nothing) {
-      say('まだ何もしていないよ。' + STEP_MSG[1]);
+      say('まだ何もしていないよ。' + START_MSG);
       return;
     }
     side = 'dorsal';
+    flipStart = null;
     found = [];
+    inkSeen = [];
     cutX = CUT_START;
     cutDone = false;
     openTop = 0;
@@ -1938,8 +1888,10 @@
     inkPos = 0;
     inkTarget = 0;
     spills = [];
-    done = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
-    goStep(1);
+    drag = null;
+    updatePanel();
+    say(START_MSG);
+    draw();
   });
 
   // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す

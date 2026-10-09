@@ -1147,6 +1147,52 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
+/* 見つけたものの記録（解剖の教材など）。見つけると黄色になり、チェックが付く */
+.panel-sub {
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: var(--text-caption);
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.check-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.check-list li {
+  padding: 2px var(--space-3);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--ink-sub);
+  background-color: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-full);
+}
+
+.check-list li.is-found {
+  color: var(--ink);
+  background-color: var(--sun);
+}
+
+.check-list li.is-found::before {
+  content: "✓ ";
+}
+
+/* 画面には出さず、読み上げだけで伝える文字 */
+.sr-state {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* ---------- 13. 開いて読む説明（アコーディオン） ---------- */
 .info {
   margin-top: var(--space-7);
