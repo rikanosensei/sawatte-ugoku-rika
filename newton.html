@@ -62,7 +62,7 @@
             <h2 class="panel-title">はかり方</h2>
             <div class="choice-list">
               <button class="btn-choice mode-btn" data-mode="weight" aria-pressed="true">おもりをつるす<small>100g・50gのおもり</small></button>
-              <button class="btn-choice mode-btn" data-mode="hand" aria-pressed="false">手で引っぱる<small>フックをドラッグ</small></button>
+              <button class="btn-choice mode-btn" data-mode="hand" aria-pressed="false">手で引っぱる<small>つまみをドラッグ</small></button>
             </div>
             <div class="panel-actions">
               <button id="add100Btn" class="btn btn-secondary btn-block">100gのおもりをつるす</button>
@@ -83,7 +83,7 @@
               <li>指標（赤い線）が指す目盛りを読む。何Nかな？</li>
               <li>「表とグラフに記録する」を押すと、力の大きさとばねののびが、右のグラフに点でかかれる。</li>
               <li>おもりの数を変えて記録をふやし、点がどのようにならぶか確かめる。</li>
-              <li>「手で引っぱる」では、フックを指で引っぱって、目盛りの読み方を練習できる。</li>
+              <li>「手で引っぱる」では、フックにかけた黄色いつまみを指で引っぱって、目盛りの読み方を練習できる。</li>
           </ol>
         </div>
       </details>
@@ -312,19 +312,33 @@
     ctx.stroke();
   }
 
-  // 手（フックを引っぱる指）
-  function drawHand(x, y) {
-    ctx.fillStyle = '#ffd7c2';
+  // フックにかけた、引っぱるためのつまみ（黄色い輪）。引っぱっていないときは、下向きの矢印を出す
+  function drawGrip(x, y) {
     ctx.strokeStyle = INK;
-    ctx.lineWidth = 2;
-    roundRect(x - 16, y + 2, 32, 30, 12);
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y + 10);
+    ctx.stroke();
+    ctx.fillStyle = '#ffd23f';
+    ctx.beginPath();
+    ctx.arc(x, y + 24, 14, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    [-8, 0, 8].forEach(function (dx) {
-      roundRect(x + dx - 4, y - 6, 8, 14, 4);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x, y + 24, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    if (!pulling) {
+      ctx.fillStyle = INK;
+      ctx.beginPath();
+      ctx.moveTo(x - 9, y + 46);
+      ctx.lineTo(x + 9, y + 46);
+      ctx.lineTo(x, y + 58);
+      ctx.closePath();
       ctx.fill();
-      ctx.stroke();
-    });
+    }
   }
 
   // グラフ
@@ -418,7 +432,7 @@
         ctx.fillText(weights.reduce(function (a, b) { return a + b; }, 0) + 'g', SX + 34, hy + 14);
       }
     } else {
-      drawHand(SX + 2, hy + 4);
+      drawGrip(SX - 3, hy + 1);
     }
 
     drawGraph();
@@ -462,7 +476,7 @@
     pulling = false;
     updatePanel();
     say(m === 'hand'
-      ? 'フック（ばねばかりのいちばん下）を指でつまんで、下に引っぱってみよう。'
+      ? 'フックにかけた黄色いつまみを、指で下に引っぱってみよう。'
       : (weights.length ? 'おもりをつるしたばねばかりにもどったよ。' : START_MSG));
     shakeFrom(old);
   }
@@ -542,7 +556,7 @@
       }
       return;
     }
-    if (Math.hypot(p.x - SX, p.y - hy) < 40) {
+    if (Math.hypot(p.x - SX, p.y - (hy + 20)) < 40) {
       pulling = true;
       grabGap = p.y - hy;
       wobble = null;
@@ -550,7 +564,7 @@
       say('そのまま下に引っぱろう。指標が指す目盛りを読むと、何Nかな？');
       draw();
     } else {
-      say('フック（ばねばかりのいちばん下）を指でつまんで、下に引っぱろう。');
+      say('黄色いつまみを指でつかんで、下に引っぱろう。');
     }
   });
 
