@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>不要な物質のゆくえ｜さわってうごく理科教材</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="appbar-back" href="grade2.html" aria-label="中学2年の教材にもどる"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <p class="logo"><a href="index.html">さわってうごく理科教材</a></p>
+      <nav class="tabbar" aria-label="学年">
+        <ul>
+          <li><a href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 10.2 12 3.5l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z"/></svg><span>ホーム</span></a></li>
+          <li><a href="grade1.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">1</text></svg><span>1年</span></a></li>
+          <li><a href="grade2.html" aria-current="true"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">2</text></svg><span>2年</span></a></li>
+          <li><a href="grade3.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">3</text></svg><span>3年</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+
+  <main id="main" class="page">
+    <nav class="breadcrumb" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade2.html">中学2年</a></li>
+        <li><span aria-current="page">不要な物質のゆくえ</span></li>
+      </ol>
+    </nav>
+
+    <div class="page-head">
+      <ul class="chips" aria-label="分野と学年"><li class="chip field-biology">生物</li><li class="chip">中学2年</li></ul>
+      <h1 class="page-title">不要な物質のゆくえ</h1>
+      <p class="lead">細胞でできたアンモニアを運んで、体の外に排出されるまでの道すじをたどろう。</p>
+    </div>
+
+    <div class="sim-layout">
+      <section class="card sim-stage" aria-label="シミュレーション">
+        <canvas id="board" class="sim-canvas" width="600" height="400" role="img"
+            aria-label="人の体の図。肝臓、腎臓、輸尿管、ぼうこう、皮膚の汗腺がある。右上の全身の細胞にアンモニアの粒がある。"></canvas>
+        <dl class="readout">
+          <div><dt>尿素にした</dt><dd><span id="ureaValue">0</span> こ</dd></div>
+          <div><dt>尿になった</dt><dd><span id="urineValue">0</span> こ</dd></div>
+          <div><dt>体外へ</dt><dd><span id="outValue">0</span> こ</dd></div>
+        </dl>
+        <div class="guide">
+          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
+          <p id="msg" class="notice" aria-live="polite">右上の「全身の細胞」で、アンモニアができたよ。アンモニアの粒を指でつまんで、まずどこへ運ぶか考えよう。</p>
+        </div>
+      </section>
+
+      <div class="card panel">
+            <h2 class="panel-title">見る場所</h2>
+            <div class="choice-list">
+              <button class="btn-choice view-btn" data-view="1" aria-pressed="true">① 体全体<small>アンモニアを運ぶ</small></button>
+              <button class="btn-choice view-btn" data-view="2" aria-pressed="false">② 腎臓を大きく見る<small>こし出すしくみ</small></button>
+            </div>
+            <div class="panel-actions">
+              <button id="releaseBtn" class="btn btn-primary btn-block">ぼうこうの尿を体外に出す</button>
+              <button id="helpBtn" class="btn btn-secondary btn-block">1つ運んでもらう</button>
+              <button id="resetBtn" class="btn btn-tertiary btn-block">もとに戻す</button>
+            </div>
+      </div>
+    </div>
+
+    <div class="info">
+      <details class="accordion" open>
+        <summary>使い方</summary>
+        <div class="accordion-body">
+          <ol class="steps">
+              <li>右上の「全身の細胞」にあるアンモニアの粒を指でつまんで、体の中の器官まで運ぶ。どこに運ぶか予想して、その上で指をはなす。</li>
+              <li>アンモニアが尿素になったら、尿素をまた運ぶ。尿になると、輸尿管を通ってぼうこうにたまる。</li>
+              <li>「ぼうこうの尿を体外に出す」を押して、尿を体外に排出する。</li>
+              <li>尿素を皮膚の汗腺に運ぶと、汗として排出されるようすも見られる。</li>
+              <li>腎臓をタップするか「② 腎臓を大きく見る」を押すと、腎臓で血液から不要な物質がこし出されるようすが見られる。</li>
+          </ol>
+          <p>画面をさわらなくても、「1つ運んでもらう」のボタンで運べます。</p>
+        </div>
+      </details>
+      <details class="accordion">
+        <summary>このモデルについて</summary>
+        <div class="accordion-body prose">
+          <p>体の図と器官の形・位置は、分かりやすくするために単純にしています。本物では、アンモニアや尿素は血液にとけて運ばれます。ここでは、粒を指で運ぶことで、血液が運ぶ道すじを表しています。</p>
+          <p>「腎臓を大きく見る」は、こし出すしくみを表したイメージ図で、本物の腎臓のつくりとはちがいます。赤い粒は、血液にふくまれる、こし出されないものを表しています。</p>
+        </div>
+      </details>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
+  const viewButtons = document.querySelectorAll('.view-btn');
+  const ureaValue = document.getElementById('ureaValue');
+  const urineValue = document.getElementById('urineValue');
+  const outValue = document.getElementById('outValue');
+
+  // キャンバスで使う文字（ページと同じ書体）
+  const FONT = '"Noto Sans JP", sans-serif';
+
+  // 高解像度の画面（タブレットなど）でもくっきり見えるように、画素を細かくする。
+  // 図は W × H の大きさを基準に描く。
+  const W = canvas.width;
+  const H = canvas.height;
+  const RATIO = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * RATIO;
+  canvas.height = H * RATIO;
+  canvas.dataset.w = W;
+  canvas.dataset.h = H;
+  ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
+
+  // 動きを減らす設定の人には、演出の動きを出さない（結果はそのまま見せる）
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふきだしで話す。cheer が true なら、フラスコがよろこぶ
+  function say(text, cheer) {
+    msg.textContent = text;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;          // いったん描き直させて、動きを最初からにする
+    msg.classList.add('pop');
+    if (cheer) {
+      const icon = document.querySelector('.guide-icon');
+      icon.classList.remove('cheer');
+      void icon.offsetWidth;
+      icon.classList.add('cheer');
+    }
+  }
+
+  // ===== 色 =====
+  const INK = '#1b1b2f';        // 線・文字
+  const SKIN = '#ffe3d3';       // 体
+  const AMMONIA = '#9b5de5';    // アンモニア（むらさきの三角）
+  const UREA = '#2fae66';       // 尿素（緑の丸）
+  const URINE = '#f2c94c';      // 尿（黄色）
+  const SWEAT = '#7fc8f8';      // 汗（水色）
+  const MARK = '#ffd23f';       // 光らせる印
+
+  const START_MSG = '右上の「全身の細胞」で、アンモニアができたよ。アンモニアの粒を指でつまんで、まずどこへ運ぶか考えよう。';
+  const ZOOM_MSG = '腎臓の中で、血液から尿素などの不要な物質が、余分な水分や塩分とともにこし出されて尿になる。こし出されたあとの血液からは、不要な物質がとり除かれているね。';
+  const VIEW_LABEL = {
+    1: '人の体の図。肝臓、腎臓、輸尿管、ぼうこう、皮膚の汗腺がある。右上の全身の細胞にアンモニアの粒がある。粒を器官に運ぶと、尿素や尿や汗に変わる。',
+    2: '腎臓でこし出すしくみを大きくした図。左から血液が流れてきて、尿素・水分・塩分がフィルターを通って下の尿の管へこし出される。赤い粒はこし出されずに、右へ流れていく。'
+  };
+
+  // ===== 器官の位置 =====
+  const LIVER = { x: 180, y: 150, rx: 46, ry: 22 };
+  const KIDNEYS = [{ x: 175, y: 212 }, { x: 245, y: 212 }];
+  const BLADDER = { x: 210, y: 298 };
+  const GLAND = { x: 309, y: 206 };
+  const CELLS = { x: 405, y: 14, w: 185, h: 178 };
+
+  // 運んで指をはなした場所が、どの器官か
+  function zoneAt(x, y) {
+    if (((x - LIVER.x) / (LIVER.rx + 10)) ** 2 + ((y - LIVER.y) / (LIVER.ry + 10)) ** 2 <= 1) { return 'liver'; }
+    if (KIDNEYS.some(function (k) { return Math.hypot(x - k.x, y - k.y) < 28; })) { return 'kidney'; }
+    if (Math.hypot(x - BLADDER.x, y - BLADDER.y) < 30) { return 'bladder'; }
+    if (Math.hypot(x - GLAND.x, y - GLAND.y) < 26) { return 'gland'; }
+    return null;
+  }
+  const ZONE_NAME = { liver: '肝臓', kidney: '腎臓', bladder: 'ぼうこう', gland: '汗腺' };
+
+  // ===== 粒（アンモニア → 尿素） =====
+  const HOMES = [[440, 78], [500, 78], [560, 78], [440, 138], [500, 138], [560, 138]];
+  // 肝臓で尿素になった粒を置く場所
+  const UREA_SPOTS = [[154, 146], [172, 140], [190, 144], [162, 160], [182, 162], [202, 156]];
+
+  // ===== いまの状態 =====
+  let view = 1;
+  let parts = [];
+  let bladder = 0;              // ぼうこうにたまった尿の数
+  let ureaMade = 0;
+  let urineMade = 0;
+  let outCount = 0;
+  let sweatCount = 0;
+  let firstOut = false;         // はじめて体外に出したか
+  let steps = {};               // 流れのうち、通ったところ
+  let drops = [];               // 動いている尿や汗のしずく（見た目だけ）
+  let releaseAnim = null;       // 尿が体外に出る動き（見た目だけ）
+  let dragging = null;
+  let hoverZone = null;
+  let animating = false;
+  let lastTime = null;
+  let zoomTime = 0;             // 腎臓を大きく見る図の時計
+
+  function resetParts() {
+    parts = HOMES.map(function (h, i) {
+      return { id: i, kind: 'ammonia', home: [h[0], h[1]], x: h[0], y: h[1], state: 'free', path: [] };
+    });
+    bladder = 0;
+    ureaMade = 0;
+    urineMade = 0;
+    outCount = 0;
+    sweatCount = 0;
+    firstOut = false;
+    steps = {};
+    drops = [];
+    releaseAnim = null;
+  }
+  resetParts();
+
+  // ===== 描く部品 =====
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // 名前の札。at があれば引き出し線をかく
+  function pill(text, cx, cy, at, size, fill) {
+    ctx.font = '700 ' + (size || 15) + 'px ' + FONT;
+    const w = ctx.measureText(text).width + 16;
+    const x = Math.max(3, Math.min(W - w - 3, cx - w / 2));
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 1.5;
+    if (at) {
+      ctx.beginPath();
+      ctx.moveTo(at[0], at[1]);
+      ctx.lineTo(cx, cy);
+      ctx.stroke();
+    }
+    ctx.fillStyle = fill || '#ffffff';
+    roundRect(x, cy - 13, w, 26, 13);
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = INK;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x + w / 2, cy + 1);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // アンモニア（むらさきの三角）
+  function drawAmmonia(x, y) {
+    ctx.fillStyle = AMMONIA;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y - 11);
+    ctx.lineTo(x + 11, y + 8);
+    ctx.lineTo(x - 11, y + 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+  // 尿素（緑の丸。つやつや）
+  function drawUrea(x, y) {
+    ctx.fillStyle = UREA;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+    ctx.beginPath();
+    ctx.ellipse(x - 3, y - 3, 3, 2, -0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // しずく（尿・汗）
+  function drawDrop(x, y, color, r) {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x, y - r * 1.5);
+    ctx.quadraticCurveTo(x + r, y - r * 0.2, x + r, y + r * 0.3);
+    ctx.arc(x, y + r * 0.3, r, 0, Math.PI);
+    ctx.quadraticCurveTo(x - r, y - r * 0.2, x, y - r * 1.5);
+    ctx.fill();
+    ctx.stroke();
+  }
+  function drawPart(p) {
+    if (p.kind === 'ammonia') { drawAmmonia(p.x, p.y); } else { drawUrea(p.x, p.y); }
+  }
+
+  // ===== ① 体全体 =====
+  function drawBody(now) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+
+    // 体のりんかく（頭・うで・胴）
+    ctx.fillStyle = SKIN;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(210, 44, 30, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    roundRect(196, 70, 28, 16, 4);
+    ctx.fill();
+    roundRect(96, 92, 30, 214, 15);
+    ctx.fill();
+    ctx.stroke();
+    roundRect(294, 92, 30, 214, 15);
+    ctx.fill();
+    ctx.stroke();
+    roundRect(128, 80, 164, 262, 40);
+    ctx.fill();
+    ctx.stroke();
+
+    // 心臓と血管（うすく）
+    ctx.strokeStyle = 'rgba(215, 38, 61, 0.35)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(230, 122);
+    ctx.quadraticCurveTo(230, 200, 175, 212);
+    ctx.moveTo(230, 122);
+    ctx.quadraticCurveTo(232, 200, 245, 212);
+    ctx.moveTo(230, 122);
+    ctx.quadraticCurveTo(200, 130, 180, 150);
+    ctx.moveTo(230, 122);
+    ctx.quadraticCurveTo(290, 150, 309, 206);
+    ctx.stroke();
+    ctx.fillStyle = '#e85a6a';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(230, 122, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // 肝臓
+    glow(hoverZone === 'liver', function () {
+      ctx.beginPath();
+      ctx.ellipse(LIVER.x, LIVER.y, LIVER.rx, LIVER.ry, -0.12, 0, Math.PI * 2);
+    }, '#b7653f');
+
+    // 輸尿管（腎臓 → ぼうこう）
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ureterPaths().forEach(function (pts) { line(pts); });
+    ctx.strokeStyle = '#f5e2a0';
+    ctx.lineWidth = 3.5;
+    ureterPaths().forEach(function (pts) { line(pts); });
+
+    // 腎臓（そらまめの形）
+    KIDNEYS.forEach(function (k, i) {
+      glow(hoverZone === 'kidney', function () {
+        ctx.beginPath();
+        ctx.ellipse(k.x, k.y, 15, 24, i === 0 ? 0.15 : -0.15, 0, Math.PI * 2);
+      }, '#c0504d');
+    });
+
+    // ぼうこう（尿がたまると黄色くなる）
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(BLADDER.x, BLADDER.y, 26, 20, 0, 0, Math.PI * 2);
+    ctx.fillStyle = hoverZone === 'bladder' ? '#fff3c4' : '#fff8ec';
+    ctx.fill();
+    ctx.clip();
+    const level = Math.min(1, bladder / 6);
+    ctx.fillStyle = URINE;
+    ctx.fillRect(BLADDER.x - 30, BLADDER.y + 20 - 40 * level, 60, 40 * level);
+    ctx.restore();
+    ctx.strokeStyle = hoverZone === 'bladder' ? MARK : INK;
+    ctx.lineWidth = hoverZone === 'bladder' ? 4 : 2.5;
+    ctx.beginPath();
+    ctx.ellipse(BLADDER.x, BLADDER.y, 26, 20, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    // ぼうこうから体外へ出る管
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(BLADDER.x, BLADDER.y + 20);
+    ctx.lineTo(BLADDER.x, 342);
+    ctx.stroke();
+
+    // 汗腺（右うでの皮膚）
+    ctx.strokeStyle = hoverZone === 'gland' ? MARK : INK;
+    ctx.lineWidth = hoverZone === 'gland' ? 4 : 2;
+    ctx.beginPath();
+    ctx.moveTo(GLAND.x + 15, GLAND.y - 10);
+    ctx.lineTo(GLAND.x + 2, GLAND.y - 10);
+    for (let i = 0; i < 3; i++) {
+      ctx.arc(GLAND.x - 2, GLAND.y - 4 + i * 6, 3, -Math.PI / 2, Math.PI / 2, i % 2 === 1);
+    }
+    ctx.stroke();
+
+    // 名前
+    pill('肝臓', 50, 132, [LIVER.x - 40, LIVER.y - 4]);
+    pill('腎臓', 50, 212, [KIDNEYS[0].x - 14, KIDNEYS[0].y]);
+    pill('輸尿管', 50, 256, [186, 256]);
+    pill('ぼうこう', 58, 300, [BLADDER.x - 26, BLADDER.y + 2]);
+    pill('汗腺', 365, 232, [GLAND.x + 12, GLAND.y]);
+    pill('体外', 210, 366, null, 15, '#fff3c4');
+
+    // 全身の細胞
+    ctx.fillStyle = '#eefaf2';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    roundRect(CELLS.x, CELLS.y, CELLS.w, CELLS.h, 14);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(47, 174, 102, 0.35)';
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < 6; i++) {
+      ctx.beginPath();
+      ctx.arc(CELLS.x + 32 + (i % 3) * 60, CELLS.y + 64 + Math.floor(i / 3) * 60, 22, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = INK;
+    ctx.font = '700 16px ' + FONT;
+    ctx.fillText('全身の細胞', CELLS.x + 12, CELLS.y + 26);
+    drawAmmonia(CELLS.x + 20, CELLS.y + CELLS.h - 15);
+    ctx.font = '700 14px ' + FONT;
+    ctx.fillStyle = INK;
+    ctx.fillText('アンモニア', CELLS.x + 36, CELLS.y + CELLS.h - 10);
+    drawUrea(CELLS.x + 122, CELLS.y + CELLS.h - 15);
+    ctx.fillStyle = INK;
+    ctx.fillText('尿素', CELLS.x + 136, CELLS.y + CELLS.h - 10);
+
+    // 流れのまとめ（通ったところが光る）
+    drawFlow();
+
+    // しずく・体外に出る尿
+    drops.forEach(function (d) { drawDrop(d.x, d.y, d.color, 6); });
+    if (releaseAnim) {
+      const t = Math.min(1, (now - releaseAnim.start) / 900);
+      ctx.strokeStyle = URINE;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(BLADDER.x, BLADDER.y + 20);
+      ctx.lineTo(BLADDER.x, BLADDER.y + 20 + 60 * t);
+      ctx.stroke();
+    }
+
+    // 粒
+    parts.forEach(function (p) { if (p.state === 'free' || p.state === 'move') { drawPart(p); } });
+    if (dragging) { drawPart(dragging); }
+  }
+
+  // 光らせながら器官を描く
+  function glow(on, pathFn, color) {
+    pathFn();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = on ? MARK : INK;
+    ctx.lineWidth = on ? 4 : 2.5;
+    ctx.stroke();
+  }
+  function line(pts) {
+    ctx.beginPath();
+    pts.forEach(function (p, i) { if (i === 0) { ctx.moveTo(p[0], p[1]); } else { ctx.lineTo(p[0], p[1]); } });
+    ctx.stroke();
+  }
+  function ureterPaths() {
+    return [
+      [[178, 236], [186, 256], [198, 278]],
+      [[242, 236], [234, 256], [222, 278]]
+    ];
+  }
+
+  // 流れのまとめ
+  const FLOW = [
+    ['ammonia', 'アンモニア（細胞）'],
+    ['liver', '→ 肝臓で尿素に'],
+    ['kidney', '→ 腎臓でこし出して尿に'],
+    ['ureter', '→ 輸尿管'],
+    ['bladder', '→ ぼうこう'],
+    ['out', '→ 体外へ']
+  ];
+  function drawFlow() {
+    const x = CELLS.x;
+    let y = 202;
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    roundRect(x, 200, CELLS.w, 192, 14);
+    ctx.fill();
+    ctx.stroke();
+    ctx.font = '700 14px ' + FONT;
+    FLOW.forEach(function (f) {
+      y += 25;
+      const on = steps[f[0]];
+      if (on) {
+        ctx.fillStyle = '#fff3c4';
+        roundRect(x + 6, y - 18, CELLS.w - 12, 24, 8);
+        ctx.fill();
+      }
+      ctx.fillStyle = on ? INK : '#6b6b7e';
+      ctx.fillText(f[1], x + 12, y);
+    });
+    y += 27;
+    ctx.fillStyle = steps.sweat ? INK : '#6b6b7e';
+    ctx.fillText('（汗腺から汗としても）', x + 12, y);
+  }
+
+  // ===== ② 腎臓を大きく見る =====
+  // 血液の中を流れる粒。kind：urea 尿素、water 水分、salt 塩分、blood こし出されないもの
+  const FLOW_KINDS = ['urea', 'water', 'salt', 'blood', 'blood', 'water'];
+  const zoomParts = [];
+  for (let i = 0; i < 18; i++) {
+    zoomParts.push({ kind: FLOW_KINDS[i % FLOW_KINDS.length], lane: 108 + (i * 37) % 30, offset: i * 33, filtered: i % 4 !== 3 });
+  }
+  const FIL_X0 = 240;
+  const FIL_X1 = 360;
+
+  function drawZoomPart(kind, x, y) {
+    if (kind === 'urea') { drawUrea(x, y); return; }
+    if (kind === 'water') { drawDrop(x, y + 2, SWEAT, 5); return; }
+    if (kind === 'salt') {
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = 1.8;
+      ctx.fillRect(x - 6, y - 6, 12, 12);
+      ctx.strokeRect(x - 6, y - 6, 12, 12);
+      return;
+    }
+    ctx.fillStyle = '#d7263d';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(x, y, 10, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function drawZoom() {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    pill('腎臓でこし出すしくみ（イメージ）', 300, 26, null, 16, '#fff3c4');
+
+    // 尿が集まる管（下へ → 輸尿管へ）
+    ctx.fillStyle = '#fff6d6';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(FIL_X0 - 10, 150);
+    ctx.lineTo(FIL_X1 + 10, 150);
+    ctx.lineTo(320, 260);
+    ctx.lineTo(320, 360);
+    ctx.lineTo(280, 360);
+    ctx.lineTo(280, 260);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 血管
+    ctx.fillStyle = '#fde3e3';
+    ctx.fillRect(10, 92, 580, 58);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(10, 92);
+    ctx.lineTo(590, 92);
+    ctx.moveTo(10, 150);
+    ctx.lineTo(FIL_X0, 150);
+    ctx.moveTo(FIL_X1, 150);
+    ctx.lineTo(590, 150);
+    ctx.stroke();
+    // フィルター（あみ目）
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 7]);
+    ctx.beginPath();
+    ctx.moveTo(FIL_X0, 150);
+    ctx.lineTo(FIL_X1, 150);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 流れる粒
+    const t = zoomTime;
+    zoomParts.forEach(function (p) {
+      const s = (t * 70 + p.offset * 3) % 660 - 40;
+      let x = s;
+      let y = p.lane;
+      const goesDown = p.kind !== 'blood' && p.filtered;
+      if (goesDown && x > FIL_X0 + 20) {
+        // フィルターを通って、下の管へこし出される
+        const d = x - (FIL_X0 + 20);
+        x = Math.min(x, FIL_X0 + 40 + (p.lane - 108) * 2) + 0;
+        y = p.lane + d * 1.1;
+        if (y > 150) { x = 300 + (x - 300) * Math.max(0, 1 - (y - 150) / 110); }
+        if (y > 360) { return; }
+      }
+      drawZoomPart(p.kind, x, y);
+    });
+
+    // 名前
+    pill('血液（不要な物質をふくむ）', 120, 72, null, 15);
+    pill('不要な物質がとり除かれた血液', 470, 72, null, 15);
+    ctx.fillStyle = INK;
+    ctx.font = '700 22px ' + FONT;
+    ctx.fillText('→', 40, 128);
+    ctx.fillText('→', 540, 128);
+    pill('こし出される', 450, 196, [FIL_X1 - 6, 156], 15);
+    pill('尿（輸尿管へ）', 420, 330, [320, 330], 15, '#fff3c4');
+
+    // 見方
+    const lx = 20;
+    let ly = 220;
+    [['urea', '尿素などの不要な物質'], ['water', '水分'], ['salt', '塩分'], ['blood', 'こし出されないもの']].forEach(function (r) {
+      drawZoomPart(r[0], lx + 12, ly);
+      ctx.fillStyle = INK;
+      ctx.font = '700 15px ' + FONT;
+      ctx.fillText(r[1], lx + 30, ly + 5);
+      ly += 34;
+    });
+  }
+
+  // ===== 画面全体を描く =====
+  // 線の形などの設定が前の絵から持ちこされないように、毎回まっさらにしてから描く
+  function draw() {
+    const now = performance.now();
+    ctx.save();
+    if (view === 1) { drawBody(now); } else { drawZoom(); }
+    ctx.restore();
+  }
+
+  // ===== 動き =====
+  const SPEED = 260;
+
+  function stepAlong(o, dist) {
+    while (dist > 0 && o.path.length > 0) {
+      const t = o.path[0];
+      const d = Math.hypot(t[0] - o.x, t[1] - o.y);
+      if (d <= dist) {
+        o.x = t[0];
+        o.y = t[1];
+        o.path.shift();
+        dist -= d;
+      } else {
+        o.x += (t[0] - o.x) / d * dist;
+        o.y += (t[1] - o.y) / d * dist;
+        dist = 0;
+      }
+    }
+    if (o.path.length === 0 && o.done) {
+      const done = o.done;
+      o.done = null;
+      done();
+    }
+  }
+  function moveAlong(o, path, done) {
+    o.path = path.slice();
+    o.done = done || null;
+    if (reduceMotion) {
+      while (o.path.length > 0 || o.done) { stepAlong(o, 100000); }
+    }
+  }
+  function busy() {
+    return view === 2 && !reduceMotion
+      || parts.some(function (p) { return p.path.length > 0 || p.done; })
+      || drops.length > 0 || releaseAnim !== null;
+  }
+  function tick(now) {
+    const dt = lastTime === null ? 0 : Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
+    zoomTime += dt;
+    parts.forEach(function (p) { if (p.path.length > 0 || p.done) { stepAlong(p, SPEED * (p.fast ? 2.5 : 1) * dt); } });
+    drops.forEach(function (d) { stepAlong(d, 160 * dt); });
+    drops = drops.filter(function (d) { return d.path.length > 0 || d.done; });
+    if (releaseAnim && now - releaseAnim.start > 900) { releaseAnim = null; }
+    draw();
+    if (busy()) {
+      requestAnimationFrame(tick);
+    } else {
+      animating = false;
+      lastTime = null;
+      draw();
+    }
+  }
+  function animate() {
+    if (reduceMotion) {
+      drops.forEach(function (d) { while (d.path.length > 0 || d.done) { stepAlong(d, 100000); } });
+      drops = [];
+      releaseAnim = null;
+      draw();
+      return;
+    }
+    if (!animating) {
+      animating = true;
+      lastTime = null;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  // ===== 表示を合わせる =====
+  function updatePanel() {
+    viewButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.view) === view)); });
+    ureaValue.textContent = ureaMade;
+    urineValue.textContent = urineMade;
+    outValue.textContent = outCount;
+    canvas.setAttribute('aria-label', VIEW_LABEL[view]);
+  }
+
+  function goView(n) {
+    view = n;
+    dragging = null;
+    hoverZone = null;
+    updatePanel();
+    say(n === 2 ? ZOOM_MSG : '体全体にもどったよ。アンモニアや尿素の粒を、運んでみよう。');
+    draw();
+    animate();
+  }
+
+  // ===== 運ぶ =====
+  function freeSpot(list) {
+    for (let i = 0; i < list.length; i++) {
+      const s = list[i];
+      if (!parts.some(function (p) { return p.state !== 'gone' && Math.hypot(p.x - s[0], p.y - s[1]) < 4; })) { return s; }
+    }
+    return list[0];
+  }
+
+  function bounce(p, text) {
+    p.state = 'move';
+    p.fast = true;
+    moveAlong(p, [p.home], function () { p.state = 'free'; p.fast = false; draw(); });
+    say(text);
+    animate();
+  }
+
+  function drop(p, zone) {
+    if (p.kind === 'ammonia') {
+      if (zone === 'liver') {
+        // 肝臓で、アンモニアが無害な尿素に変えられる
+        const spot = freeSpot(UREA_SPOTS);
+        p.kind = 'urea';
+        p.home = [spot[0], spot[1]];
+        p.state = 'move';
+        moveAlong(p, [p.home], function () { p.state = 'free'; draw(); });
+        ureaMade += 1;
+        steps.ammonia = true;
+        steps.liver = true;
+        updatePanel();
+        say('アンモニアが肝臓に運ばれて、体に無害な尿素に変えられた！ 次は、尿素をどこへ運ぶ？');
+        animate();
+      } else {
+        bounce(p, 'アンモニアのままでは、体に有害だよ。' + ZONE_NAME[zone] + 'より先に、体に無害なものに変えるところへ運ぼう。');
+      }
+      return;
+    }
+    // 尿素
+    if (zone === 'kidney') {
+      // 腎臓でこし出されて尿になり、輸尿管を通ってぼうこうへ
+      p.state = 'gone';
+      urineMade += 1;
+      steps.kidney = true;
+      updatePanel();
+      const k = p.x < 210 ? 0 : 1;
+      const d = { x: KIDNEYS[k].x, y: KIDNEYS[k].y, color: URINE, path: [] };
+      moveAlong(d, ureterPaths()[k].concat([[BLADDER.x, BLADDER.y]]), function () {
+        bladder += 1;
+        steps.ureter = true;
+        steps.bladder = true;
+        draw();
+      });
+      drops.push(d);
+      say('腎臓で、尿素が余分な水分や塩分とともに、血液中からこし出されて尿になった。尿は輸尿管を通って、ぼうこうへ。たまったら「ぼうこうの尿を体外に出す」を押そう。');
+      animate();
+    } else if (zone === 'gland') {
+      // 皮膚の汗腺から、水とともにこし出されて汗になる
+      p.state = 'gone';
+      sweatCount += 1;
+      steps.sweat = true;
+      updatePanel();
+      const d = { x: GLAND.x + 15, y: GLAND.y, color: SWEAT, path: [] };
+      moveAlong(d, [[GLAND.x + 22, GLAND.y + 8], [GLAND.x + 26, 300]], null);
+      drops.push(d);
+      say('尿素の一部は、皮膚の汗腺から水とともにこし出されて、汗になって排出される。');
+      checkAll();
+      animate();
+    } else if (zone === 'liver') {
+      bounce(p, '尿素は、もう肝臓で変えてもらったよ。次は、血液中からこし出すところへ運ぼう。');
+    } else {
+      bounce(p, 'ぼうこうには、尿になってから、輸尿管を通って入るよ。先に、血液中からこし出すところへ運ぼう。');
+    }
+  }
+
+  // ぼうこうの尿を体外に出す
+  function release() {
+    if (bladder === 0) {
+      say('ぼうこうに、まだ尿がたまっていないよ。尿素を腎臓に運んでみよう。');
+      return;
+    }
+    outCount += bladder;
+    bladder = 0;
+    steps.out = true;
+    releaseAnim = reduceMotion ? null : { start: performance.now() };
+    updatePanel();
+    if (!firstOut) {
+      firstOut = true;
+      say('ぼうこうにためられた尿が、体外に排出された！ アンモニア → 肝臓で尿素 → 腎臓でこし出して尿 → 輸尿管 → ぼうこう → 体外 の道すじがつながったね。', true);
+    } else {
+      say('ぼうこうにためられた尿が、体外に排出された。');
+    }
+    checkAll();
+    animate();
+  }
+
+  // 全部の粒を排出できたら、お祝い
+  function checkAll() {
+    const left = parts.some(function (p) { return p.state !== 'gone'; });
+    if (!left && bladder === 0 && outCount + sweatCount === parts.length) {
+      say('全身の細胞でできたアンモニアを、全部体外に排出できた！ 腎臓は尿として、汗腺は汗として、不要な物質を体の外に出しているね。', true);
+    }
+  }
+
+  // ===== 画面の操作（マウス・タッチ・ペン共通） =====
+  // 画面上の位置を、キャンバスの座標に直す（キャンバスが縮小されていてもずれないように）
+  function toCanvas(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * W / rect.width,
+      y: (e.clientY - rect.top) * H / rect.height
+    };
+  }
+
+  canvas.addEventListener('pointerdown', function (e) {
+    const p = toCanvas(e);
+    if (view === 2) {
+      say(ZOOM_MSG);
+      return;
+    }
+    // いちばん近い粒をつまむ
+    let best = null;
+    let bestD = 28;
+    parts.forEach(function (q) {
+      if (q.state !== 'free' && q.state !== 'move') { return; }
+      const d = Math.hypot(q.x - p.x, q.y - p.y);
+      if (d < bestD) { best = q; bestD = d; }
+    });
+    if (best) {
+      dragging = best;
+      dragging.state = 'drag';
+      dragging.path = [];
+      dragging.done = null;
+      dragging.grab = [best.x - p.x, best.y - p.y];
+      canvas.setPointerCapture(e.pointerId);
+      say(best.kind === 'ammonia' ? 'アンモニアをつまんだ。どこへ運ぶ？' : '尿素をつまんだ。どこへ運ぶ？');
+      draw();
+      return;
+    }
+    if (zoneAt(p.x, p.y) === 'kidney') {
+      goView(2);
+      return;
+    }
+    if (zoneAt(p.x, p.y) === 'bladder') {
+      release();
+      return;
+    }
+    say('アンモニアや尿素の粒をつまんで、運んでみよう。腎臓をタップすると、大きくして見られるよ。');
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (!dragging) { return; }
+    const p = toCanvas(e);
+    dragging.x = Math.max(8, Math.min(W - 8, p.x + dragging.grab[0]));
+    dragging.y = Math.max(8, Math.min(H - 8, p.y + dragging.grab[1]));
+    hoverZone = zoneAt(dragging.x, dragging.y);
+    draw();
+  });
+
+  function endPointer() {
+    if (!dragging) { return; }
+    const p = dragging;
+    dragging = null;
+    const zone = zoneAt(p.x, p.y);
+    hoverZone = null;
+    if (!zone) {
+      bounce(p, '肝臓・腎臓・ぼうこう・汗腺のどれかの上で、指をはなそう。');
+    } else {
+      drop(p, zone);
+    }
+    draw();
+  }
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+
+  // ===== ボタン =====
+  viewButtons.forEach(function (b) {
+    b.addEventListener('click', function () { goView(Number(b.dataset.view)); });
+  });
+  document.getElementById('releaseBtn').addEventListener('click', function () {
+    if (view !== 1) { goView(1); }
+    release();
+  });
+
+  // 1つ運んでもらう（画面をさわらなくても運べるように）
+  document.getElementById('helpBtn').addEventListener('click', function () {
+    if (view !== 1) { goView(1); }
+    const urea = parts.find(function (p) { return p.kind === 'urea' && p.state === 'free'; });
+    const ammonia = parts.find(function (p) { return p.kind === 'ammonia' && p.state === 'free'; });
+    if (urea) {
+      urea.x = KIDNEYS[0].x;
+      urea.y = KIDNEYS[0].y;
+      drop(urea, 'kidney');
+    } else if (ammonia) {
+      ammonia.x = LIVER.x;
+      ammonia.y = LIVER.y;
+      drop(ammonia, 'liver');
+    } else if (bladder > 0) {
+      release();
+    } else {
+      say('もう全部運んだよ。もう一度やるなら「もとに戻す」を押そう。');
+    }
+    draw();
+  });
+
+  // もとに戻す（まだ何もしていないときは、何をすればよいかを伝える）
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    const moved = parts.some(function (p) { return p.kind !== 'ammonia' || p.state !== 'free'; });
+    if (!moved && view === 1) {
+      say('まだ何もしていないよ。' + START_MSG);
+      return;
+    }
+    resetParts();
+    view = 1;
+    updatePanel();
+    say(START_MSG);
+    draw();
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  updatePanel();
+  draw();
+  Promise.all([
+    document.fonts.load('700 15px ' + FONT, '肝臓腎臓輸尿管ぼうこう汗腺体外アンモニア全身の細胞尿素→でに変えこし出して尿へ（から汗としても）'),
+    document.fonts.load('700 16px ' + FONT, '全身の細胞腎臓でこし出すしくみ（イメージ）'),
+    document.fonts.load('700 15px ' + FONT, '血液不要な物質をふくむがとり除かれたこし出される尿輸尿管へ水分塩分されないもの')
+  ]).finally(function () {
+    if (!animating) { draw(); }
+  });
+</script>
+
+  <footer class="site-footer">
+    <p>© 2026 さわってうごく理科教材</p>
+  </footer>
+</body>
+</html>

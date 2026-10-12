@@ -586,6 +586,93 @@ test.describe('ニュートンばねばかり', () => {
   });
 });
 
+test.describe('不要な物質のゆくえ', () => {
+  const msg = (page: Page) => page.locator('#msg');
+
+  // 粒をつまんで、(tx, ty) まで運んで指をはなす（座標は 600 × 400 を基準）
+  async function carry(page: Page, x: number, y: number, tx: number, ty: number) {
+    await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
+    const from = await toScreen(page, x, y);
+    const to = await toScreen(page, tx, ty);
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.mouse.move(to.x, to.y, { steps: 8 });
+    await page.mouse.up();
+  }
+  const LIVER = [180, 150], KIDNEY = [175, 212], GLAND = [309, 206], BLADDER = [210, 298];
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('excrete.html');
+    await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
+  });
+
+  test('アンモニアをいきなり腎臓に運ぶと、はね返ってヒントが出る', async ({ page }) => {
+    await carry(page, 440, 78, KIDNEY[0], KIDNEY[1]);
+    await expect(msg(page)).toContainText('アンモニアのままでは、体に有害');
+    await expect(page.locator('#ureaValue')).toHaveText('0');
+  });
+
+  test('肝臓で尿素になり、腎臓で尿になって、ぼうこうから体外に出せる', async ({ page }) => {
+    const before = await canvasImage(page);
+    await carry(page, 440, 78, LIVER[0], LIVER[1]);
+    await expect(msg(page)).toContainText('無害な尿素に変えられた');
+    await expect(page.locator('#ureaValue')).toHaveText('1');
+    await page.waitForTimeout(600);   // 尿素が肝臓の上に動き終わるまで待つ
+
+    await carry(page, 154, 146, BLADDER[0], BLADDER[1]);
+    await expect(msg(page)).toContainText('ぼうこうには、尿になってから');
+    await page.waitForTimeout(400);
+    await carry(page, 154, 146, KIDNEY[0], KIDNEY[1]);
+    await expect(msg(page)).toContainText('こし出されて尿になった');
+    await expect(page.locator('#urineValue')).toHaveText('1');
+    expect(await canvasImage(page)).not.toBe(before);
+
+    await page.waitForTimeout(1200);  // 尿がぼうこうにたまるまで待つ
+    await page.getByRole('button', { name: 'ぼうこうの尿を体外に出す' }).click();
+    await expect(msg(page)).toContainText('道すじがつながった');
+    await expect(page.locator('#outValue')).toHaveText('1');
+  });
+
+  test('尿素を汗腺に運ぶと、汗として排出される', async ({ page }) => {
+    await carry(page, 440, 78, LIVER[0], LIVER[1]);
+    await page.waitForTimeout(600);
+    await carry(page, 154, 146, GLAND[0], GLAND[1]);
+    await expect(msg(page)).toContainText('汗になって排出される');
+  });
+
+  test('ぼうこうに尿がないときに出そうとすると、何をすればよいかが出る', async ({ page }) => {
+    await page.getByRole('button', { name: 'ぼうこうの尿を体外に出す' }).click();
+    await expect(msg(page)).toContainText('まだ尿がたまっていない');
+  });
+
+  test('腎臓を大きく見ると、こし出すしくみの説明が出る', async ({ page }) => {
+    await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
+    const k = await toScreen(page, KIDNEY[0], KIDNEY[1]);
+    await page.mouse.click(k.x, k.y);
+    await expect(page.getByRole('button', { name: /^② 腎臓を大きく見る/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(msg(page)).toContainText('余分な水分や塩分とともにこし出されて尿になる');
+  });
+
+  test('全部運ぶとお祝いが出て、もとに戻すと最初にもどる', async ({ page }) => {
+    const before = await canvasImage(page);
+    const reset = page.getByRole('button', { name: 'もとに戻す' });
+    await reset.click();
+    await expect(msg(page)).toContainText('まだ何もしていない');
+
+    const help = page.getByRole('button', { name: '1つ運んでもらう' });
+    for (let i = 0; i < 12; i++) { await help.click(); await page.waitForTimeout(150); }
+    await page.waitForTimeout(1500);
+    await help.click();
+    await expect(msg(page)).toContainText('全部体外に排出できた');
+    await expect(page.locator('#outValue')).toHaveText('6');
+
+    await reset.click();
+    await expect(page.locator('#ureaValue')).toHaveText('0');
+    await page.waitForTimeout(200);
+    expect(await canvasImage(page)).toBe(before);
+  });
+});
+
 test('キャンバスは、画面の細かさに合わせてくっきり描かれる', async ({ page }) => {
   await page.goto('fall.html');
   const info = await page.locator('#board').evaluate((c: HTMLCanvasElement) => ({
