@@ -7,6 +7,7 @@ const PAGES = [
   'grade2.html',
   'grade3.html',
   'mirror.html',
+  'newton.html',
   'digestion.html',
   'squid.html',
   'villus.html',
@@ -97,7 +98,7 @@ test('学年のナビゲーションで、いまの学年に印がつく', async
 
 test('トップには全部の教材が並ぶ', async ({ page }) => {
   await page.goto('index.html');
-  await expect(page.locator('.m-card')).toHaveCount(5);
+  await expect(page.locator('.m-card')).toHaveCount(6);
 });
 
 test('教材がまだない分野は「準備中」と出て、リンクにはならない', async ({ page }) => {

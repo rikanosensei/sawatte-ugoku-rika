@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ニュートンばねばかり｜さわってうごく理科教材</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="appbar-back" href="grade1.html" aria-label="中学1年の教材にもどる"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <p class="logo"><a href="index.html">さわってうごく理科教材</a></p>
+      <nav class="tabbar" aria-label="学年">
+        <ul>
+          <li><a href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 10.2 12 3.5l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z"/></svg><span>ホーム</span></a></li>
+          <li><a href="grade1.html" aria-current="true"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">1</text></svg><span>1年</span></a></li>
+          <li><a href="grade2.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">2</text></svg><span>2年</span></a></li>
+          <li><a href="grade3.html"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="'Noto Sans JP', sans-serif">3</text></svg><span>3年</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+
+  <main id="main" class="page">
+    <nav class="breadcrumb" aria-label="現在位置">
+      <ol>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="grade1.html">中学1年</a></li>
+        <li><span aria-current="page">ニュートンばねばかり</span></li>
+      </ol>
+    </nav>
+
+    <div class="page-head">
+      <ul class="chips" aria-label="分野と学年"><li class="chip field-physics">物理</li><li class="chip">中学1年</li></ul>
+      <h1 class="page-title">ニュートンばねばかり</h1>
+      <p class="lead">おもりをつるして目盛りを読み、力の大きさとばねののびの関係をグラフで確かめよう。</p>
+    </div>
+
+    <div class="sim-layout">
+      <section class="card sim-stage" aria-label="シミュレーション">
+        <canvas id="board" class="sim-canvas" width="600" height="420" role="img"
+            aria-label="左にスタンドにつるしたニュートンばねばかり、右に力の大きさとばねののびのグラフがある図。"></canvas>
+        <dl class="readout">
+          <div><dt>おもり</dt><dd><span id="massValue">0</span> g</dd></div>
+          <div><dt>ばねののび</dt><dd><span id="stretchValue">0.0</span> cm</dd></div>
+          <div><dt>記録</dt><dd><span id="countValue">0</span> こ</dd></div>
+        </dl>
+        <div class="guide">
+          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
+          <p id="msg" class="notice" aria-live="polite">「100gのおもりをつるす」を押して、ばねばかりにおもりをつるしてみよう。</p>
+        </div>
+      </section>
+
+      <div class="card panel">
+            <h2 class="panel-title">はかり方</h2>
+            <div class="choice-list">
+              <button class="btn-choice mode-btn" data-mode="weight" aria-pressed="true">おもりをつるす<small>100g・50gのおもり</small></button>
+              <button class="btn-choice mode-btn" data-mode="hand" aria-pressed="false">手で引っぱる<small>フックをドラッグ</small></button>
+            </div>
+            <div class="panel-actions">
+              <button id="add100Btn" class="btn btn-secondary btn-block">100gのおもりをつるす</button>
+              <button id="add50Btn" class="btn btn-secondary btn-block">50gのおもりをつるす</button>
+              <button id="recordBtn" class="btn btn-primary btn-block">表とグラフに記録する</button>
+              <button id="removeBtn" class="btn btn-tertiary btn-block">おもりを1つはずす</button>
+              <button id="resetBtn" class="btn btn-tertiary btn-block">最初からやり直す</button>
+            </div>
+      </div>
+    </div>
+
+    <div class="info">
+      <details class="accordion" open>
+        <summary>使い方</summary>
+        <div class="accordion-body">
+          <ol class="steps">
+              <li>「100gのおもりをつるす」「50gのおもりをつるす」で、ばねばかりにおもりをつるす。100gのおもりにはたらく重力の大きさを1Nと考える。</li>
+              <li>指標（赤い線）が指す目盛りを読む。何Nかな？</li>
+              <li>「表とグラフに記録する」を押すと、力の大きさとばねののびが、右のグラフに点でかかれる。</li>
+              <li>おもりの数を変えて記録をふやし、点がどのようにならぶか確かめる。</li>
+              <li>「手で引っぱる」では、フックを指で引っぱって、目盛りの読み方を練習できる。</li>
+          </ol>
+        </div>
+      </details>
+      <details class="accordion">
+        <summary>このモデルについて</summary>
+        <div class="accordion-body prose">
+          <p>このばねばかりは、5Nまではかれるものとして、1Nの力でばねが2.0cmのびるようにしています。目盛りは0.5Nごとに1本あります。本物のばねばかりは、種類によってはかれる大きさや目盛りの間かくがちがいます。</p>
+          <p>100gの物体にはたらく重力の大きさは、正確には約0.98Nですが、教科書と同じく1Nと考えています。おもりをつるしたときのゆれは見た目だけの動きで、ばねののびの計算には入れていません。</p>
+        </div>
+      </details>
+    </div>
+  </main>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const msg = document.getElementById('msg');
+  const massValue = document.getElementById('massValue');
+  const stretchValue = document.getElementById('stretchValue');
+  const countValue = document.getElementById('countValue');
+  const modeButtons = document.querySelectorAll('.mode-btn');
+
+  // キャンバスで使う文字（ページと同じ書体）
+  const FONT = '"Noto Sans JP", sans-serif';
+
+  // 高解像度の画面（タブレットなど）でもくっきり見えるように、画素を細かくする。
+  // 図は W × H の大きさを基準に描く。
+  const W = canvas.width;
+  const H = canvas.height;
+  const RATIO = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * RATIO;
+  canvas.height = H * RATIO;
+  canvas.dataset.w = W;
+  canvas.dataset.h = H;
+  ctx.setTransform(RATIO, 0, 0, RATIO, 0, 0);
+
+  // 動きを減らす設定の人には、演出の動きを出さない（結果はそのまま見せる）
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふきだしで話す。cheer が true なら、フラスコがよろこぶ
+  function say(text, cheer) {
+    msg.textContent = text;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;          // いったん描き直させて、動きを最初からにする
+    msg.classList.add('pop');
+    if (cheer) {
+      const icon = document.querySelector('.guide-icon');
+      icon.classList.remove('cheer');
+      void icon.offsetWidth;
+      icon.classList.add('cheer');
+    }
+  }
+
+  // ===== 色 =====
+  const INK = '#1b1b2f';        // 線・文字
+  const POINTER = '#d7263d';    // 指標
+  const GRAPH = '#2446d8';      // グラフ
+  const GRID = '#e3ecf6';       // 方眼（細い線）
+  const GRID_BOLD = '#c9d9ea';  // 方眼（太い線）
+
+  // ===== ばねばかりの決まり =====
+  const MAX_N = 5;              // はかれるのは 5N まで
+  const CM_PER_N = 2;           // 1N の力で、ばねは 2cm のびる
+  const PX_PER_N = 26;          // 図の上で、1N ぶんのびる長さ
+  const SX = 110;               // ばねばかりの中心の x
+  const TOP = 26;               // ばねばかりの本体の上の端
+  const ZERO_Y = 50;            // 0N の目盛りの高さ（力がないときの指標の位置）
+  const BODY_BOTTOM = ZERO_Y + PX_PER_N * MAX_N + 14;
+  const HOOK0 = BODY_BOTTOM + 18;   // 力がないときのフックのいちばん下
+
+  // ===== グラフの決まり =====
+  const GX = 330;               // グラフの原点の x
+  const GY = 360;               // グラフの原点の y
+  const GW = 240;               // 5N ぶんの横の長さ
+  const GH = 300;               // 10cm ぶんのたての長さ
+  const gx = function (n) { return GX + n / MAX_N * GW; };
+  const gy = function (cm) { return GY - cm / (MAX_N * CM_PER_N) * GH; };
+
+  const START_MSG = '「100gのおもりをつるす」を押して、ばねばかりにおもりをつるしてみよう。';
+
+  // ===== いまの状態 =====
+  let mode = 'weight';          // weight おもりをつるす、hand 手で引っぱる
+  let weights = [];             // つるしたおもり（100 か 50）
+  let handN = 0;                // 手で引っぱっている力の大きさ（N）
+  let pulling = false;
+  let grabGap = 0;              // つまんだ位置とフックのずれ（つまんだ瞬間に、ばねがとばないように）
+  let records = [];             // 記録 { n: 力の大きさ, cm: ばねののび }
+  let lineShown = false;        // 点の上に直線を引いたか
+  let wobble = null;            // ゆれ（見た目だけ） { amp, start }
+  let animating = false;
+
+  // 力の大きさ（N）。100g のおもりにはたらく重力の大きさを 1N と考える
+  function forceN() {
+    if (mode === 'hand') { return handN; }
+    return weights.reduce(function (a, b) { return a + b; }, 0) / 100;
+  }
+  // ばねののび（cm）は、力の大きさに比例する
+  function stretchCm(n) { return n * CM_PER_N; }
+  function fmtN(n) { return (Math.round(n * 10) / 10).toString(); }
+  function fmtCm(cm) { return cm.toFixed(1); }
+
+  // ===== 描く部品 =====
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // スタンド
+  function drawStand() {
+    ctx.fillStyle = '#c9ccd6';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    roundRect(18, 6, 10, H - 20, 4);
+    ctx.fill();
+    ctx.stroke();
+    roundRect(18, 6, 120, 10, 4);
+    ctx.fill();
+    ctx.stroke();
+    roundRect(6, H - 18, 120, 12, 5);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // ばね（x を中心に、y0 から y1 まで）
+  function drawSpring(x, y0, y1, half, turns) {
+    const step = (y1 - y0) / (turns * 2);
+    [[3.4, INK], [1.4, '#9fb3c8']].forEach(function (s) {
+      ctx.strokeStyle = s[1];
+      ctx.lineWidth = s[0];
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(x, y0);
+      for (let i = 1; i <= turns * 2; i++) {
+        ctx.lineTo(i === turns * 2 ? x : x + (i % 2 ? half : -half), y0 + step * i);
+      }
+      ctx.stroke();
+    });
+  }
+
+  // ニュートンばねばかり。ext は指標が下がった長さ（図の上の長さ）
+  function drawScale(ext) {
+    // つり下げる輪
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(SX, TOP - 8, 7, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(SX, 16);
+    ctx.lineTo(SX, TOP - 15);
+    ctx.stroke();
+    // 本体
+    const g = ctx.createLinearGradient(SX - 30, 0, SX + 30, 0);
+    g.addColorStop(0, '#dbeeff');
+    g.addColorStop(0.5, '#f4faff');
+    g.addColorStop(1, '#bcd9f5');
+    ctx.fillStyle = g;
+    ctx.lineWidth = 2.5;
+    roundRect(SX - 30, TOP, 60, BODY_BOTTOM - TOP, 10);
+    ctx.fill();
+    ctx.stroke();
+    // 中が見える窓
+    ctx.fillStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    roundRect(SX - 12, TOP + 6, 28, BODY_BOTTOM - TOP - 12, 5);
+    ctx.fill();
+    ctx.stroke();
+    // 目盛り（0.5N ごと。1N ごとに長い線と数字）
+    ctx.fillStyle = INK;
+    ctx.font = '700 15px ' + FONT;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i <= MAX_N * 2; i++) {
+      const y = ZERO_Y + i * PX_PER_N / 2;
+      const long = i % 2 === 0;
+      ctx.lineWidth = long ? 2 : 1.4;
+      ctx.beginPath();
+      ctx.moveTo(SX - 30, y);
+      ctx.lineTo(SX - (long ? 15 : 21), y);
+      ctx.stroke();
+      if (long) { ctx.fillText((i / 2) + 'N', SX - 34, y); }
+    }
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    // 中のばね
+    const py = ZERO_Y + ext;
+    drawSpring(SX + 2, TOP + 8, py - 3, 7, 7);
+    // 指標（赤い線）
+    ctx.fillStyle = POINTER;
+    ctx.fillRect(SX - 28, py - 2, 50, 4);
+    // 指標からフックまでの棒
+    ctx.strokeStyle = '#7b8590';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(SX + 2, py);
+    ctx.lineTo(SX + 2, HOOK0 - 12 + ext);
+    ctx.stroke();
+    // フック
+    const hy = HOOK0 + ext;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(SX + 2, hy - 12);
+    ctx.lineTo(SX + 2, hy - 4);
+    ctx.arc(SX - 3, hy - 4, 5, 0, Math.PI * 0.95);
+    ctx.stroke();
+    return hy;
+  }
+
+  // おもり（金属のつや）
+  function drawWeight(x, y, w, h) {
+    const g = ctx.createLinearGradient(x, 0, x + w, 0);
+    g.addColorStop(0, '#9aa3ad');
+    g.addColorStop(0.35, '#eef1f4');
+    g.addColorStop(1, '#7b8590');
+    ctx.fillStyle = g;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    roundRect(x, y, w, h, 3);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // 手（フックを引っぱる指）
+  function drawHand(x, y) {
+    ctx.fillStyle = '#ffd7c2';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    roundRect(x - 16, y + 2, 32, 30, 12);
+    ctx.fill();
+    ctx.stroke();
+    [-8, 0, 8].forEach(function (dx) {
+      roundRect(x + dx - 4, y - 6, 8, 14, 4);
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
+
+  // グラフ
+  function drawGraph() {
+    // 方眼
+    for (let i = 0; i <= MAX_N * 2; i++) {
+      ctx.strokeStyle = i % 2 === 0 ? GRID_BOLD : GRID;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(gx(i / 2), gy(0));
+      ctx.lineTo(gx(i / 2), gy(MAX_N * CM_PER_N));
+      ctx.stroke();
+    }
+    for (let c = 0; c <= MAX_N * CM_PER_N; c++) {
+      ctx.strokeStyle = c % 2 === 0 ? GRID_BOLD : GRID;
+      ctx.beginPath();
+      ctx.moveTo(gx(0), gy(c));
+      ctx.lineTo(gx(MAX_N), gy(c));
+      ctx.stroke();
+    }
+    // 軸
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(gx(0), gy(MAX_N * CM_PER_N) - 6);
+    ctx.lineTo(gx(0), gy(0));
+    ctx.lineTo(gx(MAX_N) + 6, gy(0));
+    ctx.stroke();
+    ctx.fillStyle = INK;
+    ctx.font = '700 15px ' + FONT;
+    ctx.textAlign = 'center';
+    for (let n = 0; n <= MAX_N; n++) { ctx.fillText(String(n), gx(n), GY + 20); }
+    ctx.fillText('力の大きさ〔N〕', gx(MAX_N / 2), GY + 44);
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    for (let c = 0; c <= MAX_N * CM_PER_N; c += 2) { ctx.fillText(String(c), GX - 8, gy(c)); }
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('ばねののび〔cm〕', GX - 30, gy(MAX_N * CM_PER_N) - 16);
+
+    // 点の上に引いた直線
+    if (lineShown) {
+      ctx.strokeStyle = GRAPH;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(gx(0), gy(0));
+      ctx.lineTo(gx(MAX_N), gy(stretchCm(MAX_N)));
+      ctx.stroke();
+    }
+    // 記録した点
+    records.forEach(function (r) {
+      ctx.fillStyle = GRAPH;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(gx(r.n), gy(r.cm), 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
+
+  // ===== 画面全体を描く =====
+  function draw() {
+    const now = performance.now();
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    drawStand();
+
+    // ゆれ（見た目だけ。計算した力とのびは変えない）
+    let shake = 0;
+    if (wobble) {
+      const t = (now - wobble.start) / 1000;
+      shake = wobble.amp * Math.exp(-t / 0.35) * Math.cos(t * Math.PI * 2 * 2.2);
+    }
+    const ext = forceN() * PX_PER_N + shake;
+    const hy = drawScale(ext);
+
+    if (mode === 'weight') {
+      // つるしたおもり（上から順に）
+      let y = hy + 2;
+      weights.forEach(function (g) {
+        const w = g === 100 ? 50 : 42;
+        const h = g === 100 ? 13 : 8;
+        drawWeight(SX + 2 - w / 2, y, w, h);
+        y += h + 1;
+      });
+      if (weights.length > 0) {
+        ctx.fillStyle = INK;
+        ctx.font = '700 16px ' + FONT;
+        ctx.fillText(weights.reduce(function (a, b) { return a + b; }, 0) + 'g', SX + 34, hy + 14);
+      }
+    } else {
+      drawHand(SX + 2, hy + 4);
+    }
+
+    drawGraph();
+    ctx.restore();
+  }
+
+  // ===== 動き =====
+  function tick() {
+    draw();
+    if (wobble && performance.now() - wobble.start < 1600) {
+      requestAnimationFrame(tick);
+    } else {
+      wobble = null;
+      animating = false;
+      draw();
+    }
+  }
+  // 力が変わったとき、もとの位置からゆれながら止まる
+  function shakeFrom(oldN) {
+    if (reduceMotion) { draw(); return; }
+    wobble = { amp: (oldN - forceN()) * PX_PER_N, start: performance.now() };
+    if (!animating) {
+      animating = true;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  // ===== 表示を合わせる =====
+  function updatePanel() {
+    modeButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.mode === mode)); });
+    massValue.textContent = mode === 'weight' ? weights.reduce(function (a, b) { return a + b; }, 0) : '―';
+    stretchValue.textContent = fmtCm(stretchCm(forceN()));
+    countValue.textContent = records.length;
+  }
+
+  function setMode(m) {
+    if (mode === m) { return; }
+    const old = forceN();
+    mode = m;
+    handN = 0;
+    pulling = false;
+    updatePanel();
+    say(m === 'hand'
+      ? 'フック（ばねばかりのいちばん下）を指でつまんで、下に引っぱってみよう。'
+      : (weights.length ? 'おもりをつるしたばねばかりにもどったよ。' : START_MSG));
+    shakeFrom(old);
+  }
+
+  // ===== おもり =====
+  function addWeight(g) {
+    if (mode !== 'weight') { setMode('weight'); }
+    const total = weights.reduce(function (a, b) { return a + b; }, 0);
+    if (total + g > MAX_N * 100) {
+      say('このばねばかりは5Nまでしかはかれないよ。これ以上つるすと、ばねがのびきってこわれてしまう。');
+      return;
+    }
+    const old = forceN();
+    weights.push(g);
+    updatePanel();
+    say(g + 'gのおもりをつるした（全部で' + (total + g) + 'g）。指標（赤い線）が指す目盛りを読むと、何Nかな？ 読めたら「表とグラフに記録する」を押そう。');
+    shakeFrom(old);
+  }
+
+  function removeWeight() {
+    if (mode !== 'weight' || weights.length === 0) {
+      say('はずすおもりは、まだないよ。「100gのおもりをつるす」を押してみよう。');
+      return;
+    }
+    const old = forceN();
+    const g = weights.pop();
+    updatePanel();
+    say(g + 'gのおもりをはずした。');
+    shakeFrom(old);
+  }
+
+  // ===== 記録 =====
+  function record() {
+    if (mode === 'hand') {
+      say('記録は、おもりをつるしてしよう。「おもりをつるす」を選んでね。');
+      return;
+    }
+    if (weights.length === 0) {
+      say('まだおもりをつるしていないよ。おもりをつるしてから記録しよう。');
+      return;
+    }
+    const n = forceN();
+    if (records.some(function (r) { return Math.abs(r.n - n) < 1e-9; })) {
+      say(fmtN(n) + 'Nのときは、もう記録してあるよ。おもりの数を変えてみよう。');
+      return;
+    }
+    records.push({ n: n, cm: stretchCm(n) });
+    updatePanel();
+    const text = fmtN(n) + 'Nのとき、ばねののびは' + fmtCm(stretchCm(n)) + 'cmだった。';
+    if (records.length >= 4 && !lineShown) {
+      lineShown = true;
+      say(text + ' 点が、原点を通る1本の直線の上にならんだ！ ばねののびは、力の大きさに比例している。だから、ばねばかりの目盛りは等間隔なんだね。', true);
+    } else if (lineShown) {
+      say(text + ' この点も、直線の上にあるね。');
+    } else {
+      say(text + ' おもりの数を変えて、もっと記録してみよう。（あと ' + (4 - records.length) + ' こ）');
+    }
+    draw();
+  }
+
+  // ===== 手で引っぱる（マウス・タッチ・ペン共通） =====
+  // 画面上の位置を、キャンバスの座標に直す（キャンバスが縮小されていてもずれないように）
+  function toCanvas(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * W / rect.width,
+      y: (e.clientY - rect.top) * H / rect.height
+    };
+  }
+
+  canvas.addEventListener('pointerdown', function (e) {
+    const p = toCanvas(e);
+    const hy = HOOK0 + forceN() * PX_PER_N;
+    if (mode !== 'hand') {
+      if (Math.abs(p.x - SX) < 50 && p.y > HOOK0 - 20 && p.y < H) {
+        say('おもりは、「100gのおもりをつるす」「50gのおもりをつるす」のボタンでつるそう。手で引っぱるなら「手で引っぱる」を選んでね。');
+      }
+      return;
+    }
+    if (Math.hypot(p.x - SX, p.y - hy) < 40) {
+      pulling = true;
+      grabGap = p.y - hy;
+      wobble = null;
+      canvas.setPointerCapture(e.pointerId);
+      say('そのまま下に引っぱろう。指標が指す目盛りを読むと、何Nかな？');
+      draw();
+    } else {
+      say('フック（ばねばかりのいちばん下）を指でつまんで、下に引っぱろう。');
+    }
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (!pulling) { return; }
+    const p = toCanvas(e);
+    const n = (p.y - grabGap - HOOK0) / PX_PER_N;
+    if (n > MAX_N) {
+      handN = MAX_N;
+      say('5Nより大きな力で引っぱると、ばねばかりがこわれてしまうよ。');
+    } else {
+      handN = Math.max(0, n);
+    }
+    updatePanel();
+    draw();
+  });
+
+  function endPull() {
+    if (!pulling) { return; }
+    pulling = false;
+    const last = handN;
+    if (last > 0.05) {
+      say('手をはなす前は、およそ' + fmtN(last) + 'Nの力で引いていたよ。目盛りの読みと合っていたかな？ 手をはなすと、ばねはもとの長さにもどった。');
+    }
+    handN = 0;
+    updatePanel();
+    shakeFrom(last);
+  }
+  canvas.addEventListener('pointerup', endPull);
+  canvas.addEventListener('pointercancel', endPull);
+
+  // ===== ボタン =====
+  modeButtons.forEach(function (b) {
+    b.addEventListener('click', function () { setMode(b.dataset.mode); });
+  });
+  document.getElementById('add100Btn').addEventListener('click', function () { addWeight(100); });
+  document.getElementById('add50Btn').addEventListener('click', function () { addWeight(50); });
+  document.getElementById('removeBtn').addEventListener('click', removeWeight);
+  document.getElementById('recordBtn').addEventListener('click', record);
+
+  // 最初からやり直す（まだ何もしていないときは、何をすればよいかを伝える）
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    if (weights.length === 0 && records.length === 0 && mode === 'weight') {
+      say('まだ何もしていないよ。' + START_MSG);
+      return;
+    }
+    mode = 'weight';
+    weights = [];
+    records = [];
+    lineShown = false;
+    handN = 0;
+    pulling = false;
+    wobble = null;
+    updatePanel();
+    say(START_MSG);
+    draw();
+  });
+
+  // 最初の状態を描き、図で使う文字のフォントが読み込めたら描き直す
+  // （キャンバスの文字は、描くまでフォントが読み込まれないため）
+  updatePanel();
+  draw();
+  document.fonts.load('700 16px ' + FONT, '0123456789N.g力の大きさ〔〕ばねののびcm').finally(function () {
+    if (!animating) { draw(); }
+  });
+</script>
+
+  <footer class="site-footer">
+    <p>© 2026 さわってうごく理科教材</p>
+  </footer>
+</body>
+</html>

@@ -505,6 +505,87 @@ test.describe('栄養分の吸収', () => {
   });
 });
 
+test.describe('ニュートンばねばかり', () => {
+  const msg = (page: Page) => page.locator('#msg');
+  const press = (page: Page, name: string) => page.getByRole('button', { name }).click();
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('newton.html');
+    await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
+  });
+
+  test('おもりをつるすと、おもりの重さとばねののびが変わる', async ({ page }) => {
+    const before = await canvasImage(page);
+    await press(page, '100gのおもりをつるす');
+    await press(page, '50gのおもりをつるす');
+    await expect(page.locator('#massValue')).toHaveText('150');
+    await expect(page.locator('#stretchValue')).toHaveText('3.0');   // 1N で 2cm のびる
+    await expect(msg(page)).toContainText('何Nかな');
+    await expect.poll(() => canvasImage(page)).not.toBe(before);
+
+    await press(page, 'おもりを1つはずす');
+    await expect(page.locator('#massValue')).toHaveText('100');
+    await expect(page.locator('#stretchValue')).toHaveText('2.0');
+  });
+
+  test('5Nをこえるおもりは、つるせない', async ({ page }) => {
+    for (let i = 0; i < 5; i++) await press(page, '100gのおもりをつるす');
+    await press(page, '50gのおもりをつるす');
+    await expect(msg(page)).toContainText('5Nまでしかはかれない');
+    await expect(page.locator('#massValue')).toHaveText('500');
+  });
+
+  test('記録をふやすと、点が直線の上にならぶことが分かる', async ({ page }) => {
+    await press(page, '表とグラフに記録する');
+    await expect(msg(page)).toContainText('まだおもりをつるしていない');
+
+    await press(page, '100gのおもりをつるす');
+    await press(page, '表とグラフに記録する');
+    await expect(msg(page)).toContainText('1Nのとき、ばねののびは2.0cm');
+    await press(page, '表とグラフに記録する');
+    await expect(msg(page)).toContainText('もう記録してある');
+
+    for (const g of ['50g', '100g', '100g']) {
+      await press(page, `${g}のおもりをつるす`);
+      await press(page, '表とグラフに記録する');
+    }
+    await expect(page.locator('#countValue')).toHaveText('4');
+    await expect(msg(page)).toContainText('原点を通る1本の直線');
+  });
+
+  test('はずすおもりがないときは、何をすればよいかが出る', async ({ page }) => {
+    await press(page, 'おもりを1つはずす');
+    await expect(msg(page)).toContainText('はずすおもりは、まだない');
+  });
+
+  test('手で引っぱると、ばねがのび、はなすともとにもどる', async ({ page }) => {
+    await page.getByRole('button', { name: /^手で引っぱる/ }).click();
+    await expect(page.getByRole('button', { name: /^手で引っぱる/ })).toHaveAttribute('aria-pressed', 'true');
+    await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
+    const hook = await toScreen(page, 110, 212);   // フックのいちばん下
+    const down = await toScreen(page, 110, 264);
+    await page.mouse.move(hook.x, hook.y);
+    await page.mouse.down();
+    await page.mouse.move(down.x, down.y, { steps: 6 });
+    await expect(page.locator('#stretchValue')).toHaveText('4.0');   // 52px 引く ＝ 2N ＝ 4cm
+    await page.mouse.up();
+    await expect(msg(page)).toContainText('およそ2Nの力で引いていた');
+    await expect(page.locator('#stretchValue')).toHaveText('0.0');
+  });
+
+  test('最初からやり直すと、記録とおもりが消えて図も最初にもどる', async ({ page }) => {
+    const before = await canvasImage(page);
+    await press(page, '最初からやり直す');
+    await expect(msg(page)).toContainText('まだ何もしていない');
+    await press(page, '100gのおもりをつるす');
+    await press(page, '表とグラフに記録する');
+    await press(page, '最初からやり直す');
+    await expect(page.locator('#countValue')).toHaveText('0');
+    await expect(page.locator('#massValue')).toHaveText('0');
+    expect(await canvasImage(page)).toBe(before);
+  });
+});
+
 test('キャンバスは、画面の細かさに合わせてくっきり描かれる', async ({ page }) => {
   await page.goto('fall.html');
   const info = await page.locator('#board').evaluate((c: HTMLCanvasElement) => ({
