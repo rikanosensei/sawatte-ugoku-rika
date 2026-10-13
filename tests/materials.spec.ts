@@ -773,7 +773,7 @@ test.describe('血液の循環', () => {
 
   test('速さのスライダーで、進む速さを変えられる', async ({ page }) => {
     const slider = page.getByRole('slider', { name: /進む速さ/ });
-    await expect(slider).toHaveAttribute('aria-valuetext', 'ふつう');
+    await expect(slider).toHaveAttribute('aria-valuetext', 'ふつう（1.0倍）');
     // ふつうの速さで、分かれ道まで何秒かかるか
     async function timeToBranch() {
       await page.getByRole('button', { name: 'スタート' }).click();
@@ -783,9 +783,14 @@ test.describe('血液の循環', () => {
       return t;
     }
     const normal = await timeToBranch();
-    await slider.fill('5');
-    await expect(slider).toHaveAttribute('aria-valuetext', 'とてもはやい');
-    await expect(page.locator('#speedValue')).toHaveText('とてもはやい');
+    // つまみをドラッグして、右のはしまで動かす
+    const box = (await slider.boundingBox())!;
+    await page.mouse.move(box.x + box.width * 0.3, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 2, box.y + box.height / 2, { steps: 10 });
+    await page.mouse.up();
+    await expect(slider).toHaveAttribute('aria-valuetext', 'とてもはやい（2.4倍）');
+    await expect(page.locator('#speedValue')).toHaveText('とてもはやい（2.4倍）');
     const fast = await timeToBranch();
     expect(fast).toBeLessThan(normal);
   });
