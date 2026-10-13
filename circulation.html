@@ -102,7 +102,7 @@
               <li>肺動脈と肺静脈では、流れている血液が動脈血か静脈血かを、「動脈血」「静脈血」のボタンで答えてみよう。</li>
               <li>「② 心臓を大きく見る」を押すと、心臓の4つの部屋と弁が動くようすが見られる。</li>
           </ol>
-          <p>画面をさわらなくても、「スタート」「まだ行っていない器官へ進む」のボタンで進めます。</p>
+          <p>進んでいるとちゅうで「ストップ」を押すと止まり、「スタート」を押すと続きから進みます。速さは「進む速さ」のスライダーで変えられます。画面をさわらなくても、「スタート」のボタンだけで進めます（分かれ道では、まだ行っていない器官へ進みます）。</p>
         </div>
       </details>
       <details class="accordion">
@@ -301,7 +301,7 @@
   resetState();
 
   const START_MSG = 'きみは赤血球。いまは、全身へ血液を送り出す左心室にいるよ。「スタート」を押すと、血液の流れに乗って進むよ。分かれ道に来たら止まるから、行き先を選ぼう。';
-  const BRANCH_MSG = '大動脈の分かれ道に着いた。脳・筋肉・小腸・腎臓の、どの器官へ進む？ 器官をタップしよう。';
+  const BRANCH_MSG = '大動脈の分かれ道に着いた。脳・筋肉・小腸・腎臓の、どの器官へ進む？ 器官をタップしよう（「スタート」を押すと、まだ行っていない器官へ進むよ）。';
   const ZOOM_MSG = '心房が縮むと血液が心室へ、心室が縮むと血液が動脈へ送り出される。弁があるので、血液は逆もどりしないね。';
 
   // ===== 描く部品 =====
@@ -765,7 +765,7 @@
   function tick(now) {
     const dt = lastTime == null ? 0 : Math.min(0.05, (now - lastTime) / 1000);
     lastTime = now;
-    if (travel) {
+    if (travel && !state.paused) {
       let f = 1;
       if (travel.easeIn) { f = Math.min(f, 0.25 + travel.d / 70); }
       if (travel.easeOut) { f = Math.min(f, 0.2 + (travel.len - travel.d) / 70); }
@@ -803,7 +803,7 @@
       });
     }
     draw();
-    if (travel || effects.length || trail.length || view === 2) {
+    if ((travel && !state.paused) || effects.length || trail.length || view === 2) {
       requestAnimationFrame(tick);
     } else {
       animating = false;
@@ -882,7 +882,11 @@
   // 自分で場所を選ぶ（分かれ道のとき）
   function goTo(k) {
     if (state.running) {
-      say('いまは流れに乗って進んでいるよ。分かれ道に来たら止まるから、待っていてね。');
+      if (state.paused) {
+        say('ストップしているよ。「スタート」を押すと、続きから進むよ。');
+      } else {
+        say('いまは流れに乗って進んでいるよ。分かれ道に来たら止まるから、待っていてね。');
+      }
       return;
     }
     if (state.at !== 'ao') { begin(); return; }
@@ -1059,9 +1063,8 @@
     placeValue.textContent = P[state.at].name;
     o2Value.textContent = state.o2 ? '多い' : '少ない';
     lapValue.textContent = state.laps;
-    const notYet = ORGANS.some(function (o) { return !state.visited[o]; });
-    nextBtn.textContent = state.running ? '進んでいるところ'
-      : (state.at === 'ao' ? (notYet ? 'まだ行っていない器官へ進む' : 'どれかの器官へ進む') : 'スタート');
+    // 進んでいる間は「ストップ」、止まっているときは「スタート」
+    nextBtn.textContent = state.running && !state.paused ? 'ストップ' : 'スタート';
     document.querySelectorAll('#visitList li').forEach(function (li) {
       const on = !!state.visited[li.dataset.key];
       li.classList.toggle('is-found', on);
@@ -1084,7 +1087,9 @@
       say(ZOOM_MSG);
       if (reduceMotion) { draw(); } else { animate(); }
     } else {
-      if (state.running) {
+      if (state.running && state.paused) {
+        say('ストップしているよ。「スタート」を押すと、続きから進むよ。');
+      } else if (state.running) {
         say('赤血球はいま、' + P[state.at].name + 'にいるよ。続きから進むよ。');
         schedule(1.2);
       } else if (state.at === 'ao') {
@@ -1174,10 +1179,25 @@
   });
 
   // スタート／分かれ道で器官をえらんでもらう（画面をさわらなくても進めるように）
+  // ストップ（とちゅうで止める）と、続きから進む
+  function pause() {
+    state.paused = true;
+    clearTimeout(runTimer);
+    talk('ストップしたよ。「スタート」を押すと、続きから進むよ。', false, true);
+    updatePanel();
+    draw();
+  }
+  function resume() {
+    state.paused = false;
+    talk('続きから進むよ。', false, true);
+    updatePanel();
+    if (travel) { animate(); } else { autoStep(); }
+  }
+
   nextBtn.addEventListener('click', function () {
     if (view !== 1) { goView(1); }
     if (state.running) {
-      goTo(null);
+      if (state.paused) { resume(); } else { pause(); }
       return;
     }
     if (state.at !== 'ao') {

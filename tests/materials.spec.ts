@@ -709,7 +709,22 @@ test.describe('血液の循環', () => {
     await expect(place(page)).toHaveText('左心室');
     await expect(page.locator('#o2Value')).toHaveText('多い');
     await startToBranch(page);
-    await expect(page.getByRole('button', { name: 'まだ行っていない器官へ進む' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'スタート' })).toBeVisible();
+  });
+
+  test('ストップで止まり、スタートで続きから進む', async ({ page }) => {
+    await page.getByRole('button', { name: 'スタート' }).click();
+    await page.clock.runFor(2000);
+    await page.getByRole('button', { name: 'ストップ' }).click();
+    await expect(msg(page)).toContainText('ストップしたよ');
+    await page.clock.runFor(300);
+    const stopped = await canvasImage(page);
+    await page.clock.runFor(5000);
+    expect(await canvasImage(page)).toBe(stopped);
+    await expect(place(page)).toHaveText('左心室');
+    await page.getByRole('button', { name: 'スタート' }).click();
+    await expect(page.getByRole('button', { name: 'ストップ' })).toBeVisible();
+    await runUntil(page, '大動脈');
   });
 
   test('分かれ道では、つながっていない場所や逆向きには進めない', async ({ page }) => {
