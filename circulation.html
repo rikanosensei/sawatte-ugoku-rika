@@ -209,7 +209,29 @@
     const pts = rawRoute(a, b);
     pts[0] = rest(a);
     pts[pts.length - 1] = rest(b);
-    return pts;
+    return smooth(pts);
+  }
+  // 折れ線の角を丸くして、なめらかに曲がる道にする（見た目だけ）
+  function smooth(pts) {
+    const out = [pts[0]];
+    for (let i = 1; i < pts.length - 1; i++) {
+      const a = pts[i - 1], b = pts[i], c = pts[i + 1];
+      const l1 = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const l2 = Math.hypot(c[0] - b[0], c[1] - b[1]);
+      if (l1 < 1 || l2 < 1) { continue; }
+      const r = Math.min(22, l1 / 2, l2 / 2);
+      const p0 = [b[0] - (b[0] - a[0]) / l1 * r, b[1] - (b[1] - a[1]) / l1 * r];
+      const p2 = [b[0] + (c[0] - b[0]) / l2 * r, b[1] + (c[1] - b[1]) / l2 * r];
+      for (let j = 0; j <= 8; j++) {
+        const t = j / 8;
+        out.push([
+          (1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * b[0] + t * t * p2[0],
+          (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * b[1] + t * t * p2[1]
+        ]);
+      }
+    }
+    out.push(pts[pts.length - 1]);
+    return out;
   }
   function rawRoute(a, b) {
     const pa = P[a], pb = P[b];
@@ -717,18 +739,24 @@
   }
 
   // ===== 動き =====
-  const SPEED = 85;             // 赤血球が進む速さ（見た目だけ。1秒に進む画素）。ゆっくり進む
+  const SPEED = 55;             // 赤血球が進む速さ（見た目だけ。1秒に進む画素）。ゆっくり進む
   function tick(now) {
     const dt = lastTime == null ? 0 : Math.min(0.05, (now - lastTime) / 1000);
     lastTime = now;
     if (travel) {
-      travel.d += SPEED * dt;
+      let f = 1;
+      if (travel.easeIn) { f = Math.min(f, 0.25 + travel.d / 70); }
+      if (travel.easeOut) { f = Math.min(f, 0.2 + (travel.len - travel.d) / 70); }
+      travel.d += SPEED * f * dt;
       const p = pointAt(travel.pts, travel.d);
       trail.push([cell.x, cell.y]);
       if (trail.length > 6) { trail.shift(); }
       cell.x = p[0];
       cell.y = p[1];
-      if (travel.d >= travel.len) { finishTravel(); }
+      if (travel.d >= travel.len) {
+        carry = travel.d - travel.len;
+        finishTravel();
+      }
     } else if (trail.length) {
       trail.shift();
     }
@@ -786,9 +814,13 @@
 
   // ===== 進む =====
   // 分かれ道（大動脈）に着くまでは、自動で次の場所へ進む
+  let carry = 0;                // 前の道で進みすぎた分（次の道に引きつぐ。止まらずなめらかに進むため）
   function startTravel(k) {
     const pts = route(state.at, k);
-    travel = { to: k, pts: pts, d: 0, len: pathLen(pts) };
+    // 出発するときはゆっくり動き出し、分かれ道の前ではゆっくり止まる
+    travel = { to: k, pts: pts, d: carry, len: pathLen(pts), easeIn: state.at === 'lv' && !state.moving || state.at === 'ao', easeOut: k === 'ao' };
+    carry = 0;
+    state.moving = true;
     updatePanel();
     animate();
   }
@@ -834,7 +866,8 @@
     cell.x = rest(k)[0];
     cell.y = rest(k)[1];
     arrive(k);
-    if (k === 'ao') { state.running = false; }
+    if (k === 'ao') { state.running = false; state.moving = false; }
+    if (!state.running) { carry = 0; }
     updatePanel();
     // 止まらずに、そのまま次の場所へ進む（動きを止める設定のときは、少し待ってから次へ）
     if (state.running) {

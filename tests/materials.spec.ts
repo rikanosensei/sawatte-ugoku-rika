@@ -687,7 +687,7 @@ test.describe('血液の循環', () => {
   // スタートして、分かれ道（大動脈）で止まるまで待つ
   async function startToBranch(page: Page) {
     await page.getByRole('button', { name: 'スタート' }).click();
-    await expect(place(page)).toHaveText('大動脈');
+    await expect(place(page)).toHaveText('大動脈', { timeout: 15_000 });
     await expect(msg(page)).toContainText('分かれ道');
   }
 
@@ -713,26 +713,26 @@ test.describe('血液の循環', () => {
   });
 
   test('器官を選ぶと、肺を通って1周し、次の分かれ道でまた止まる', async ({ page }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(150_000);
     const before = await canvasImage(page);
     await startToBranch(page);
     await tap(page, 'intestine');
-    await expect(place(page)).toHaveText('小腸', { timeout: 5_000 });
+    await expect(place(page)).toHaveText('小腸', { timeout: 15_000 });
     await expect(msg(page)).toContainText('栄養分');
     await expect(page.locator('#o2Value')).toHaveText('少ない');
     expect(await canvasImage(page)).not.toBe(before);
 
     // 肺動脈では、動脈血か静脈血かを答える
-    await expect(place(page)).toHaveText('肺動脈', { timeout: 20_000 });
+    await expect(place(page)).toHaveText('肺動脈', { timeout: 40_000 });
     await page.getByRole('button', { name: /^動脈血/ }).click();
     await expect(msg(page)).toContainText('ざんねん');
     await page.getByRole('button', { name: /^静脈血/ }).click();
     await expect(msg(page)).toContainText('正解');
 
     await expect(page.locator('#o2Value')).toHaveText('多い', { timeout: 20_000 });
-    await expect(msg(page)).toContainText('肺循環', { timeout: 30_000 });
-    await expect(page.locator('#lapValue')).toHaveText('1', { timeout: 30_000 });
-    await expect(place(page)).toHaveText('大動脈', { timeout: 30_000 });
+    await expect(msg(page)).toContainText('肺循環', { timeout: 40_000 });
+    await expect(page.locator('#lapValue')).toHaveText('1', { timeout: 40_000 });
+    await expect(place(page)).toHaveText('大動脈', { timeout: 40_000 });
     await expect(page.locator('#visitList li.is-found')).toHaveCount(3);
   });
 
