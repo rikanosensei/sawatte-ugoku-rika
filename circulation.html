@@ -111,6 +111,7 @@
           <p>図の色は、静脈血が流れるところを水色、動脈血が流れるところをピンクで表しています。赤血球は、酸素が多いとあざやかな赤、少ないとこい青で表しています。図は、血液の通り道を分かりやすくするために単純にしたもので、器官の形や位置は本物とはちがいます。心臓は、体の正面から見た向きでかいているので、体の右側（右心房・右心室）が図の左側になります。</p>
           <p>本物の赤血球は、酸素を運びます。栄養分や二酸化炭素、不要な物質は、血液の液体の成分である血しょうにとけて運ばれます。図では、赤血球のまわりのうすい丸で、血しょうが運ぶものを表しています。</p>
           <p>全身の器官は、脳・筋肉・小腸・腎臓の4つだけをえらんでいます。</p>
+          <p>「心臓を大きく見る」の動きは、ようすが分かるように、本物の拍動よりずっとゆっくりにしています。本物の心臓は、1分間に60〜80回くらい拍動します。</p>
         </div>
       </details>
     </div>
@@ -625,7 +626,9 @@
   const ZLEN = pathLen(ZPATH.right);
   const AV_AT = pathLen(ZPATH.right.slice(0, 3));   // 心房と心室の間の弁のところ
   const SL_AT = pathLen(ZPATH.right.slice(0, 6));   // 心室から動脈への弁のところ
-  const BEAT = 1.8;               // 1回の拍動の時間（秒）
+  // 本物の拍動より、ずっとゆっくりにしている（文を読めるように）。1つの時期が 2.5 秒
+  const PHASE = 2.5;
+  const BEAT = PHASE * 3;         // 1回の拍動の時間（秒）
   let zdots = [];
   function resetDots() {
     zdots = [];
@@ -635,7 +638,7 @@
   // 拍動の時期：0 心房が縮む、1 心室が縮む、2 ひと休み
   function phase() {
     const t = zoomTime % BEAT;
-    return t < 0.6 ? 0 : (t < 1.2 ? 1 : 2);
+    return t < PHASE ? 0 : (t < PHASE * 2 ? 1 : 2);
   }
 
   function drawZoom() {
@@ -790,12 +793,12 @@
     effects.forEach(function (e) { e.t += dt; });
     effects = effects.filter(function (e) { return e.t < e.life; });
     if (view === 2) {
-      zoomTime += dt;
+      zoomTime += dt * speedMul;   // 速さのスライダーで、拍動の速さも変わる
       const ph = phase();
       zdots.forEach(function (d) {
         // 心房が縮むときと、ゆるむときは、心房 → 心室へ。心室が縮むときは、心室 → 動脈へ
-        let v = 70;
-        if (ph === 1 && d.d > AV_AT - 4) { v = 220; }
+        let v = 40 * speedMul;
+        if (ph === 1 && d.d > AV_AT - 4) { v = 110 * speedMul; }
         let nd = d.d + v * dt;
         if (ph === 1 && d.d < AV_AT && nd >= AV_AT) { nd = AV_AT - 1; }       // 心房と心室の間の弁がしまっている
         if (ph !== 1 && d.d < SL_AT && nd >= SL_AT) { nd = SL_AT - 1; }       // 動脈への弁がしまっている
