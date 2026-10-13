@@ -673,6 +673,95 @@ test.describe('不要な物質のゆくえ', () => {
   });
 });
 
+test.describe('血液の循環', () => {
+  const msg = (page: Page) => page.locator('#msg');
+  // 場所の位置（座標は 600 × 420 を基準）
+  const AT = {
+    ra: [258, 170], rv: [258, 230], pa: [170, 125], lung: [338, 60], pv: [430, 118],
+    la: [342, 170], lv: [342, 230], ao: [510, 262], intestine: [377, 345], vc: [80, 280],
+  } as const;
+
+  // 場所をタップして、赤血球が着くまで待つ
+  async function tap(page: Page, k: keyof typeof AT) {
+    await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
+    const p = await toScreen(page, AT[k][0], AT[k][1]);
+    await page.mouse.click(p.x, p.y);
+  }
+  async function arrive(page: Page, name: string) {
+    await expect(page.locator('#placeValue')).toHaveText(name);
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('circulation.html');
+    await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
+  });
+
+  test('つながっていない場所や、逆向きには進めない', async ({ page }) => {
+    await tap(page, 'lv');
+    await expect(msg(page)).toContainText('じかにつながっていない');
+    await tap(page, 'rv');
+    await arrive(page, '右心室');
+    await tap(page, 'ra');
+    await expect(msg(page)).toContainText('逆もどりできない');
+    await expect(page.locator('#placeValue')).toHaveText('右心室');
+  });
+
+  test('肺で酸素を受け取り、肺動脈と肺静脈のクイズに答えられる', async ({ page }) => {
+    const before = await canvasImage(page);
+    await tap(page, 'rv'); await arrive(page, '右心室');
+    await tap(page, 'pa'); await arrive(page, '肺動脈');
+    await page.getByRole('button', { name: /^動脈血/ }).click();
+    await expect(msg(page)).toContainText('ざんねん');
+    await page.getByRole('button', { name: /^静脈血/ }).click();
+    await expect(msg(page)).toContainText('正解');
+    await tap(page, 'lung'); await arrive(page, '肺');
+    await expect(page.locator('#o2Value')).toHaveText('多い');
+    expect(await canvasImage(page)).not.toBe(before);
+    await tap(page, 'pv'); await arrive(page, '肺静脈');
+    await page.getByRole('button', { name: /^動脈血/ }).click();
+    await expect(msg(page)).toContainText('正解');
+    await tap(page, 'la'); await arrive(page, '左心房');
+    await expect(msg(page)).toContainText('肺循環');
+  });
+
+  test('大動脈から器官を選んで、体を1周するとお祝いが出る', async ({ page }) => {
+    const next = page.getByRole('button', { name: '次の場所へ進む' });
+    for (let i = 0; i < 7; i++) { await next.click(); }
+    await arrive(page, '大動脈');
+    await tap(page, 'intestine'); await arrive(page, '小腸');
+    await expect(msg(page)).toContainText('栄養分');
+    await expect(page.locator('#o2Value')).toHaveText('少ない');
+    await tap(page, 'vc'); await arrive(page, '大静脈');
+    await tap(page, 'ra'); await arrive(page, '右心房');
+    await expect(msg(page)).toContainText('1周できた');
+    await expect(page.locator('#lapValue')).toHaveText('1');
+    await expect(page.locator('#visitList li.is-found')).toHaveCount(3);
+  });
+
+  test('心臓を大きく見ると、心臓のしくみの説明が出る', async ({ page }) => {
+    await page.getByRole('button', { name: /^② 心臓を大きく見る/ }).click();
+    await expect(page.getByRole('button', { name: /^② 心臓を大きく見る/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(msg(page)).toContainText('弁があるので');
+  });
+
+  test('4つの器官を全部回るとお祝いが出て、もとに戻すと最初にもどる', async ({ page }) => {
+    const before = await canvasImage(page);
+    const reset = page.getByRole('button', { name: 'もとに戻す' });
+    await reset.click();
+    await expect(msg(page)).toContainText('まだ何もしていない');
+    const next = page.getByRole('button', { name: '次の場所へ進む' });
+    // キーボードでも進められる（Enter キーで 40 回押す）
+    await next.focus();
+    for (let i = 0; i < 40; i++) { await page.keyboard.press('Enter'); }
+    await expect(page.locator('#lapValue')).toHaveText('4');
+    await expect(page.locator('#visitList li.is-found')).toHaveCount(6);
+    await reset.click();
+    await expect(page.locator('#lapValue')).toHaveText('0');
+    await page.waitForTimeout(400);
+    expect(await canvasImage(page)).toBe(before);
+  });
+});
+
 test('キャンバスは、画面の細かさに合わせてくっきり描かれる', async ({ page }) => {
   await page.goto('fall.html');
   const info = await page.locator('#board').evaluate((c: HTMLCanvasElement) => ({
