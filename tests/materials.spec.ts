@@ -715,15 +715,19 @@ test.describe('血液の循環', () => {
   test('ストップで止まり、スタートで続きから進む', async ({ page }) => {
     await page.getByRole('button', { name: 'スタート' }).click();
     await page.clock.runFor(2000);
+    const before = await msg(page).textContent();
     await page.getByRole('button', { name: 'ストップ' }).click();
-    await expect(msg(page)).toContainText('ストップしたよ');
+    // ストップしても、そのときのふきだしの文が残る
+    await expect(msg(page)).toHaveText(before!);
     await page.clock.runFor(300);
     const stopped = await canvasImage(page);
     await page.clock.runFor(5000);
     expect(await canvasImage(page)).toBe(stopped);
     await expect(place(page)).toHaveText('左心室');
+    await expect(msg(page)).toHaveText(before!);
     await page.getByRole('button', { name: 'スタート' }).click();
     await expect(page.getByRole('button', { name: 'ストップ' })).toBeVisible();
+    await expect(msg(page)).toHaveText(before!);   // 続きから進むときも、文はそのまま
     await runUntil(page, '大動脈');
   });
 

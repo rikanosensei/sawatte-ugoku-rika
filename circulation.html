@@ -883,7 +883,7 @@
   function goTo(k) {
     if (state.running) {
       if (state.paused) {
-        say('ストップしているよ。「スタート」を押すと、続きから進むよ。');
+        return;                  // ストップ中は、ふきだしの文をそのまま残す
       } else {
         say('いまは流れに乗って進んでいるよ。分かれ道に来たら止まるから、待っていてね。');
       }
@@ -1180,16 +1180,21 @@
 
   // スタート／分かれ道で器官をえらんでもらう（画面をさわらなくても進めるように）
   // ストップ（とちゅうで止める）と、続きから進む
+  // ふきだしの文はそのまま残す。読む時間の残りもとっておき、続きから数える
+  let readLeft = 0;
   function pause() {
     state.paused = true;
     clearTimeout(runTimer);
-    talk('ストップしたよ。「スタート」を押すと、続きから進むよ。', false, true);
+    clearTimeout(talkTimer);
+    talkTimer = null;
+    readLeft = Math.max(0, readUntil - performance.now());
     updatePanel();
     draw();
   }
   function resume() {
     state.paused = false;
-    talk('続きから進むよ。', false, true);
+    readUntil = performance.now() + readLeft;
+    if (talkQueue.length) { talkTimer = setTimeout(nextTalk, readLeft); }
     updatePanel();
     if (travel) { animate(); } else { autoStep(); }
   }
