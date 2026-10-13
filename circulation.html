@@ -191,7 +191,7 @@
   // 赤血球がとまる位置（名前の札とかさならないように、器官と肺では右によせる）
   function rest(k) {
     if (P[k].organ) { return [P[k].x + 22, P[k].y]; }
-    if (k === 'lung') { return [338, 60]; }
+    if (k === 'lung') { return [236, 60]; }   // 肺の入り口あたり。ここから肺の中をゆっくり進む
     return [P[k].x, P[k].y];
   }
   const ARTERY_Y = 300;         // 大動脈から器官へ分かれる血管の高さ
@@ -237,7 +237,7 @@
     const pa = P[a], pb = P[b];
     if (a === 'ra') { return [[pa.x, pa.y], [pb.x, pb.y]]; }
     if (a === 'rv') { return [[pa.x, pa.y], [214, 230], [170, 230], [pb.x, pb.y]]; }
-    if (a === 'pa') { return [[pa.x, pa.y], [170, 60], [215, 60], [300, 60], [pb.x, pb.y]]; }
+    if (a === 'pa') { return [[pa.x, pa.y], [170, 60], [215, 60], [pb.x, pb.y]]; }
     if (a === 'lung') { return [[pa.x, pa.y], [385, 60], [430, 60], [pb.x, pb.y]]; }
     if (a === 'pv') { return [[pa.x, pa.y], [430, 170], [386, 170], [pb.x, pb.y]]; }
     if (a === 'la') { return [[pa.x, pa.y], [pb.x, pb.y]]; }
@@ -493,7 +493,7 @@
     ctx.fill();
     ctx.stroke();
     capillaries(222, 34, 156, 52, VEIN, ART, false);
-    tag('肺', 262, 60, 16);
+    tag('肺', 352, 60, 16);
 
     // 心臓
     ctx.fillStyle = WALL;
@@ -747,6 +747,11 @@
       let f = 1;
       if (travel.easeIn) { f = Math.min(f, 0.25 + travel.d / 70); }
       if (travel.easeOut) { f = Math.min(f, 0.2 + (travel.len - travel.d) / 70); }
+      // ふきだしの文を読んでいる間は、ゆっくり進む
+      if (now < readUntil) { f *= talkQueue.length ? 0.15 : 0.45; }   // 次の文が待っているときは、もっとゆっくり
+      // 肺と器官の中（毛細血管）では、さらにゆっくり進む
+      if (cell.x > 215 && cell.x < 385 && cell.y > 30 && cell.y < 90) { f *= 0.4; }
+      if (cell.y > 323 && cell.y < 367) { f *= 0.6; }
       travel.d += SPEED * f * dt;
       const p = pointAt(travel.pts, travel.d);
       trail.push([cell.x, cell.y]);
@@ -838,7 +843,7 @@
     state.running = true;
     state.moved = true;
     hideQuiz();
-    say('出発！ 左心室から、血液が勢いよく送り出されるよ。');
+    talk('出発！ 左心室から、血液が勢いよく送り出されるよ。', false, true);
     autoStep();
   }
 
@@ -871,13 +876,47 @@
     updatePanel();
     // 止まらずに、そのまま次の場所へ進む（動きを止める設定のときは、少し待ってから次へ）
     if (state.running) {
-      if (reduceMotion) { schedule(1.5); } else { autoStep(); }
+      if (reduceMotion) { schedule(Math.max(1.5, (readUntil - performance.now()) / 1000)); } else { autoStep(); }
     }
   }
 
   // 話す（通りながら、ふきだしの文が変わっていく）
-  function talk(text, cheer) {
+  // 文を読む時間（ミリ秒）。1文字0.15秒くらい。この間は赤血球の進み方をおそくする
+  // 前の文をまだ読んでいるときは、次の文は順番待ちにして、読み終わってから出す
+  let readUntil = 0;
+  let talkQueue = [];
+  let talkTimer = null;
+  function readMs(text, cheer) {
+    return Math.min(9000, Math.max(2500, text.length * 150)) + (cheer ? 1000 : 0);
+  }
+  function showTalk(text, cheer) {
     say(text, cheer);
+    readUntil = performance.now() + readMs(text, cheer);
+  }
+  function talk(text, cheer, now) {
+    if (now) {                   // ボタンを押したときの答えなどは、すぐに出す
+      showTalk(text, cheer);
+      return;
+    }
+    if (performance.now() < readUntil) {
+      talkQueue.push([text, cheer]);
+      if (!talkTimer) { talkTimer = setTimeout(nextTalk, readUntil - performance.now()); }
+      return;
+    }
+    showTalk(text, cheer);
+  }
+  function nextTalk() {
+    talkTimer = null;
+    const t = talkQueue.shift();
+    if (!t) { return; }
+    showTalk(t[0], t[1]);
+    if (talkQueue.length) { talkTimer = setTimeout(nextTalk, readUntil - performance.now()); }
+  }
+  function clearTalk() {
+    talkQueue = [];
+    clearTimeout(talkTimer);
+    talkTimer = null;
+    readUntil = 0;
   }
   const PASS = null;            // 話すことがない場所
 
@@ -957,7 +996,7 @@
     quizBox.hidden = false;
     quizQ.textContent = P[k].name + 'を流れる血液は？';
     quizButtons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
-    talk(P[k].name + 'を通るよ。ここを流れる血液は、動脈血？ 静脈血？ 「動脈血」「静脈血」のボタンで答えてみよう。');
+    talk(P[k].name + 'を通るよ。流れている血液は、動脈血？ 静脈血？ ボタンで答えよう。');
   }
   function hideQuiz() {
     quizAt = null;
@@ -970,14 +1009,14 @@
     if (a === right) {
       state.answered[quizAt] = true;
       if (quizAt === 'pa') {
-        say('正解！ 肺動脈は心臓から送り出される血液が流れるので「動脈」だけど、流れているのは、二酸化炭素を多くふくむ静脈血だよ。', true);
+        talk('正解！ 肺動脈は心臓から送り出される血液が流れるので「動脈」だけど、流れているのは、二酸化炭素を多くふくむ静脈血だよ。', true, true);
       } else {
-        say('正解！ 肺静脈は心臓にもどる血液が流れるので「静脈」だけど、流れているのは、肺で酸素を受け取った動脈血だよ。', true);
+        talk('正解！ 肺静脈は心臓にもどる血液が流れるので「静脈」だけど、流れているのは、肺で酸素を受け取った動脈血だよ。', true, true);
       }
     } else if (quizAt === 'pa') {
-      say('ざんねん。肺動脈を流れるのは、まだ肺を通る前の、酸素が少ない血液だよ。もう一度答えてみよう。');
+      talk('ざんねん。肺動脈を流れるのは、まだ肺を通る前の、酸素が少ない血液だよ。もう一度答えてみよう。', false, true);
     } else {
-      say('ざんねん。肺静脈を流れるのは、肺で酸素を受け取ったあとの血液だよ。もう一度答えてみよう。');
+      talk('ざんねん。肺静脈を流れるのは、肺で酸素を受け取ったあとの血液だよ。もう一度答えてみよう。', false, true);
     }
   }
 
@@ -1003,6 +1042,7 @@
   function goView(n) {
     if (travel) { finishTravel(); }
     clearTimeout(runTimer);
+    clearTalk();
     view = n;
     updatePanel();
     if (view === 2) {
@@ -1123,6 +1163,7 @@
       return;
     }
     resetState();
+    clearTalk();
     hideQuiz();
     view = 1;
     updatePanel();

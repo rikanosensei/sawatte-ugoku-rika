@@ -677,21 +677,30 @@ test.describe('血液の循環', () => {
   const msg = (page: Page) => page.locator('#msg');
   const place = (page: Page) => page.locator('#placeValue');
   // 場所の位置（座標は 600 × 420 を基準）
-  const AT = { lv: [342, 230], lung: [338, 60], intestine: [377, 345] } as const;
+  const AT = { lv: [342, 230], lung: [300, 60], intestine: [377, 345] } as const;
 
   async function tap(page: Page, k: keyof typeof AT) {
     await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
     const p = await toScreen(page, AT[k][0], AT[k][1]);
     await page.mouse.click(p.x, p.y);
   }
+  // 赤血球はゆっくり進むので、ページの時計を早送りしながら、その場所に着くのを待つ
+  async function runUntil(page: Page, name: string) {
+    for (let t = 0; t < 180_000; t += 500) {
+      if ((await place(page).textContent()) === name) { return; }
+      await page.clock.runFor(500);
+    }
+    throw new Error(name + 'に着かなかった');
+  }
   // スタートして、分かれ道（大動脈）で止まるまで待つ
   async function startToBranch(page: Page) {
     await page.getByRole('button', { name: 'スタート' }).click();
-    await expect(place(page)).toHaveText('大動脈', { timeout: 15_000 });
+    await runUntil(page, '大動脈');
     await expect(msg(page)).toContainText('分かれ道');
   }
 
   test.beforeEach(async ({ page }) => {
+    await page.clock.install();
     await page.goto('circulation.html');
     await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
   });
@@ -713,27 +722,38 @@ test.describe('血液の循環', () => {
   });
 
   test('器官を選ぶと、肺を通って1周し、次の分かれ道でまた止まる', async ({ page }) => {
-    test.setTimeout(150_000);
     const before = await canvasImage(page);
     await startToBranch(page);
     await tap(page, 'intestine');
-    await expect(place(page)).toHaveText('小腸', { timeout: 15_000 });
+    await runUntil(page, '小腸');
     await expect(msg(page)).toContainText('栄養分');
     await expect(page.locator('#o2Value')).toHaveText('少ない');
     expect(await canvasImage(page)).not.toBe(before);
 
     // 肺動脈では、動脈血か静脈血かを答える
-    await expect(place(page)).toHaveText('肺動脈', { timeout: 40_000 });
+    await runUntil(page, '肺動脈');
     await page.getByRole('button', { name: /^動脈血/ }).click();
     await expect(msg(page)).toContainText('ざんねん');
     await page.getByRole('button', { name: /^静脈血/ }).click();
     await expect(msg(page)).toContainText('正解');
 
-    await expect(page.locator('#o2Value')).toHaveText('多い', { timeout: 20_000 });
-    await expect(msg(page)).toContainText('肺循環', { timeout: 40_000 });
-    await expect(page.locator('#lapValue')).toHaveText('1', { timeout: 40_000 });
-    await expect(place(page)).toHaveText('大動脈', { timeout: 40_000 });
+    await runUntil(page, '肺');
+    await expect(page.locator('#o2Value')).toHaveText('多い');
+    await runUntil(page, '左心房');
+    await expect(msg(page)).toContainText('肺循環');
+    await runUntil(page, '大動脈');
+    await expect(page.locator('#lapValue')).toHaveText('1');
     await expect(page.locator('#visitList li.is-found')).toHaveCount(3);
+  });
+
+  test('ふきだしの文を読んでいる間と、肺の中では、ゆっくり進む', async ({ page }) => {
+    await startToBranch(page);
+    await tap(page, 'intestine');
+    await runUntil(page, '肺動脈');
+    // 肺動脈から肺を通りぬけて肺静脈に着くまで、10秒より長くかかる
+    let t = 0;
+    while ((await place(page).textContent()) !== '肺静脈') { await page.clock.runFor(500); t += 500; }
+    expect(t).toBeGreaterThan(10_000);
   });
 
   test('心臓を大きく見ると、心臓のしくみの説明が出る', async ({ page }) => {
@@ -751,7 +771,7 @@ test.describe('血液の循環', () => {
     await reset.click();
     await expect(place(page)).toHaveText('左心室');
     await expect(page.getByRole('button', { name: 'スタート' })).toBeVisible();
-    await page.waitForTimeout(400);
+    await page.clock.runFor(500);
     expect(await canvasImage(page)).toBe(before);
   });
 });
