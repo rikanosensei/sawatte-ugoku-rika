@@ -154,6 +154,7 @@ const canvas = document.getElementById('board');
   const LIGHT = '#ff3d8b';            // 光の道筋
   const LIGHT_PREVIEW = 'rgba(255, 61, 139, 0.5)';
   const GUIDE = '#a9bccf';            // 補助の点線
+  const GUIDE_SAVE = '#6f88a3';       // 保存する画像の補助の点線（こく）
   const SKIN = '#ffe0c7';
   const HAIR = '#3b2f4a';
 
@@ -221,6 +222,9 @@ const canvas = document.getElementById('board');
   }
 
   // ===== 描画 =====
+  // 保存する画像では、方眼や線をこく・太くする（送った先でも見えやすいように）
+  let forSave = false;
+
   function draw() {
     const pos = getPositions();
 
@@ -250,10 +254,13 @@ const canvas = document.getElementById('board');
   }
 
   function drawGrid() {
-    ctx.lineWidth = 1;
+    // 50cmごとの線と、10cmごとの線の色（保存する画像ではこくする）
+    const major = forSave ? '#6f88a3' : '#c9d9ea';
+    const minor = forSave ? '#b4c6d9' : '#e8eff7';
+    ctx.lineWidth = forSave ? 1.5 : 1;
     // 縦線
     for (let x = MIRROR_X % (10 * S); x <= W; x += 10 * S) {
-      ctx.strokeStyle = ((x - MIRROR_X) % (50 * S) === 0) ? '#c9d9ea' : '#e8eff7';
+      ctx.strokeStyle = ((x - MIRROR_X) % (50 * S) === 0) ? major : minor;
       ctx.beginPath();
       ctx.moveTo(x + 0.5, 0);
       ctx.lineTo(x + 0.5, GROUND_Y);
@@ -261,7 +268,7 @@ const canvas = document.getElementById('board');
     }
     // 横線（床から上へ）
     for (let y = GROUND_Y; y >= 0; y -= 10 * S) {
-      ctx.strokeStyle = ((GROUND_Y - y) % (50 * S) === 0) ? '#c9d9ea' : '#e8eff7';
+      ctx.strokeStyle = ((GROUND_Y - y) % (50 * S) === 0) ? major : minor;
       ctx.beginPath();
       ctx.moveTo(0, y + 0.5);
       ctx.lineTo(W, y + 0.5);
@@ -407,8 +414,8 @@ const canvas = document.getElementById('board');
 
   function drawDashed(x1, y1, x2, y2) {
     ctx.setLineDash([8, 6]);
-    ctx.strokeStyle = GUIDE;
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = forSave ? GUIDE_SAVE : GUIDE;
+    ctx.lineWidth = forSave ? 2.5 : 2;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
@@ -448,7 +455,7 @@ const canvas = document.getElementById('board');
     ctx.shadowColor = 'rgba(255, 61, 139, 0.55)';
     ctx.shadowBlur = 10;
     ctx.strokeStyle = color;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = forSave ? 6 : 4;
     ctx.lineJoin = 'round';
     ctx.beginPath();
     ctx.moveTo(realX, ty);
@@ -537,8 +544,15 @@ const canvas = document.getElementById('board');
   });
 
   document.getElementById('saveBtn').addEventListener('click', function () {
+    // 線をこくして描き、画像にしたら、画面の見た目にもどす
+    forSave = true;
+    draw();
+    const url = canvas.toDataURL('image/png');
+    forSave = false;
+    draw();
+
     const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
+    link.href = url;
     link.download = 'hansha.png';
     link.click();
   });
