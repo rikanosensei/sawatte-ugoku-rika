@@ -74,7 +74,7 @@
               <li data-key="kidney">腎臓<span class="sr-state">（まだ）</span></li>
             </ul>
             <div class="panel-actions">
-              <button id="nextBtn" class="btn btn-primary btn-block">次の場所へ進む</button>
+              <button id="nextBtn" class="btn btn-primary btn-block">スタート</button>
               <button id="resetBtn" class="btn btn-tertiary btn-block">もとに戻す</button>
             </div>
             <div id="quiz" hidden>
@@ -92,19 +92,19 @@
         <summary>使い方</summary>
         <div class="accordion-body">
           <ol class="steps">
-              <li>きみは赤血球。いまいる場所から、血管でつながった次の場所をタップすると、そこまで進む。赤血球を指でつまんで、次の場所まで運んでもよい。</li>
+              <li>きみは赤血球。左心室から出発する。「スタート」を押すと、血液の流れに乗って自動で進む。</li>
+              <li>大動脈の分かれ道で止まったら、脳・筋肉・小腸・腎臓のどれに進むかを、器官をタップして選ぶ。赤血球を指でつまんで、器官まで運んでもよい。器官ごとに、血液が受けわたすものがちがう。</li>
               <li>肺を通ると酸素を受け取り、全身の器官を通ると酸素をわたす。赤血球の色の変わり方を見よう。</li>
-              <li>大動脈の先では、脳・筋肉・小腸・腎臓のどれに進むかを自分で選ぶ。器官ごとに、血液が受けわたすものがちがう。</li>
               <li>肺動脈と肺静脈では、流れている血液が動脈血か静脈血かを、「動脈血」「静脈血」のボタンで答えてみよう。</li>
               <li>「② 心臓を大きく見る」を押すと、心臓の4つの部屋と弁が動くようすが見られる。</li>
           </ol>
-          <p>画面をさわらなくても、「次の場所へ進む」のボタンで進めます。</p>
+          <p>画面をさわらなくても、「スタート」「まだ行っていない器官へ進む」のボタンで進めます。</p>
         </div>
       </details>
       <details class="accordion">
         <summary>このモデルについて</summary>
         <div class="accordion-body prose">
-          <p>図は、血液の通り道を分かりやすくするために単純にしたもので、器官の形や位置は本物とはちがいます。心臓は、体の正面から見た向きでかいているので、体の右側（右心房・右心室）が図の左側になります。</p>
+          <p>図の色は、静脈血が流れるところを水色、動脈血が流れるところをピンクで表しています。赤血球は、酸素が多いとあざやかな赤、少ないとこい青で表しています。図は、血液の通り道を分かりやすくするために単純にしたもので、器官の形や位置は本物とはちがいます。心臓は、体の正面から見た向きでかいているので、体の右側（右心房・右心室）が図の左側になります。</p>
           <p>本物の赤血球は、酸素を運びます。栄養分や二酸化炭素、不要な物質は、血液の液体の成分である血しょうにとけて運ばれます。図では、赤血球のまわりのうすい丸で、血しょうが運ぶものを表しています。</p>
           <p>全身の器官は、脳・筋肉・小腸・腎臓の4つだけをえらんでいます。</p>
         </div>
@@ -123,6 +123,7 @@
   const placeValue = document.getElementById('placeValue');
   const o2Value = document.getElementById('o2Value');
   const lapValue = document.getElementById('lapValue');
+  const nextBtn = document.getElementById('nextBtn');
 
   // キャンバスで使う文字（ページと同じ書体）
   const FONT = '"Noto Sans JP", sans-serif';
@@ -157,10 +158,13 @@
 
   // ===== 色 =====
   const INK = '#1b1b2f';        // 線・文字
-  const ART = '#e8253f';        // 動脈血（酸素が多い。あざやかな赤）
-  const VEIN = '#5b3a9e';       // 静脈血（二酸化炭素が多い。暗い色）
-  const ART_SOFT = '#ffd6dc';
-  const VEIN_SOFT = '#e3dbf5';
+  const ART = '#e5587a';        // 動脈血の血管・部屋（ピンク）
+  const VEIN = '#0096db';       // 静脈血の血管・部屋（水色）
+  const ART_SOFT = '#f8cfdd';
+  const VEIN_SOFT = '#c4e8f8';
+  const WALL = '#fbe9f0';       // 心臓のかべ
+  const CELL_ART = '#e02a4a';   // 酸素が多い赤血球（あざやかな赤）
+  const CELL_VEIN = '#0b4a9a';  // 酸素が少ない赤血球（こい青）
   const CO2 = '#8a8fa3';        // 二酸化炭素（灰色の粒）
   const FOOD = '#f2c94c';       // 栄養分（黄色の粒）
   const WASTE = '#2fae66';      // 不要な物質（緑の粒）
@@ -243,28 +247,33 @@
   let lastTime = null;
   let zoomTime = 0;             // 心臓を大きく見る図の時計
   let quizAt = null;            // クイズを出している場所
+  let runTimer = null;          // 次の場所へ進むまでの待ち時間
 
   function resetState() {
     state = {
-      at: 'ra',
-      o2: false,                // 酸素を多く持っているか
-      cargo: { co2: true, food: false, waste: false },   // 血しょうが運ぶもの
+      at: 'lv',                 // 左心室から出発する
+      o2: true,                 // 酸素を多く持っているか
+      cargo: { co2: false, food: false, waste: false },  // 血しょうが運ぶもの
       laps: 0,
-      sinceLung: false,         // 右心房を出てから肺を通ったか
-      sinceOrgan: true,         // 体循環から右心房にもどってきたところから始める
+      sinceLung: false,         // 左心室を出てから肺を通ったか
+      sinceOrgan: false,        // 左心室を出てから器官を通ったか
       visited: {},
       answered: {},
+      running: false,           // 分かれ道まで自動で進んでいるところか
       moved: false
     };
-    cell = { x: rest('ra')[0], y: rest('ra')[1] };
+    cell = { x: rest('lv')[0], y: rest('lv')[1] };
     travel = null;
     effects = [];
     trail = [];
     quizAt = null;
+    clearTimeout(runTimer);
+    runTimer = null;
   }
   resetState();
 
-  const START_MSG = 'きみは赤血球。いまは、全身からもどってきた右心房にいるよ。血管でつながった次の場所をタップして、進んでみよう。';
+  const START_MSG = 'きみは赤血球。いまは、全身へ血液を送り出す左心室にいるよ。「スタート」を押すと、血液の流れに乗って進むよ。分かれ道に来たら止まるから、行き先を選ぼう。';
+  const BRANCH_MSG = '大動脈の分かれ道に着いた。脳・筋肉・小腸・腎臓の、どの器官へ進む？ 器官をタップしよう。';
   const ZOOM_MSG = '心房が縮むと血液が心室へ、心室が縮むと血液が動脈へ送り出される。弁があるので、血液は逆もどりしないね。';
 
   // ===== 描く部品 =====
@@ -308,7 +317,7 @@
     ctx.lineJoin = 'round';
     polyline(pts);
     ctx.strokeStyle = INK;
-    ctx.lineWidth = 13;
+    ctx.lineWidth = 12;
     ctx.stroke();
     polyline(pts);
     ctx.strokeStyle = color;
@@ -364,8 +373,8 @@
     if (cargo.food) { items.push(FOOD); }
     if (cargo.waste) { items.push(WASTE); }
     if (items.length) {
-      ctx.fillStyle = 'rgba(255, 243, 196, 0.85)';
-      ctx.strokeStyle = 'rgba(27, 27, 47, 0.35)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.strokeStyle = 'rgba(27, 27, 47, 0.45)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(x, y, 26 * s, 0, Math.PI * 2);
@@ -383,7 +392,7 @@
       });
     }
     // 円盤の形（まん中が少しへこんでいる）
-    ctx.fillStyle = o2 ? ART : VEIN;
+    ctx.fillStyle = o2 ? CELL_ART : CELL_VEIN;
     ctx.strokeStyle = INK;
     ctx.lineWidth = 2.5;
     ctx.beginPath();
@@ -423,19 +432,21 @@
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, W, H);
 
-    // 肺循環・体循環を1回通ったら、その道をうすい色の帯で示す
+    // 肺循環・体循環を1回通ったら、その道を点線でかこんで示す
+    ctx.setLineDash([6, 5]);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2;
     if (state.visited.pulmonary) {
-      ctx.fillStyle = '#e6f3ff';
-      roundRect(150, 18, 300, 132, 20);
-      ctx.fill();
-      label('肺循環', 520, 40, 16, INK);
+      roundRect(146, 16, 308, 136, 20);
+      ctx.stroke();
     }
     if (state.visited.systemic) {
-      ctx.fillStyle = '#fff3c4';
-      roundRect(60, 276, 480, 132, 20);
-      ctx.fill();
-      label('体循環', 568, 400, 16, INK, 'right');
+      roundRect(58, 276, 484, 134, 20);
+      ctx.stroke();
     }
+    ctx.setLineDash([]);
+    if (state.visited.pulmonary) { tag('肺循環', 510, 30, 15, '#ffffff'); }
+    if (state.visited.systemic) { tag('体循環', 560, 398, 15, '#ffffff'); }
 
     // 器官へ分かれる血管・器官から集まる血管
     ORGANS.forEach(function (k) {
@@ -453,7 +464,7 @@
     vessel([[170, 150], [170, 190]], VEIN);
 
     // 肺（毛細血管で、静脈血 → 動脈血）
-    ctx.fillStyle = '#ffe0ee';
+    ctx.fillStyle = '#fdf0f5';
     ctx.strokeStyle = INK;
     ctx.lineWidth = 2.5;
     roundRect(215, 30, 170, 60, 26);
@@ -463,7 +474,7 @@
     tag('肺', 262, 60, 16);
 
     // 心臓
-    ctx.fillStyle = '#ffe3d3';
+    ctx.fillStyle = WALL;
     ctx.strokeStyle = INK;
     ctx.lineWidth = 2.5;
     roundRect(214, 140, 172, 122, 30);
@@ -496,7 +507,7 @@
     // 器官（毛細血管で、動脈血 → 静脈血）
     ORGANS.forEach(function (k) {
       const p = P[k];
-      ctx.fillStyle = '#ffe3d3';
+      ctx.fillStyle = '#ffffff';
       ctx.strokeStyle = INK;
       ctx.lineWidth = 2.5;
       roundRect(p.x - 48, p.y - 22, 96, 44, 14);
@@ -509,7 +520,7 @@
     // 血管の名前
     tag('肺動脈', P.pa.x - 38, P.pa.y - 20, 14);
     tag('肺静脈', P.pv.x + 38, P.pv.y - 20, 14);
-    tag('大動脈', P.ao.x + 40, P.ao.y - 12, 14);
+    tag('大動脈', P.ao.x + 44, P.ao.y + 18, 14);
     tag('大静脈', P.vc.x - 32, P.vc.y - 34, 14);
 
     // 流れの向き
@@ -521,8 +532,8 @@
     arrowAt(400, ARTERY_Y, -1, 0);
     arrowAt(200, VEIN_Y, -1, 0);
 
-    // 次に進める場所を、点線の輪で知らせる
-    if (!travel && !dragging) {
+    // 分かれ道で止まっているときは、進める器官を点線でかこむ
+    if (!travel && !dragging && !state.running && state.at === 'ao') {
       nextOf(state.at).forEach(function (k) {
         const p = P[k];
         ctx.setLineDash([5, 4]);
@@ -551,7 +562,7 @@
     // 残像と赤血球
     trail.forEach(function (t, i) {
       ctx.globalAlpha = 0.12 + 0.05 * i;
-      ctx.fillStyle = state.o2 ? ART : VEIN;
+      ctx.fillStyle = state.o2 ? CELL_ART : CELL_VEIN;
       ctx.beginPath();
       ctx.ellipse(t[0], t[1], 12, 10, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -604,6 +615,13 @@
     ctx.fillRect(0, 0, W, H);
     const ph = reduceMotion ? -1 : phase();
     const sq = function (on) { return on ? 0.94 : 1; };
+    // 心臓のかべ
+    ctx.fillStyle = WALL;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
+    roundRect(80, 84, 440, 326, 40);
+    ctx.fill();
+    ctx.stroke();
 
     // 血管（右：静脈血、左：動脈血）
     vessel([[20, 150], [100, 150]], VEIN);
@@ -639,7 +657,7 @@
     zdots.forEach(function (d) {
       const pts = d.side === 'right' ? ZPATH.right : ZPATH.left;
       const p = pointAt(pts, d.d);
-      ctx.fillStyle = d.side === 'right' ? VEIN : ART;
+      ctx.fillStyle = d.side === 'right' ? CELL_VEIN : CELL_ART;
       ctx.strokeStyle = INK;
       ctx.lineWidth = 1.2;
       ctx.beginPath();
@@ -767,26 +785,47 @@
   }
 
   // ===== 進む =====
-  function goTo(k) {
-    if (travel) { finishTravel(); }
-    const from = state.at;
-    if (k === from) {
-      say('いまは' + P[from].name + 'にいるよ。点線の輪のところへ進もう。');
-      return;
-    }
-    if (nextOf(from).indexOf(k) < 0) {
-      // 逆向き？
-      const back = VALVE_BACK[from + '>' + k];
-      if (back) { say(back); return; }
-      if (nextOf(k).indexOf(from) >= 0) { say('血液は、決まった向きにしか流れないよ。' + P[from].name + 'の次は、点線の輪のところだよ。'); return; }
-      say(P[from].name + 'から' + P[k].name + 'へは、血管でじかにつながっていないよ。点線の輪のところへ進もう。');
-      return;
-    }
+  // 分かれ道（大動脈）に着くまでは、自動で次の場所へ進む
+  function startTravel(k) {
+    const pts = route(state.at, k);
+    travel = { to: k, pts: pts, d: 0, len: pathLen(pts) };
+    updatePanel();
+    animate();
+  }
+  function schedule(sec) {
+    clearTimeout(runTimer);
+    runTimer = setTimeout(autoStep, sec * 1000);
+  }
+  function autoStep() {
+    runTimer = null;
+    if (!state.running || view !== 1 || travel) { return; }
+    startTravel(nextOf(state.at)[0]);
+  }
+  // スタート
+  function begin() {
+    state.running = true;
     state.moved = true;
     hideQuiz();
-    const pts = route(from, k);
-    travel = { to: k, pts: pts, d: 0, len: pathLen(pts) };
-    animate();
+    say('出発！ 左心室から、血液が勢いよく送り出されるよ。');
+    autoStep();
+  }
+
+  // 自分で場所を選ぶ（分かれ道のとき）
+  function goTo(k) {
+    if (state.running) {
+      say('いまは流れに乗って進んでいるよ。分かれ道に来たら止まるから、待っていてね。');
+      return;
+    }
+    if (state.at !== 'ao') { begin(); return; }
+    if (nextOf('ao').indexOf(k) < 0) {
+      if (k === 'ao') { say(BRANCH_MSG); return; }
+      const back = VALVE_BACK['ao>' + k];
+      if (back) { say(back); return; }
+      say('大動脈から' + P[k].name + 'へは、血管でじかにつながっていないよ。点線でかこんだ器官へ進もう。');
+      return;
+    }
+    state.running = true;
+    startTravel(k);
   }
 
   function finishTravel() {
@@ -794,83 +833,87 @@
     travel = null;
     cell.x = rest(k)[0];
     cell.y = rest(k)[1];
-    arrive(k);
+    const wait = arrive(k);
+    if (k === 'ao') { state.running = false; }
     updatePanel();
+    if (state.running) { schedule(wait); }
   }
 
-  // 着いた場所で起こること
+  // 話して、読み終わるくらいの時間（秒）を返す
+  function talk(text, cheer) {
+    say(text, cheer);
+    return cheer ? 4 : Math.min(4, Math.max(1.4, text.length * 0.06));
+  }
+  const PASS = 0.3;             // 話すことがない場所は、すぐ次へ進む
+
+  // 着いた場所で起こること。次へ進むまでの時間（秒）を返す
   function arrive(k) {
     const prev = state.at;
     state.at = k;
     const p = P[k];
     const c = state.cargo;
+    if (k === 'ao') {
+      return talk(BRANCH_MSG);
+    }
     if (k === 'lung') {
-      const first = !state.visited.lung;
       state.visited.lung = true;
       state.sinceLung = true;
       let t = '肺に着いた。';
       if (c.co2) { t += '二酸化炭素を出して、'; burst(p.x, p.y, CO2, true); }
       t += '酸素を受け取ったよ。赤血球があざやかな赤になったね（動脈血）。';
-      if (first) { t += '肺の毛細血管のまわりには、肺胞があるよ。'; }
       c.co2 = false;
       state.o2 = true;
-      burst(p.x, p.y, ART, false);
-      say(t);
-    } else if (p.organ) {
+      burst(p.x, p.y, CELL_ART, false);
+      return talk(t);
+    }
+    if (p.organ) {
       state.visited[k] = true;
       state.sinceOrgan = true;
       let t = p.name + 'に着いた。';
-      if (state.o2) { t += '細胞に酸素をわたして、'; burst(p.x, p.y, ART, true); } else { t += 'もう酸素はほとんど残っていないね。'; }
+      if (state.o2) { t += '細胞に酸素をわたして、'; burst(p.x, p.y, CELL_ART, true); }
       state.o2 = false;
       c.co2 = true;
-      t += '細胞から出た二酸化炭素を受け取ったよ。';
+      t += '二酸化炭素を受け取ったよ。';
       if (k === 'intestine') {
-        if (!c.food) { t += '小腸では、吸収された栄養分も受け取るよ。'; burst(p.x, p.y, FOOD, false); }
+        if (!c.food) { t += '吸収された栄養分も受け取るよ。'; burst(p.x, p.y, FOOD, false); }
         c.food = true;
       } else if (k === 'kidney') {
-        if (c.waste) { t += '腎臓で、不要な物質がこし出されたよ。'; burst(p.x, p.y, WASTE, true); } else { t += '腎臓では、血液中の不要な物質がこし出されるよ。'; }
+        if (c.waste) { t += '不要な物質がこし出されたよ。'; burst(p.x, p.y, WASTE, true); } else { t += '腎臓では、不要な物質がこし出されるよ。'; }
         c.waste = false;
       } else {
-        if (c.food) { t += '運んできた栄養分も、細胞にわたしたよ。'; burst(p.x, p.y, FOOD, true); }
+        if (c.food) { t += '栄養分も細胞にわたしたよ。'; burst(p.x, p.y, FOOD, true); }
         c.food = false;
-        if (!c.waste) { t += '細胞でできた不要な物質も受け取った。'; }
+        if (!c.waste) { t += '不要な物質も受け取った。'; }
         c.waste = true;
       }
       t += '（静脈血になった）';
-      say(t);
-    } else if (k === 'pa' || k === 'pv') {
-      showQuiz(k);
-    } else if (k === 'la' && prev === 'pv' && !state.visited.pulmonary) {
+      return talk(t);
+    }
+    if ((k === 'pa' || k === 'pv') && !state.answered[k]) {
+      return showQuiz(k);
+    }
+    if (k === 'ra' && prev === 'vc' && !state.visited.systemic) {
+      state.visited.systemic = true;
+      return talk('全身から心臓にもどってきた。左心室 → 大動脈 → 全身 → 大静脈 → 右心房の道すじを体循環というよ。', true);
+    }
+    if (k === 'la' && prev === 'pv' && !state.visited.pulmonary) {
       state.visited.pulmonary = true;
-      say('右心室 → 肺動脈 → 肺 → 肺静脈 → 左心房。この道すじを肺循環というよ。', true);
-    } else if (k === 'ra' && prev === 'vc') {
-      if (!state.visited.systemic) {
-        state.visited.systemic = true;
-      }
-      if (state.sinceLung && state.sinceOrgan) {
-        state.laps += 1;
-      }
+      return talk('右心室 → 肺動脈 → 肺 → 肺静脈 → 左心房。この道すじを肺循環というよ。', true);
+    }
+    if (k === 'lv' && prev === 'la') {
+      if (state.sinceLung && state.sinceOrgan) { state.laps += 1; }
       state.sinceLung = false;
+      state.sinceOrgan = false;
       if (state.laps === 1 && !state.answered.lapCheer) {
         state.answered.lapCheer = true;
-        say('1周できた！ 左心室 → 大動脈 → 全身 → 大静脈 → 右心房の道すじを体循環というよ。血液は、肺循環と体循環をくり返して体をめぐっているね。', true);
-      } else if (ORGANS.every(function (o) { return state.visited[o]; }) && !state.answered.allCheer) {
-        state.answered.allCheer = true;
-        say('4つの器官を全部回れた！ 器官によって、血液が受けとったり、わたしたりするものがちがったね。', true);
-      } else {
-        say('右心房にもどってきた。' + state.laps + '周したよ。ちがう器官にも行ってみよう。');
+        return talk('1周して、左心室にもどってきた！ 血液は、肺循環と体循環をくり返して体をめぐっているね。', true);
       }
-    } else {
-      const DESC = {
-        ra: '右心房：全身からもどってきた血液が入るところ。',
-        rv: '右心室：血液を肺へ送り出すところ。',
-        la: '左心房：肺からもどってきた血液が入るところ。',
-        lv: '左心室：血液を全身へ送り出すところ。',
-        ao: '大動脈：心臓から全身へ血液を送り出す動脈。ここから、どの器官へ進むか選ぼう。',
-        vc: '大静脈：全身から心臓にもどる血液が流れる静脈。'
-      };
-      say(DESC[k]);
+      if (ORGANS.every(function (o) { return state.visited[o]; }) && !state.answered.allCheer) {
+        state.answered.allCheer = true;
+        return talk('4つの器官を全部回れた！ 器官によって、血液が受けとったり、わたしたりするものがちがったね。', true);
+      }
     }
+    return PASS;
   }
 
   // ===== クイズ（肺動脈・肺静脈） =====
@@ -879,7 +922,7 @@
     quizBox.hidden = false;
     quizQ.textContent = P[k].name + 'を流れる血液は？';
     quizButtons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
-    say(P[k].name + 'に着いた。ここを流れる血液は、動脈血？ 静脈血？ 「動脈血」「静脈血」のボタンで答えてみよう。');
+    return talk(P[k].name + 'を通るよ。ここを流れる血液は、動脈血？ 静脈血？ 「動脈血」「静脈血」のボタンで答えてみよう。');
   }
   function hideQuiz() {
     quizAt = null;
@@ -897,9 +940,9 @@
         say('正解！ 肺静脈は心臓にもどる血液が流れるので「静脈」だけど、流れているのは、肺で酸素を受け取った動脈血だよ。', true);
       }
     } else if (quizAt === 'pa') {
-      say('ざんねん。赤血球の色を見てみよう。まだ肺を通る前だから、酸素は少ないね。');
+      say('ざんねん。肺動脈を流れるのは、まだ肺を通る前の、酸素が少ない血液だよ。もう一度答えてみよう。');
     } else {
-      say('ざんねん。赤血球の色を見てみよう。肺を通ったあとだから、酸素を多くふくんでいるね。');
+      say('ざんねん。肺静脈を流れるのは、肺で酸素を受け取ったあとの血液だよ。もう一度答えてみよう。');
     }
   }
 
@@ -909,6 +952,9 @@
     placeValue.textContent = P[state.at].name;
     o2Value.textContent = state.o2 ? '多い' : '少ない';
     lapValue.textContent = state.laps;
+    const notYet = ORGANS.some(function (o) { return !state.visited[o]; });
+    nextBtn.textContent = state.running ? '流れに乗って進んでいるよ'
+      : (state.at === 'ao' ? (notYet ? 'まだ行っていない器官へ進む' : 'どれかの器官へ進む') : 'スタート');
     document.querySelectorAll('#visitList li').forEach(function (li) {
       const on = !!state.visited[li.dataset.key];
       li.classList.toggle('is-found', on);
@@ -921,6 +967,7 @@
 
   function goView(n) {
     if (travel) { finishTravel(); }
+    clearTimeout(runTimer);
     view = n;
     updatePanel();
     if (view === 2) {
@@ -929,7 +976,14 @@
       say(ZOOM_MSG);
       if (reduceMotion) { draw(); } else { animate(); }
     } else {
-      say('赤血球はいま、' + P[state.at].name + 'にいるよ。点線の輪のところへ進もう。');
+      if (state.running) {
+        say('赤血球はいま、' + P[state.at].name + 'にいるよ。続きから進むよ。');
+        schedule(1.2);
+      } else if (state.at === 'ao') {
+        say(BRANCH_MSG);
+      } else {
+        say(START_MSG);
+      }
       draw();
     }
   }
@@ -960,7 +1014,7 @@
     }
     const p = toCanvas(e);
     downAt = p;
-    if (!travel && Math.hypot(p.x - cell.x, p.y - cell.y) < 24) {
+    if (!travel && state.at === 'ao' && !state.running && Math.hypot(p.x - cell.x, p.y - cell.y) < 24) {
       dragging = { grab: [cell.x - p.x, cell.y - p.y] };
       canvas.setPointerCapture(e.pointerId);
       e.preventDefault();
@@ -984,12 +1038,12 @@
       const k = placeAt(cell.x, cell.y);
       cell.x = rest(state.at)[0];
       cell.y = rest(state.at)[1];
-      if (k && k !== state.at) { goTo(k); } else if (!k) { say('点線の輪のところで、指をはなそう。'); }
+      if (k && k !== state.at) { goTo(k); } else if (!k) { say('点線でかこんだ器官の上で、指をはなそう。'); }
       draw();
       return;
     }
     const k = placeAt(p.x, p.y);
-    if (k) { goTo(k); } else { say('点線の輪のところをタップすると、そこへ進むよ。'); }
+    if (state.running) { goTo(k); } else if (state.at !== 'ao') { begin(); } else if (k) { goTo(k); } else { say('点線でかこんだ器官をタップすると、そこへ進むよ。'); }
     draw();
   }
   canvas.addEventListener('pointerup', endPointer);
@@ -1011,17 +1065,20 @@
     b.addEventListener('click', function () { answer(b.dataset.answer); });
   });
 
-  // 次の場所へ進む（画面をさわらなくても進めるように）
-  document.getElementById('nextBtn').addEventListener('click', function () {
+  // スタート／分かれ道で器官をえらんでもらう（画面をさわらなくても進めるように）
+  nextBtn.addEventListener('click', function () {
     if (view !== 1) { goView(1); }
-    if (travel) { finishTravel(); }
-    let next = nextOf(state.at);
-    // 大動脈では、まだ行っていない器官をえらぶ
-    if (next.length > 1) {
-      const notYet = next.filter(function (k) { return !state.visited[k]; });
-      next = notYet.length ? notYet : next;
+    if (state.running) {
+      goTo(null);
+      return;
     }
-    goTo(next[0]);
+    if (state.at !== 'ao') {
+      begin();
+      updatePanel();
+      return;
+    }
+    const notYet = ORGANS.filter(function (k) { return !state.visited[k]; });
+    goTo((notYet.length ? notYet : ORGANS)[0]);
   });
 
   // もとに戻す（まだ何もしていないときは、何をすればよいかを伝える）
