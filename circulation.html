@@ -45,6 +45,10 @@
 
     <div class="sim-layout">
       <section class="card sim-stage" aria-label="シミュレーション">
+        <div class="guide guide-top">
+          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
+          <p id="msg" class="notice" aria-live="polite"></p>
+        </div>
         <canvas id="board" class="sim-canvas" width="600" height="420" role="img"
             aria-label="血液の循環の図。"></canvas>
         <dl class="readout">
@@ -52,10 +56,6 @@
           <div><dt>酸素</dt><dd id="o2Value">少ない</dd></div>
           <div><dt>体を回った</dt><dd><span id="lapValue">0</span> 周</dd></div>
         </dl>
-        <div class="guide">
-          <span class="guide-icon"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="24" y="6" width="16" height="22" rx="3" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><rect x="20" y="3" width="24" height="7" rx="3.5" fill="#fff" stroke="#1b1b2f" stroke-width="3"/><circle cx="32" cy="42" r="18" fill="#fff"/><path d="M14.4 46A18 18 0 0 0 49.6 46Z" fill="#7fd3ff"/><circle cx="32" cy="42" r="18" fill="none" stroke="#1b1b2f" stroke-width="3"/><circle cx="25.5" cy="37.5" r="2.6" fill="#1b1b2f"/><circle cx="38.5" cy="37.5" r="2.6" fill="#1b1b2f"/><path d="M27.5 43q4.5 4 9 0" fill="none" stroke="#1b1b2f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="21.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><ellipse cx="42.5" cy="42.5" rx="2.6" ry="1.8" fill="#ff8fbf"/><circle cx="26" cy="52" r="1.8" fill="#fff"/><circle cx="36" cy="54.5" r="1.3" fill="#fff"/></svg></span>
-          <p id="msg" class="notice" aria-live="polite"></p>
-        </div>
       </section>
 
       <div class="card panel">
@@ -63,6 +63,14 @@
             <div class="choice-list">
               <button class="btn-choice view-btn" data-view="1" aria-pressed="true">① 体全体<small>赤血球になって進む</small></button>
               <button class="btn-choice view-btn" data-view="2" aria-pressed="false">② 心臓を大きく見る<small>4つの部屋と弁</small></button>
+            </div>
+            <div class="control">
+              <label class="control-label" for="speedSlider">進む速さ <span id="speedValue" class="control-value">ふつう</span></label>
+              <input type="range" id="speedSlider" min="1" max="5" step="1" value="3" aria-valuetext="ふつう">
+            </div>
+            <div class="panel-actions">
+              <button id="nextBtn" class="btn btn-primary btn-block">スタート</button>
+              <button id="resetBtn" class="btn btn-tertiary btn-block">もとに戻す</button>
             </div>
             <h3 class="panel-sub">通ったところ</h3>
             <ul class="check-list" id="visitList">
@@ -73,10 +81,6 @@
               <li data-key="intestine">小腸<span class="sr-state">（まだ）</span></li>
               <li data-key="kidney">腎臓<span class="sr-state">（まだ）</span></li>
             </ul>
-            <div class="panel-actions">
-              <button id="nextBtn" class="btn btn-primary btn-block">スタート</button>
-              <button id="resetBtn" class="btn btn-tertiary btn-block">もとに戻す</button>
-            </div>
             <div id="quiz" hidden>
               <h3 class="panel-sub" id="quizQ">ここを流れる血液は？</h3>
               <div class="choice-list">
@@ -124,6 +128,8 @@
   const o2Value = document.getElementById('o2Value');
   const lapValue = document.getElementById('lapValue');
   const nextBtn = document.getElementById('nextBtn');
+  const speedSlider = document.getElementById('speedSlider');
+  const speedValue = document.getElementById('speedValue');
 
   // キャンバスで使う文字（ページと同じ書体）
   const FONT = '"Noto Sans JP", sans-serif';
@@ -740,6 +746,22 @@
 
   // ===== 動き =====
   const SPEED = 55;             // 赤血球が進む速さ（見た目だけ。1秒に進む画素）。ゆっくり進む
+  // 速さのスライダー（1〜5）。ふつうの何倍で進むか
+  const SPEED_STEPS = [
+    { mul: 0.5, name: 'とてもゆっくり' },
+    { mul: 0.75, name: 'ゆっくり' },
+    { mul: 1, name: 'ふつう' },
+    { mul: 1.5, name: 'はやい' },
+    { mul: 2.2, name: 'とてもはやい' }
+  ];
+  let speedMul = 1;
+  function setSpeed() {
+    const st = SPEED_STEPS[Number(speedSlider.value) - 1];
+    speedMul = st.mul;
+    speedValue.textContent = st.name;
+    speedSlider.setAttribute('aria-valuetext', st.name);
+  }
+  speedSlider.addEventListener('input', setSpeed);
   function tick(now) {
     const dt = lastTime == null ? 0 : Math.min(0.05, (now - lastTime) / 1000);
     lastTime = now;
@@ -752,7 +774,7 @@
       // 肺と器官の中（毛細血管）では、さらにゆっくり進む
       if (cell.x > 215 && cell.x < 385 && cell.y > 30 && cell.y < 90) { f *= 0.4; }
       if (cell.y > 323 && cell.y < 367) { f *= 0.6; }
-      travel.d += SPEED * f * dt;
+      travel.d += SPEED * speedMul * f * dt;
       const p = pointAt(travel.pts, travel.d);
       trail.push([cell.x, cell.y]);
       if (trail.length > 6) { trail.shift(); }
@@ -839,7 +861,17 @@
     startTravel(nextOf(state.at)[0]);
   }
   // スタート
+  // 図とふきだしが、画面の中にまるごと見えるようにする
+  function showStage() {
+    const stage = document.querySelector('.sim-stage');
+    const bar = document.querySelector('.appbar');
+    const barH = bar ? bar.getBoundingClientRect().height : 0;
+    const r = stage.getBoundingClientRect();
+    if (r.top >= barH && r.bottom <= window.innerHeight) { return; }
+    window.scrollTo({ top: window.scrollY + r.top - barH - 8, behavior: reduceMotion ? 'auto' : 'smooth' });
+  }
   function begin() {
+    showStage();
     state.running = true;
     state.moved = true;
     hideQuiz();
@@ -887,7 +919,8 @@
   let talkQueue = [];
   let talkTimer = null;
   function readMs(text, cheer) {
-    return Math.min(9000, Math.max(2500, text.length * 150)) + (cheer ? 1000 : 0);
+    // 速さを上げたときは、待つ時間も少し短くする
+    return (Math.min(9000, Math.max(2500, text.length * 150)) + (cheer ? 1000 : 0)) / Math.sqrt(speedMul);
   }
   function showTalk(text, cheer) {
     say(text, cheer);
@@ -1027,7 +1060,7 @@
     o2Value.textContent = state.o2 ? '多い' : '少ない';
     lapValue.textContent = state.laps;
     const notYet = ORGANS.some(function (o) { return !state.visited[o]; });
-    nextBtn.textContent = state.running ? '流れに乗って進んでいるよ'
+    nextBtn.textContent = state.running ? '進んでいるところ'
       : (state.at === 'ao' ? (notYet ? 'まだ行っていない器官へ進む' : 'どれかの器官へ進む') : 'スタート');
     document.querySelectorAll('#visitList li').forEach(function (li) {
       const on = !!state.visited[li.dataset.key];

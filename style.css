@@ -952,6 +952,19 @@ svg {
   margin-top: var(--space-4);
 }
 
+/* ふきだしを図の上に置く版（図とふきだしを一画面に収める）。文の長さで図が上下しないように、3行分の高さをとる */
+.guide-top {
+  margin: 0 0 var(--space-3);
+}
+
+.guide-top .notice {
+  min-height: calc(1.65em * 3 + var(--space-3) * 2 + 5px);
+}
+
+.choice-list + .control {
+  margin-top: var(--space-4);
+}
+
 .guide-icon {
   display: grid;
   place-items: center;

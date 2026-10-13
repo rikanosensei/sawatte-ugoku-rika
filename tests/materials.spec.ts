@@ -756,6 +756,39 @@ test.describe('血液の循環', () => {
     expect(t).toBeGreaterThan(10_000);
   });
 
+  test('速さのスライダーで、進む速さを変えられる', async ({ page }) => {
+    const slider = page.getByRole('slider', { name: /進む速さ/ });
+    await expect(slider).toHaveAttribute('aria-valuetext', 'ふつう');
+    // ふつうの速さで、分かれ道まで何秒かかるか
+    async function timeToBranch() {
+      await page.getByRole('button', { name: 'スタート' }).click();
+      let t = 0;
+      while ((await place(page).textContent()) !== '大動脈') { await page.clock.runFor(250); t += 250; }
+      await page.getByRole('button', { name: 'もとに戻す' }).click();
+      return t;
+    }
+    const normal = await timeToBranch();
+    await slider.fill('5');
+    await expect(slider).toHaveAttribute('aria-valuetext', 'とてもはやい');
+    await expect(page.locator('#speedValue')).toHaveText('とてもはやい');
+    const fast = await timeToBranch();
+    expect(fast).toBeLessThan(normal);
+  });
+
+  test('ふきだしは図の上にあり、スタートすると図とふきだしが画面に収まる', async ({ page }) => {
+    const guide = await page.locator('.guide').boundingBox();
+    const canvas = await page.locator('#board').boundingBox();
+    expect(guide!.y).toBeLessThan(canvas!.y);
+    await page.getByRole('button', { name: 'スタート' }).click();
+    await page.clock.runFor(1500);
+    await page.waitForTimeout(1000);   // なめらかなスクロールが終わるまで待つ
+    const vh = page.viewportSize()!.height;
+    const g = await page.locator('.guide').boundingBox();
+    const c = await page.locator('#board').boundingBox();
+    expect(g!.y).toBeGreaterThanOrEqual(0);
+    if (test.info().project.name !== 'mobile') { expect(c!.y + c!.height).toBeLessThanOrEqual(vh); }
+  });
+
   test('心臓を大きく見ると、心臓のしくみの説明が出る', async ({ page }) => {
     await page.getByRole('button', { name: /^② 心臓を大きく見る/ }).click();
     await expect(page.getByRole('button', { name: /^② 心臓を大きく見る/ })).toHaveAttribute('aria-pressed', 'true');
