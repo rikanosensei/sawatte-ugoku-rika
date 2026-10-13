@@ -717,7 +717,7 @@
   }
 
   // ===== 動き =====
-  const SPEED = 320;            // 赤血球が進む速さ（見た目だけ。1秒に進む画素）
+  const SPEED = 85;             // 赤血球が進む速さ（見た目だけ。1秒に進む画素）。ゆっくり進む
   function tick(now) {
     const dt = lastTime == null ? 0 : Math.min(0.05, (now - lastTime) / 1000);
     lastTime = now;
@@ -833,20 +833,22 @@
     travel = null;
     cell.x = rest(k)[0];
     cell.y = rest(k)[1];
-    const wait = arrive(k);
+    arrive(k);
     if (k === 'ao') { state.running = false; }
     updatePanel();
-    if (state.running) { schedule(wait); }
+    // 止まらずに、そのまま次の場所へ進む（動きを止める設定のときは、少し待ってから次へ）
+    if (state.running) {
+      if (reduceMotion) { schedule(1.5); } else { autoStep(); }
+    }
   }
 
-  // 話して、読み終わるくらいの時間（秒）を返す
+  // 話す（通りながら、ふきだしの文が変わっていく）
   function talk(text, cheer) {
     say(text, cheer);
-    return cheer ? 4 : Math.min(4, Math.max(1.4, text.length * 0.06));
   }
-  const PASS = 0.3;             // 話すことがない場所は、すぐ次へ進む
+  const PASS = null;            // 話すことがない場所
 
-  // 着いた場所で起こること。次へ進むまでの時間（秒）を返す
+  // 通った場所で起こること
   function arrive(k) {
     const prev = state.at;
     state.at = k;
@@ -858,7 +860,7 @@
     if (k === 'lung') {
       state.visited.lung = true;
       state.sinceLung = true;
-      let t = '肺に着いた。';
+      let t = '肺を通っているよ。';
       if (c.co2) { t += '二酸化炭素を出して、'; burst(p.x, p.y, CO2, true); }
       t += '酸素を受け取ったよ。赤血球があざやかな赤になったね（動脈血）。';
       c.co2 = false;
@@ -869,7 +871,7 @@
     if (p.organ) {
       state.visited[k] = true;
       state.sinceOrgan = true;
-      let t = p.name + 'に着いた。';
+      let t = p.name + 'を通っているよ。';
       if (state.o2) { t += '細胞に酸素をわたして、'; burst(p.x, p.y, CELL_ART, true); }
       state.o2 = false;
       c.co2 = true;
@@ -922,7 +924,7 @@
     quizBox.hidden = false;
     quizQ.textContent = P[k].name + 'を流れる血液は？';
     quizButtons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
-    return talk(P[k].name + 'を通るよ。ここを流れる血液は、動脈血？ 静脈血？ 「動脈血」「静脈血」のボタンで答えてみよう。');
+    talk(P[k].name + 'を通るよ。ここを流れる血液は、動脈血？ 静脈血？ 「動脈血」「静脈血」のボタンで答えてみよう。');
   }
   function hideQuiz() {
     quizAt = null;
