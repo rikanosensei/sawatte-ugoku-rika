@@ -589,7 +589,7 @@ test.describe('ニュートンばねばかり', () => {
 test.describe('不要な物質のゆくえ', () => {
   const msg = (page: Page) => page.locator('#msg');
 
-  // 粒をつまんで、(tx, ty) まで運んで指をはなす（座標は 600 × 400 を基準）
+  // 粒をつまんで、(tx, ty) まで運んで指をはなす（座標は 600 × 420 を基準）
   async function carry(page: Page, x: number, y: number, tx: number, ty: number) {
     await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
     const from = await toScreen(page, x, y);
@@ -599,44 +599,56 @@ test.describe('不要な物質のゆくえ', () => {
     await page.mouse.move(to.x, to.y, { steps: 8 });
     await page.mouse.up();
   }
-  const LIVER = [180, 150], KIDNEY = [175, 212], GLAND = [309, 206], BLADDER = [210, 298];
+  // 粒は血液にのってゆっくり運ばれるので、ページの時計を早送りしながら待つ
+  async function runUntil(page: Page, sel: string, value: string) {
+    for (let t = 0; t < 120_000; t += 500) {
+      if ((await page.locator(sel).textContent()) === value) { return; }
+      await page.clock.runFor(500);
+    }
+    throw new Error(sel + ' が ' + value + ' にならなかった');
+  }
+  const CELL = [460, 82], LIVER = [182, 154], KIDNEY = [180, 238], SKIN = [509, 330], BLADDER = [250, 352], UREA_AT = [150, 148];
 
   test.beforeEach(async ({ page }) => {
+    await page.clock.install();
     await page.goto('excrete.html');
     await page.waitForLoadState('networkidle'); // 図の文字のフォントが届いて描き直されるまで待つ
   });
 
   test('アンモニアをいきなり腎臓に運ぶと、はね返ってヒントが出る', async ({ page }) => {
-    await carry(page, 440, 78, KIDNEY[0], KIDNEY[1]);
+    await carry(page, CELL[0], CELL[1], KIDNEY[0], KIDNEY[1]);
     await expect(msg(page)).toContainText('アンモニアのままでは、体に有害');
     await expect(page.locator('#ureaValue')).toHaveText('0');
   });
 
-  test('肝臓で尿素になり、腎臓で尿になって、ぼうこうから体外に出せる', async ({ page }) => {
+  test('血液にのって肝臓で尿素になり、腎臓で尿になって、ぼうこうから体外に出せる', async ({ page }) => {
     const before = await canvasImage(page);
-    await carry(page, 440, 78, LIVER[0], LIVER[1]);
+    await carry(page, CELL[0], CELL[1], LIVER[0], LIVER[1]);
+    await expect(msg(page)).toContainText('血液にとけて');
+    await runUntil(page, '#ureaValue', '1');
     await expect(msg(page)).toContainText('無害な尿素に変えられた');
-    await expect(page.locator('#ureaValue')).toHaveText('1');
-    await page.waitForTimeout(600);   // 尿素が肝臓の上に動き終わるまで待つ
-
-    await carry(page, 154, 146, BLADDER[0], BLADDER[1]);
-    await expect(msg(page)).toContainText('ぼうこうには、尿になってから');
-    await page.waitForTimeout(400);
-    await carry(page, 154, 146, KIDNEY[0], KIDNEY[1]);
-    await expect(msg(page)).toContainText('こし出されて尿になった');
-    await expect(page.locator('#urineValue')).toHaveText('1');
     expect(await canvasImage(page)).not.toBe(before);
 
-    await page.waitForTimeout(1200);  // 尿がぼうこうにたまるまで待つ
+    await carry(page, UREA_AT[0], UREA_AT[1], BLADDER[0], BLADDER[1]);
+    await expect(msg(page)).toContainText('ぼうこうには、尿になってから');
+    await page.clock.runFor(1500);   // 尿素が肝臓にもどるまで待つ
+    await carry(page, UREA_AT[0], UREA_AT[1], KIDNEY[0], KIDNEY[1]);
+    await expect(msg(page)).toContainText('腎動脈を通って');
+    await runUntil(page, '#urineValue', '1');
+    await expect(msg(page)).toContainText('こし出されて尿になった');
+
+    await page.clock.runFor(10_000);  // 尿が輸尿管を通って、ぼうこうにたまるまで待つ
     await page.getByRole('button', { name: 'ぼうこうの尿を体外に出す' }).click();
     await expect(msg(page)).toContainText('道すじがつながった');
     await expect(page.locator('#outValue')).toHaveText('1');
+    await expect(page.locator('#flowList li.is-found')).toHaveCount(7);
   });
 
-  test('尿素を汗腺に運ぶと、汗として排出される', async ({ page }) => {
-    await carry(page, 440, 78, LIVER[0], LIVER[1]);
-    await page.waitForTimeout(600);
-    await carry(page, 154, 146, GLAND[0], GLAND[1]);
+  test('尿素を皮膚の汗腺に運ぶと、汗として排出される', async ({ page }) => {
+    await carry(page, CELL[0], CELL[1], LIVER[0], LIVER[1]);
+    await runUntil(page, '#ureaValue', '1');
+    await carry(page, UREA_AT[0], UREA_AT[1], SKIN[0], SKIN[1]);
+    for (let t = 0; t < 60_000 && !((await msg(page).textContent()) || '').includes('汗になって排出される'); t += 500) { await page.clock.runFor(500); }
     await expect(msg(page)).toContainText('汗になって排出される');
   });
 
@@ -645,12 +657,26 @@ test.describe('不要な物質のゆくえ', () => {
     await expect(msg(page)).toContainText('まだ尿がたまっていない');
   });
 
-  test('腎臓を大きく見ると、こし出すしくみの説明が出る', async ({ page }) => {
+  test('腎臓を大きく見ると、こし出すしくみが動き、説明が出る', async ({ page }) => {
     await page.locator('#board').evaluate((c) => c.scrollIntoView({ block: 'center' }));
     const k = await toScreen(page, KIDNEY[0], KIDNEY[1]);
     await page.mouse.click(k.x, k.y);
     await expect(page.getByRole('button', { name: /^② 腎臓を大きく見る/ })).toHaveAttribute('aria-pressed', 'true');
     await expect(msg(page)).toContainText('余分な水分や塩分とともにこし出されて尿になる');
+    const a = await canvasImage(page);
+    await page.clock.runFor(1000);
+    expect(await canvasImage(page)).not.toBe(a);
+
+    // ストップすると止まり、ふきだしの文はそのまま
+    await page.getByRole('button', { name: 'ストップ' }).click();
+    await page.clock.runFor(200);
+    const b = await canvasImage(page);
+    await page.clock.runFor(2000);
+    expect(await canvasImage(page)).toBe(b);
+    await expect(msg(page)).toContainText('余分な水分や塩分');
+    await page.getByRole('button', { name: 'スタート' }).click();
+    await page.clock.runFor(1000);
+    expect(await canvasImage(page)).not.toBe(b);
   });
 
   test('全部運ぶとお祝いが出て、もとに戻すと最初にもどる', async ({ page }) => {
@@ -659,16 +685,21 @@ test.describe('不要な物質のゆくえ', () => {
     await reset.click();
     await expect(msg(page)).toContainText('まだ何もしていない');
 
+    // 速くしておく
+    await page.locator('#speedSlider').fill('2.4');
     const help = page.getByRole('button', { name: '1つ運んでもらう' });
-    for (let i = 0; i < 12; i++) { await help.click(); await page.waitForTimeout(150); }
-    await page.waitForTimeout(1500);
-    await help.click();
-    await expect(msg(page)).toContainText('全部体外に排出できた');
+    for (let i = 0; i < 40 && (await page.locator('#outValue').textContent()) !== '6'; i++) {
+      await help.click();
+      await page.clock.runFor(4000);
+    }
     await expect(page.locator('#outValue')).toHaveText('6');
+    for (let t = 0; t < 30_000 && !((await msg(page).textContent()) || '').includes('全部体外に排出できた'); t += 500) { await page.clock.runFor(500); }
+    await expect(msg(page)).toContainText('全部体外に排出できた');
 
     await reset.click();
     await expect(page.locator('#ureaValue')).toHaveText('0');
-    await page.waitForTimeout(200);
+    await page.locator('#speedSlider').fill('1');
+    await page.clock.runFor(300);
     expect(await canvasImage(page)).toBe(before);
   });
 });
